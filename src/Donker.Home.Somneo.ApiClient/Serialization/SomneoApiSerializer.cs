@@ -45,12 +45,14 @@ namespace Donker.Home.Somneo.ApiClient.Serialization
             if (obj == null)
                 return string.Empty;
 
-            return JsonConvert.SerializeObject(obj, Formatting.None, _settings);
+            string json = JsonConvert.SerializeObject(obj, Formatting.None, _settings);
+            return json;
         }
 
         public T Deserialize<T>(string content)
         {
-            return JsonConvert.DeserializeObject<T>(content, _settings);
+            T obj = JsonConvert.DeserializeObject<T>(content, _settings);
+            return obj;
         }
 
         public T Deserialize<T>(IRestResponse response)

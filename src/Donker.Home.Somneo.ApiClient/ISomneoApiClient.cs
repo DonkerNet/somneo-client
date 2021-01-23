@@ -22,7 +22,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region General device information
+        #region General
 
         /// <summary>
         /// Retrieves details about the Somneo device itself.
@@ -72,7 +72,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Light management
+        #region Lights
 
         /// <summary>
         /// Retrieves the current light settings.
@@ -112,7 +112,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Display management
+        #region Display
 
         /// <summary>
         /// Retrieves the current settings of the display.
@@ -135,6 +135,26 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="ArgumentException">Exception thrown when the <paramref name="brightnessLevel"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void SetDisplayLevel(int brightnessLevel);
+
+        #endregion
+
+        #region FM radio
+
+        /// <summary>
+        /// Retrieves the configured presets of FM radio frequencies.
+        /// </summary>
+        /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        FMRadioPresets GetFMRadioPresets();
+
+        /// <summary>
+        /// Sets the preset of the specified position to the specified FM frequency.
+        /// </summary>
+        /// <param name="position">The preset position. Value must be between 1 and 5.</param>
+        /// <param name="frequency">The FM frequency. Value must be between 87.50 to 107.99.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SetFMRadioPreset(int position, float frequency);
 
         #endregion
     }

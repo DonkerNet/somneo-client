@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
@@ -89,7 +91,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region General device information
+        #region General
 
         /// <summary>
         /// Retrieves details about the Somneo device itself.
@@ -163,7 +165,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Light management
+        #region Light
 
         /// <summary>
         /// Retrieves the current light settings.
@@ -288,7 +290,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Display management
+        #region Display
 
         /// <summary>
         /// Retrieves the current settings of the display.
@@ -337,6 +339,43 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region FM radio
+
+        /// <summary>
+        /// Retrieves the configured presets of FM radio frequencies.
+        /// </summary>
+        /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public FMRadioPresets GetFMRadioPresets()
+        {
+            var response = ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00");
+            return response.Data;
+        }
+
+        /// <summary>
+        /// Sets the preset of the specified position to the specified FM frequency.
+        /// </summary>
+        /// <param name="position">The preset position. Value must be between 1 and 5.</param>
+        /// <param name="frequency">The FM frequency. Value must be within the range of 87.50 to 107.99.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void SetFMRadioPreset(int position, float frequency)
+        {
+            if (position < 1 || position > 5)
+                throw new ArgumentException("The position must be between 1 and 5.", nameof(position));
+            if (frequency < 87.50F || frequency > 107.99F)
+                throw new ArgumentException("The frequency must be within the range of 87.50 to 107.99.", nameof(frequency));
+
+            object data = new Dictionary<string, string>
+            {
+                { position.ToString(), frequency.ToString("0.00", NumberFormatInfo.InvariantInfo) }
+            };
+
+            ExecutePutRequest("di/v1/products/1/wufmp/00", data);
+        }
+
+        #endregion
+
         #region Private methods
 
         private IRestResponse<T> ExecuteGetRequest<T>(string resource)
@@ -361,7 +400,8 @@ namespace Donker.Home.Somneo.ApiClient
             {
                 Resource = resource,
                 Method = method,
-                RequestFormat = DataFormat.Json
+                RequestFormat = DataFormat.Json,
+                JsonSerializer = _serializer
             };
 
             if (data != null)
