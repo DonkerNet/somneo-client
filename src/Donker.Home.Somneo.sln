@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{D15272F3-2DE6-4B08-BDFB-679D383ED2FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Donker.Home.Somneo.ApiClient", "Donker.Home.Somneo.ApiClient\Donker.Home.Somneo.ApiClient.csproj", "{A530E9D8-2F08-4A02-B888-1D2409AE1C80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Donker.Home.Somneo.TestConsole", "Donker.Home.Somneo.TestConsole\Donker.Home.Somneo.TestConsole.csproj", "{52C3DAC4-758A-4600-AE4D-F316E99FE7D5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A530E9D8-2F08-4A02-B888-1D2409AE1C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A530E9D8-2F08-4A02-B888-1D2409AE1C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A530E9D8-2F08-4A02-B888-1D2409AE1C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A530E9D8-2F08-4A02-B888-1D2409AE1C80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52C3DAC4-758A-4600-AE4D-F316E99FE7D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52C3DAC4-758A-4600-AE4D-F316E99FE7D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52C3DAC4-758A-4600-AE4D-F316E99FE7D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52C3DAC4-758A-4600-AE4D-F316E99FE7D5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A530E9D8-2F08-4A02-B888-1D2409AE1C80} = {D15272F3-2DE6-4B08-BDFB-679D383ED2FC}
+		{52C3DAC4-758A-4600-AE4D-F316E99FE7D5} = {D15272F3-2DE6-4B08-BDFB-679D383ED2FC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D327B6DD-5EB8-416B-B57E-3B7CF3D4CEE0}
+	EndGlobalSection
+EndGlobal
