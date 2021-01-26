@@ -366,12 +366,14 @@ namespace Donker.Home.Somneo.ApiClient
             if (frequency < 87.50F || frequency > 107.99F)
                 throw new ArgumentException("The frequency must be within the range of 87.50 to 107.99.", nameof(frequency));
 
-            object data = new Dictionary<string, string>
+            object data = new
             {
-                { position.ToString(), frequency.ToString("0.00", NumberFormatInfo.InvariantInfo) }
+                fmfrq = frequency.ToString("0.00", NumberFormatInfo.InvariantInfo),
+                fmcmd = "set",
+                prstn = position
             };
 
-            ExecutePutRequest("di/v1/products/1/wufmp/00", data);
+            ExecutePutRequest("di/v1/products/1/wufmr", data);
         }
 
         /// <summary>
