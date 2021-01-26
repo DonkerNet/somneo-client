@@ -3,12 +3,12 @@
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     /// <summary>
-    /// Describes the status of the Somneo's audio player.
+    /// Describes the state of the Somneo's audio player.
     /// </summary>
-    public sealed class PlayerStatus
+    public sealed class PlayerState
     {
         /// <summary>
-        /// Whether the audi player is enabled or not.
+        /// Whether the audio player is enabled or not.
         /// </summary>
         [JsonProperty("onoff")]
         public bool Enabled { get; init; }
