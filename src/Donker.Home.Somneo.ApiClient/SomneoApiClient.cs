@@ -98,55 +98,35 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The details of the device as a <see cref="DeviceDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public DeviceDetails GetDeviceDetails()
-        {
-            var response = ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device");
-            return response.Data;
-        }
+        public DeviceDetails GetDeviceDetails() => ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device").Data;
 
         /// <summary>
         /// Retrieves details about the Somneo's wifi connection.
         /// </summary>
         /// <returns>The details of the wifi connection as a <see cref="WifiDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public WifiDetails GetWifiDetails()
-        {
-            var response = ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi");
-            return response.Data;
-        }
+        public WifiDetails GetWifiDetails() => ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi").Data;
 
         /// <summary>
         /// Retrieves details about the Somneo's firmware.
         /// </summary>
         /// <returns>The firmware details as a <see cref="FirmwareDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FirmwareDetails GetFirmwareDetails()
-        {
-            var response = ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware");
-            return response.Data;
-        }
+        public FirmwareDetails GetFirmwareDetails() => ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware").Data;
 
         /// <summary>
         /// Retrieves details about the locale set for the Somneo device.
         /// </summary>
         /// <returns>The locale details as a <see cref="Locale"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public Locale GetLocale()
-        {
-            var response = ExecuteGetRequest<Locale>("di/v1/products/0/locale");
-            return response.Data;
-        }
+        public Locale GetLocale() => ExecuteGetRequest<Locale>("di/v1/products/0/locale").Data;
 
         /// <summary>
         /// Retrieves details about the time set for the Somneo device.
         /// </summary>
         /// <returns>The time details as a <see cref="Time"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public Time GetTime()
-        {
-            var response = ExecuteGetRequest<Time>("di/v1/products/0/time");
-            return response.Data;
-        }
+        public Time GetTime() => ExecuteGetRequest<Time>("di/v1/products/0/time").Data;
 
         #endregion
 
@@ -157,11 +137,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The sensor data as a <see cref="SensorData"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public SensorData GetSensorData()
-        {
-            var response = ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd");
-            return response.Data;
-        }
+        public SensorData GetSensorData() => ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd").Data;
 
         #endregion
 
@@ -172,11 +148,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The light state as a <see cref="LightState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public LightState GetLightState()
-        {
-            var response = ExecuteGetRequest<LightState>("di/v1/products/1/wulgt");
-            return response.Data;
-        }
+        public LightState GetLightState() => ExecuteGetRequest<LightState>("di/v1/products/1/wulgt").Data;
 
         /// <summary>
         /// Toggles the normal light.
@@ -185,24 +157,12 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public void ToggleLight(bool enabled)
         {
-            object data;
-
-            if (enabled)
+            object data = new
             {
-                data = new
-                {
-                    onoff = true,   // Enable the light
-                    tempy = false,  // Disable sunrise preview
-                    ngtlt = false   // Disable the night light
-                };
-            }
-            else
-            {
-                data = new
-                {
-                    onoff = false
-                };
-            }
+                onoff = enabled,    // Toggle the light
+                tempy = false,      // Disable sunrise preview
+                ngtlt = false       // Disable the night light
+            };
 
             ExecutePutRequest("di/v1/products/1/wulgt", data);
         }
@@ -236,24 +196,12 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public void ToggleNightLight(bool enabled)
         {
-            object data;
-
-            if (enabled)
+            object data = new
             {
-                data = new
-                {
-                    onoff = false,  // Disable the regular light
-                    tempy = false,  // Disable sunrise preview
-                    ngtlt = true    // Enable the night light
-                };
-            }
-            else
-            {
-                data = new
-                {
-                    ngtlt = false
-                };
-            }
+                onoff = false,  // Disable the regular light
+                tempy = false,  // Disable sunrise preview
+                ngtlt = enabled // Enable the night light
+            };
 
             ExecutePutRequest("di/v1/products/1/wulgt", data);
         }
@@ -265,25 +213,12 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public void ToggleSunrisePreview(bool enabled)
         {
-            object data;
-
-            if (enabled)
+            object data = new
             {
-                data = new
-                {
-                    onoff = true,   // Enable the light
-                    tempy = true,   // Enable sunrise preview
-                    ngtlt = false   // Disable the night light
-                };
-            }
-            else
-            {
-                data = new
-                {
-                    onoff = false,  // Disable the light
-                    tempy = false   // Disable sunrise preview
-                };
-            }
+                onoff = enabled,    // Enable the light
+                tempy = enabled,    // Enable sunrise preview
+                ngtlt = false       // Disable the night light
+            };
 
             ExecutePutRequest("di/v1/products/1/wulgt", data);
         }
@@ -297,11 +232,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The display state as a <see cref="DisplayState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public DisplayState GetDisplayState()
-        {
-            var response = ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts");
-            return response.Data;
-        }
+        public DisplayState GetDisplayState() => ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts").Data;
 
         /// <summary>
         /// Toggles whether the display should always be shown or if it should disable automatically after a period of time.
@@ -346,11 +277,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FMRadioPresets GetFMRadioPresets()
-        {
-            var response = ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00");
-            return response.Data;
-        }
+        public FMRadioPresets GetFMRadioPresets() => ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00").Data;
 
         /// <summary>
         /// Sets the preset of the specified position to the specified FM frequency.
@@ -381,11 +308,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FMRadioState GetFMRadioState()
-        {
-            var response = ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr");
-            return response.Data;
-        }
+        public FMRadioState GetFMRadioState() => ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr").Data;
 
         /// <summary>
         /// Enables the FM radio.
@@ -456,11 +379,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The audio player state as a <see cref="PlayerState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public PlayerState GetPlayerState()
-        {
-            var response = ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply");
-            return response.Data;
-        }
+        public PlayerState GetPlayerState() => ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply").Data;
 
         /// <summary>
         /// Sets the volume of the audio player.
