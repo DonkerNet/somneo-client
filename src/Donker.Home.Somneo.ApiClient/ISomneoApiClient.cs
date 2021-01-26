@@ -156,6 +156,21 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void SetFMRadioPreset(int position, float frequency);
 
+        /// <summary>
+        /// Enables the FM radio.
+        /// </summary>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void EnableFMRadio();
+
+        /// <summary>
+        /// Enables the FM radio for the specified preset.
+        /// </summary>
+        /// <param name="preset">The preset. Value must be between 1 and 5.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void EnableFMRadioPreset(int preset);
+
         #endregion
 
         #region Audio player
@@ -163,9 +178,23 @@ namespace Donker.Home.Somneo.ApiClient
         /// <summary>
         /// Retrieves the status of the audio player.
         /// </summary>
-        /// <returns>The audo plauer status as an <see cref="AudioPlayerStatus"/> object.</returns>
+        /// <returns>The audo plauer status as an <see cref="PlayerStatus"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        AudioPlayerStatus GetAudioPlayerStatus();
+        PlayerStatus GetPlayerStatus();
+
+        /// <summary>
+        /// Sets the volume of the audio player.
+        /// </summary>
+        /// <param name="position">The volume. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="volume"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SetPlayerVolume(int volume);
+
+        /// <summary>
+        /// Disables the audio player.
+        /// </summary>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void DisablePlayer();
 
         #endregion
     }

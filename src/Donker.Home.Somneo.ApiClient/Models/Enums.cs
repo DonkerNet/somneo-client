@@ -6,7 +6,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
     /// <summary>
     /// The type of audio device in use by the Somneo's audio player.
     /// </summary>
-    public enum AudioPlayerDeviceType
+    public enum PlayerDeviceType
     {
         /// <summary>
         /// The Somneo is not playing anything.

@@ -5,7 +5,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
     /// <summary>
     /// Describes the status of the Somneo's audio player.
     /// </summary>
-    public sealed class AudioPlayerStatus
+    public sealed class PlayerStatus
     {
         /// <summary>
         /// Whether the audi player is enabled or not.
@@ -21,7 +21,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// The type of audio device in use by the Somneo's audio player.
         /// </summary>
         [JsonProperty("snddv")]
-        public AudioPlayerDeviceType Device { get; init; }
+        public PlayerDeviceType Device { get; init; }
         /// <summary>
         /// The current channel or preset that is selected.
         /// </summary>

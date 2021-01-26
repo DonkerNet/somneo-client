@@ -43,8 +43,12 @@ namespace Donker.Home.Somneo.TestConsole
 
             RegisterCommand("fm-radio-presets", args => GetFMRadioPresets());
             RegisterCommand("set-fm-radio-preset", args => SetFMRadioPreset(args));
+            RegisterCommand("enable-fm-radio", args => EnableFMRadio());
+            RegisterCommand("enable-fm-radio-preset", args => EnableFMRadioPreset(args));
 
-            RegisterCommand("audio-player-status", args => GetAudioPlayerStatus());
+            RegisterCommand("player-status", args => GetPlayerStatus());
+            RegisterCommand("set-player-volume", args => SetPlayerVolume(args));
+            RegisterCommand("disable-player", args => DisablePlayer());
 
             RegisterCommand("exit", args => _canRun = false);
         }
@@ -140,8 +144,12 @@ $@"Available commands:
     ----
     fm-radio-presets
     set-fm-radio-preset [1-5] [{87.50F:0.00}-{107.99F:0.00}]
+    enable-fm-radio
+    enable-fm-radio-preset [1-5]
     ----
-    audio-player-status
+    player-status
+    set-player-volume [1-25]
+    disable-player
     ----
     exit");
         }
@@ -439,11 +447,29 @@ $@"FM radio presets:
             Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
         }
 
-        private void GetAudioPlayerStatus()
+        private void EnableFMRadio()
         {
-            AudioPlayerStatus audioPlayerStatus = _somneoApiClient.GetAudioPlayerStatus();
+            _somneoApiClient.EnableFMRadio();
+            Console.WriteLine("FM radio enabled for the default preset.");
+        }
 
-            if (audioPlayerStatus == null)
+        private void EnableFMRadioPreset(string args)
+        {
+            if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int preset) && preset >= 1 && preset <= 5)
+            {
+                _somneoApiClient.EnableFMRadioPreset(preset);
+                Console.WriteLine($"FM radio enabled for preset {preset}/5.");
+                return;
+            }
+
+            Console.WriteLine("The preset should be between 1 and 5.");
+        }
+
+        private void GetPlayerStatus()
+        {
+            PlayerStatus playerStatus = _somneoApiClient.GetPlayerStatus();
+
+            if (playerStatus == null)
             {
                 Console.WriteLine("Unable to retrieve the audio player status.");
                 return;
@@ -451,10 +477,28 @@ $@"FM radio presets:
 
             Console.WriteLine(
 $@"FM radio presets:
-Enabled: {(audioPlayerStatus.Enabled ? "Yes" : "No")}
-Volume: {audioPlayerStatus.Volume}/25
-Device: {EnumHelper.GetDescription(audioPlayerStatus.Device)}
-Channel: {audioPlayerStatus.Channel}");
+Enabled: {(playerStatus.Enabled ? "Yes" : "No")}
+Volume: {playerStatus.Volume}/25
+Device: {EnumHelper.GetDescription(playerStatus.Device)}
+Channel: {playerStatus.Channel}");
+        }
+
+        private void SetPlayerVolume(string args)
+        {
+            if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int volume) && volume >= 1 && volume <= 25)
+            {
+                _somneoApiClient.SetPlayerVolume(volume);
+                Console.WriteLine($"Audio player volume set to {volume}/25.");
+                return;
+            }
+
+            Console.WriteLine("Specify a volume between 1 and 25.");
+        }
+        
+        private void DisablePlayer()
+        {
+            _somneoApiClient.DisablePlayer();
+            Console.WriteLine("Audio player disabled.");
         }
     }
 }

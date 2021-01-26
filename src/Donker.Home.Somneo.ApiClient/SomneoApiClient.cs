@@ -200,7 +200,7 @@ namespace Donker.Home.Somneo.ApiClient
             {
                 data = new
                 {
-                    onoff = false   // Disable the light
+                    onoff = false
                 };
             }
 
@@ -251,7 +251,7 @@ namespace Donker.Home.Somneo.ApiClient
             {
                 data = new
                 {
-                    ngtlt = false    // Disable the night light
+                    ngtlt = false
                 };
             }
 
@@ -312,7 +312,7 @@ namespace Donker.Home.Somneo.ApiClient
         {
             object data = new
             {
-                dspon = enabled // Enable the display
+                dspon = enabled
             };
 
             ExecutePutRequest("di/v1/products/1/wusts", data);
@@ -331,7 +331,7 @@ namespace Donker.Home.Somneo.ApiClient
 
             object data = new
             {
-                brght = brightnessLevel // Set the level
+                brght = brightnessLevel
             };
 
             ExecutePutRequest("di/v1/products/1/wusts", data);
@@ -374,6 +374,47 @@ namespace Donker.Home.Somneo.ApiClient
             ExecutePutRequest("di/v1/products/1/wufmp/00", data);
         }
 
+        /// <summary>
+        /// Enables the FM radio.
+        /// </summary>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void EnableFMRadio()
+        {
+            object data = new
+            {
+                sndss = 0,      // What is this?
+                onoff = true,   // Enable the player
+                tempy = false,  // Disables the sunrise preview?
+                snddv = "fmr"   // Set the player to FM radio
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
+        }
+
+        /// <summary>
+        /// Enables the FM radio for the specified preset.
+        /// </summary>
+        /// <param name="preset">The preset. Value must be between 1 and 5.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void EnableFMRadioPreset(int preset)
+        {
+            if (preset < 1 || preset > 5)
+                throw new ArgumentException("The preset must be between 1 and 5.", nameof(preset));
+
+            object data = new
+            {
+                sndss = 0,                  // What is this?
+                onoff = true,               // Enable the player
+                tempy = false,              // Disables the sunrise preview?
+                snddv = "fmr",              // Set the player to FM radio
+                sndch = preset.ToString()   // Set the "channel" to the preset number
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
+        }
+
         #endregion
 
         #region Audio player
@@ -381,12 +422,45 @@ namespace Donker.Home.Somneo.ApiClient
         /// <summary>
         /// Retrieves the status of the audio player.
         /// </summary>
-        /// <returns>The audo plauer status as an <see cref="AudioPlayerStatus"/> object.</returns>
+        /// <returns>The audo plauer status as an <see cref="PlayerStatus"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public AudioPlayerStatus GetAudioPlayerStatus()
+        public PlayerStatus GetPlayerStatus()
         {
-            var response = ExecuteGetRequest<AudioPlayerStatus>("di/v1/products/1/wuply");
+            var response = ExecuteGetRequest<PlayerStatus>("di/v1/products/1/wuply");
             return response.Data;
+        }
+
+        /// <summary>
+        /// Sets the volume of the audio player.
+        /// </summary>
+        /// <param name="position">The volume. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="volume"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void SetPlayerVolume(int volume)
+        {
+            if (volume < 1 || volume > 25)
+                throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+
+            object data = new
+            {
+                sdvol = volume
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
+        }
+
+        /// <summary>
+        /// Disables the audio player.
+        /// </summary>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void DisablePlayer()
+        {
+            object data = new
+            {
+                onoff = false
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
         }
 
         #endregion
