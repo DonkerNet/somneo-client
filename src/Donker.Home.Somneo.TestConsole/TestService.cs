@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using Donker.Home.Somneo.ApiClient;
+using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole
@@ -40,6 +43,8 @@ namespace Donker.Home.Somneo.TestConsole
 
             RegisterCommand("fm-radio-presets", args => GetFMRadioPresets());
             RegisterCommand("set-fm-radio-preset", args => SetFMRadioPreset(args));
+
+            RegisterCommand("audio-player-status", args => GetAudioPlayerStatus());
 
             RegisterCommand("exit", args => _canRun = false);
         }
@@ -109,7 +114,7 @@ Type ""help"" to get started.");
             }
         }
 
-        private void ShowHelp()
+        private static void ShowHelp()
         {
             Console.WriteLine(
 $@"Available commands:
@@ -135,6 +140,8 @@ $@"Available commands:
     ----
     fm-radio-presets
     set-fm-radio-preset [1-5] [{87.50F:0.00}-{107.99F:0.00}]
+    ----
+    audio-player-status
     ----
     exit");
         }
@@ -430,6 +437,24 @@ $@"FM radio presets:
             }
 
             Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
+        }
+
+        private void GetAudioPlayerStatus()
+        {
+            AudioPlayerStatus audioPlayerStatus = _somneoApiClient.GetAudioPlayerStatus();
+
+            if (audioPlayerStatus == null)
+            {
+                Console.WriteLine("Unable to retrieve the audio player status.");
+                return;
+            }
+
+            Console.WriteLine(
+$@"FM radio presets:
+Enabled: {(audioPlayerStatus.Enabled ? "Yes" : "No")}
+Volume: {audioPlayerStatus.Volume}/25
+Device: {EnumHelper.GetDescription(audioPlayerStatus.Device)}
+Channel: {audioPlayerStatus.Channel}");
         }
     }
 }

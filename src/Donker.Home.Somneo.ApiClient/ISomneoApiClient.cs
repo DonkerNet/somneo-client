@@ -143,7 +143,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// <summary>
         /// Retrieves the configured presets of FM radio frequencies.
         /// </summary>
-        /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
+        /// <returns>The FM radio presets as an <see cref="FMRadioPresets"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         FMRadioPresets GetFMRadioPresets();
 
@@ -155,6 +155,17 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void SetFMRadioPreset(int position, float frequency);
+
+        #endregion
+
+        #region Audio player
+
+        /// <summary>
+        /// Retrieves the status of the audio player.
+        /// </summary>
+        /// <returns>The audo plauer status as an <see cref="AudioPlayerStatus"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        AudioPlayerStatus GetAudioPlayerStatus();
 
         #endregion
     }

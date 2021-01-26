@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using RestSharp;
 
@@ -38,6 +39,8 @@ namespace Donker.Home.Somneo.ApiClient.Serialization
                     NamingStrategy = new LowercaseNamingStrategy()
                 }
             };
+
+            _settings.Converters.Add(new StringEnumConverter(typeof(LowercaseNamingStrategy)));
         }
 
         public string Serialize(object obj)

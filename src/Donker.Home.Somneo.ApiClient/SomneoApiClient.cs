@@ -376,6 +376,21 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Audio player
+
+        /// <summary>
+        /// Retrieves the status of the audio player.
+        /// </summary>
+        /// <returns>The audo plauer status as an <see cref="AudioPlayerStatus"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public AudioPlayerStatus GetAudioPlayerStatus()
+        {
+            var response = ExecuteGetRequest<AudioPlayerStatus>("di/v1/products/1/wuply");
+            return response.Data;
+        }
+
+        #endregion
+
         #region Private methods
 
         private IRestResponse<T> ExecuteGetRequest<T>(string resource)
