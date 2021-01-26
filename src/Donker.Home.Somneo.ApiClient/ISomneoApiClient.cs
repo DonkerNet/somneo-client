@@ -75,11 +75,11 @@ namespace Donker.Home.Somneo.ApiClient
         #region Lights
 
         /// <summary>
-        /// Retrieves the current light settings.
+        /// Retrieves the current light state.
         /// </summary>
-        /// <returns>The light settings as a <see cref="LightSettings"/> object.</returns>
+        /// <returns>The light state as a <see cref="LightState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        LightSettings GetLightSettings();
+        LightState GetLightState();
 
         /// <summary>
         /// Toggles the normal light.
@@ -115,11 +115,11 @@ namespace Donker.Home.Somneo.ApiClient
         #region Display
 
         /// <summary>
-        /// Retrieves the current settings of the display.
+        /// Retrieves the current state of the display.
         /// </summary>
-        /// <returns>The display settings as a <see cref="LightSettings"/> object.</returns>
+        /// <returns>The display state as a <see cref="DisplayState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        DisplaySettings GetDisplaySettings();
+        DisplayState GetDisplayState();
 
         /// <summary>
         /// Toggles whether the display should always be shown or if it should disable automatically after a period of time.
@@ -155,6 +155,13 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void SetFMRadioPreset(int position, float frequency);
+
+        /// <summary>
+        /// Retrieves the state of the FM radio.
+        /// </summary>
+        /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        FMRadioState GetFMRadioState();
 
         /// <summary>
         /// Enables the FM radio.

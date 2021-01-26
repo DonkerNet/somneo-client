@@ -3,9 +3,9 @@
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     /// <summary>
-    /// Describes the display settings for the Somneo device.
+    /// Describes the display state for the Somneo device.
     /// </summary>
-    public sealed class DisplaySettings
+    public sealed class DisplayState
     {
         /// <summary>
         /// Whether the display is permanently shown or automatically disables after a period of time.

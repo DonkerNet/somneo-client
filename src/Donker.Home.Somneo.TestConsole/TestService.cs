@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using Donker.Home.Somneo.ApiClient;
 using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
@@ -31,18 +32,19 @@ namespace Donker.Home.Somneo.TestConsole
 
             RegisterCommand("sensor-data", args => GetSensorData());
 
-            RegisterCommand("light-settings", args => GetLightSettings());
+            RegisterCommand("light-state", args => GetLightState());
             RegisterCommand("toggle-light", args => ToggleLight(args));
             RegisterCommand("set-light-level", args => SetLightLevel(args));
             RegisterCommand("toggle-night-light", args => ToggleNightLight(args));
             RegisterCommand("toggle-sunrise-preview", args => ToggleSunrisePreview(args));
 
-            RegisterCommand("display-settings", args => GetDisplaySettings());
+            RegisterCommand("display-state", args => GetDisplayState());
             RegisterCommand("toggle-permanent-display", args => TogglePermanentDisplay(args));
             RegisterCommand("set-display-level", args => SetDisplayLevel(args));
 
             RegisterCommand("fm-radio-presets", args => GetFMRadioPresets());
             RegisterCommand("set-fm-radio-preset", args => SetFMRadioPreset(args));
+            RegisterCommand("fm-radio-state", args => GetFMRadioState());
             RegisterCommand("enable-fm-radio", args => EnableFMRadio());
             RegisterCommand("enable-fm-radio-preset", args => EnableFMRadioPreset(args));
 
@@ -132,18 +134,19 @@ $@"Available commands:
     ----
     sensor-data
     ----
-    light-settings
+    light-state
     toggle-light [on/off]
     set-light-level [1-25]
     toggle-night-light [on/off]
     toggle-sunrise-preview [on/off]
     ----
-    display-settings
+    display-state
     toggle-permanent-display [on/off]
     set-display-level [1-6]
     ----
     fm-radio-presets
     set-fm-radio-preset [1-5] [{87.50F:0.00}-{107.99F:0.00}]
+    fm-radio-state
     enable-fm-radio
     enable-fm-radio-preset [1-5]
     ----
@@ -165,12 +168,13 @@ $@"Available commands:
             }
 
             Console.WriteLine(
-$@"Name: {deviceDetails.Name}
-Model: {deviceDetails.Model}
-Series: {deviceDetails.Series}
-Product range: {deviceDetails.ProductRange}
-Serial number: {deviceDetails.Serial}
-Product ID: {deviceDetails.ProductId}");
+$@"Device details:
+  Name: {deviceDetails.Name}
+  Model: {deviceDetails.Model}
+  Series: {deviceDetails.Series}
+  Product range: {deviceDetails.ProductRange}
+  Serial number: {deviceDetails.Serial}
+  Product ID: {deviceDetails.ProductId}");
         }
 
         private void GetFirmwareDetails()
@@ -183,24 +187,31 @@ Product ID: {deviceDetails.ProductId}");
                 return;
             }
 
-            Console.WriteLine(
-$@"Name: {firmwareDetails.Name}
-Version: {firmwareDetails.Version}
-State: {firmwareDetails.State}");
+            StringBuilder consoleMessageBuilder = new StringBuilder();
+
+            consoleMessageBuilder.Append(
+$@"Firmware details:
+  Name: {firmwareDetails.Name}
+  Version: {firmwareDetails.Version}
+  State: {firmwareDetails.State}");
 
             if (!firmwareDetails.IsIdle)
             {
-                Console.WriteLine(
-$@"Update progress: {firmwareDetails.Progress}
-Status message: {firmwareDetails.StatusMessage}");
+                consoleMessageBuilder.Append(
+$@"
+  Update progress: {firmwareDetails.Progress}
+  Status message: {firmwareDetails.StatusMessage}");
             }
             
             if (firmwareDetails.CanUpgrade)
             {
-                Console.WriteLine(
-$@"Available upgrade: {firmwareDetails.Upgrade}
-Mandatory: {(firmwareDetails.Mandatory ? "Yes" : "No")}");
+                consoleMessageBuilder.Append(
+$@"
+  Available upgrade: {firmwareDetails.Upgrade}
+  Mandatory: {(firmwareDetails.Mandatory ? "Yes" : "No")}");
             }
+
+            Console.WriteLine(consoleMessageBuilder);
         }
 
         private void GetWifiDetails()
@@ -214,12 +225,13 @@ Mandatory: {(firmwareDetails.Mandatory ? "Yes" : "No")}");
             }
 
             Console.WriteLine(
-$@"SSID: {wifiDetails.SSID}
-Protection: {wifiDetails.Protection}
-IP address: {wifiDetails.IPAddress}
-Netmask: {wifiDetails.Netmask}
-Gateway IP: {wifiDetails.Gateway}
-MAC address: {wifiDetails.MACAddress}");
+$@"Wifi details:
+  SSID: {wifiDetails.SSID}
+  Protection: {wifiDetails.Protection}
+  IP address: {wifiDetails.IPAddress}
+  Netmask: {wifiDetails.Netmask}
+  Gateway IP: {wifiDetails.Gateway}
+  MAC address: {wifiDetails.MACAddress}");
         }
 
         private void GetLocale()
@@ -233,8 +245,9 @@ MAC address: {wifiDetails.MACAddress}");
             }
 
             Console.WriteLine(
-$@"Country: {locale.Country}
-Timezone: {locale.Timezone}");
+$@"Locale:
+  Country: {locale.Country}
+  Timezone: {locale.Timezone}");
         }
 
         private void GetTime()
@@ -248,10 +261,11 @@ Timezone: {locale.Timezone}");
             }
 
             Console.WriteLine(
-$@"Date/time: {time.DateTime}
-Timezone offset: {time.TimezoneOffset}
-DST: {(time.IsDSTApplied ? "Yes" : "No")} (offset = {time.DSTOffset})
-Next DST change: {time.DSTChangeOver}");
+$@"Time:
+  Date/time: {time.DateTime}
+  Timezone offset: {time.TimezoneOffset}
+  DST: {(time.IsDSTApplied ? "Yes" : "No")} (offset = {time.DSTOffset})
+  Next DST change: {time.DSTChangeOver}");
         }
 
         private void GetSensorData()
@@ -265,27 +279,29 @@ Next DST change: {time.DSTChangeOver}");
             }
 
             Console.WriteLine(
-$@"Temperature: {sensorData.CurrentTemperature} °C (avg: {sensorData.AverageTemperature} °C)
-Light: {sensorData.CurrentLight} lux (avg: {sensorData.AverageLight} lux)
-Sound: {sensorData.CurrentSound} dB (avg: {sensorData.AverageSound} dB)
-Humidity: {sensorData.CurrentHumidity} % (avg: {sensorData.AverageHumidity} %)");
+$@"Sensor data:
+  Temperature: {sensorData.CurrentTemperature} °C (avg: {sensorData.AverageTemperature} °C)
+  Light: {sensorData.CurrentLight} lux (avg: {sensorData.AverageLight} lux)
+  Sound: {sensorData.CurrentSound} dB (avg: {sensorData.AverageSound} dB)
+  Humidity: {sensorData.CurrentHumidity} % (avg: {sensorData.AverageHumidity} %)");
         }
 
-        private void GetLightSettings()
+        private void GetLightState()
         {
-            LightSettings lightSettings = _somneoApiClient.GetLightSettings();
+            LightState lightState = _somneoApiClient.GetLightState();
 
-            if (lightSettings == null)
+            if (lightState == null)
             {
-                Console.WriteLine("Unable to retrieve the light settings.");
+                Console.WriteLine("Unable to retrieve the light state.");
                 return;
             }
 
             Console.WriteLine(
-$@"Normal light enabled: {(lightSettings.LightEnabled ? "Yes" : "No")}
-Light level: {lightSettings.LightLevel}/25
-Night light enabled: {(lightSettings.NightLightEnabled ? "Yes" : "No")}
-Sunrise preview enabled: {(lightSettings.SunrisePreviewEnabled ? "Yes" : "No")}");
+$@"Light state:
+  Normal light enabled: {(lightState.LightEnabled ? "Yes" : "No")}
+  Light level: {lightState.LightLevel}/25
+  Night light enabled: {(lightState.NightLightEnabled ? "Yes" : "No")}
+  Sunrise preview enabled: {(lightState.SunrisePreviewEnabled ? "Yes" : "No")}");
         }
 
         private void ToggleLight(string args)
@@ -360,19 +376,20 @@ Sunrise preview enabled: {(lightSettings.SunrisePreviewEnabled ? "Yes" : "No")}"
             }
         }
 
-        private void GetDisplaySettings()
+        private void GetDisplayState()
         {
-            DisplaySettings displaySettings = _somneoApiClient.GetDisplaySettings();
+            DisplayState displayState = _somneoApiClient.GetDisplayState();
 
-            if (displaySettings == null)
+            if (displayState == null)
             {
-                Console.WriteLine("Unable to retrieve the display settings.");
+                Console.WriteLine("Unable to retrieve the display state.");
                 return;
             }
 
             Console.WriteLine(
-$@"Permanent display enabled: {(displaySettings.Permanent ? "Yes" : "No")}
-Brightness level: {displaySettings.Brightness}/6");
+$@"Display state:
+  Permanent display enabled: {(displayState.Permanent ? "Yes" : "No")}
+  Brightness level: {displayState.Brightness}/6");
         }
 
         private void TogglePermanentDisplay(string args)
@@ -419,11 +436,11 @@ Brightness level: {displaySettings.Brightness}/6");
 
             Console.WriteLine(
 $@"FM radio presets:
-1: {fmRadioPresets.Preset1:0.00} FM
-2: {fmRadioPresets.Preset2:0.00} FM
-3: {fmRadioPresets.Preset3:0.00} FM
-4: {fmRadioPresets.Preset4:0.00} FM
-5: {fmRadioPresets.Preset5:0.00} FM");
+  1: {fmRadioPresets.Preset1:0.00} FM
+  2: {fmRadioPresets.Preset2:0.00} FM
+  3: {fmRadioPresets.Preset3:0.00} FM
+  4: {fmRadioPresets.Preset4:0.00} FM
+  5: {fmRadioPresets.Preset5:0.00} FM");
         }
 
         private void SetFMRadioPreset(string args)
@@ -445,6 +462,22 @@ $@"FM radio presets:
             }
 
             Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
+        }
+
+        private void GetFMRadioState()
+        {
+            FMRadioState fmRadioState = _somneoApiClient.GetFMRadioState();
+
+            if (fmRadioState == null)
+            {
+                Console.WriteLine("Unable to retrieve the FM radio state.");
+                return;
+            }
+
+            Console.WriteLine(
+$@"FM radio state:
+  Frequency: {fmRadioState.Frequency:0.00} FM
+  Preset: {fmRadioState.Preset}/5");
         }
 
         private void EnableFMRadio()
@@ -477,10 +510,10 @@ $@"FM radio presets:
 
             Console.WriteLine(
 $@"Audio player state:
-Enabled: {(playerState.Enabled ? "Yes" : "No")}
-Volume: {playerState.Volume}/25
-Device: {EnumHelper.GetDescription(playerState.Device)}
-Channel: {playerState.Channel}");
+  Enabled: {(playerState.Enabled ? "Yes" : "No")}
+  Volume: {playerState.Volume}/25
+  Device: {EnumHelper.GetDescription(playerState.Device)}
+  Channel/preset: {playerState.ChannelOrPreset}");
         }
 
         private void SetPlayerVolume(string args)

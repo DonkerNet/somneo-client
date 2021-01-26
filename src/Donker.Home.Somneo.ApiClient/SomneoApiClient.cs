@@ -168,13 +168,13 @@ namespace Donker.Home.Somneo.ApiClient
         #region Light
 
         /// <summary>
-        /// Retrieves the current light settings.
+        /// Retrieves the current light state.
         /// </summary>
-        /// <returns>The light settings as a <see cref="LightSettings"/> object.</returns>
+        /// <returns>The light state as a <see cref="LightState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public LightSettings GetLightSettings()
+        public LightState GetLightState()
         {
-            var response = ExecuteGetRequest<LightSettings>("di/v1/products/1/wulgt");
+            var response = ExecuteGetRequest<LightState>("di/v1/products/1/wulgt");
             return response.Data;
         }
 
@@ -293,13 +293,13 @@ namespace Donker.Home.Somneo.ApiClient
         #region Display
 
         /// <summary>
-        /// Retrieves the current settings of the display.
+        /// Retrieves the current state of the display.
         /// </summary>
-        /// <returns>The display settings as a <see cref="LightSettings"/> object.</returns>
+        /// <returns>The display state as a <see cref="DisplayState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public DisplaySettings GetDisplaySettings()
+        public DisplayState GetDisplayState()
         {
-            var response = ExecuteGetRequest<DisplaySettings>("di/v1/products/1/wusts");
+            var response = ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts");
             return response.Data;
         }
 
@@ -374,6 +374,17 @@ namespace Donker.Home.Somneo.ApiClient
             };
 
             ExecutePutRequest("di/v1/products/1/wufmr", data);
+        }
+
+        /// <summary>
+        /// Retrieves the state of the FM radio.
+        /// </summary>
+        /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public FMRadioState GetFMRadioState()
+        {
+            var response = ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr");
+            return response.Data;
         }
 
         /// <summary>

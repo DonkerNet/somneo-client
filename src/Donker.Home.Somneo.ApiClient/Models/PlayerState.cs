@@ -26,6 +26,6 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// The current channel or preset that is selected.
         /// </summary>
         [JsonProperty("sndch")]
-        public string Channel { get; init; }
+        public string ChannelOrPreset { get; init; }
     }
 }

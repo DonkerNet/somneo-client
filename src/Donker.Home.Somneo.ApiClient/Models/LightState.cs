@@ -3,9 +3,9 @@
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     /// <summary>
-    /// Describes the light settings for the Somneo device.
+    /// Describes the light state for the Somneo device.
     /// </summary>
-    public sealed class LightSettings
+    public sealed class LightState
     {
         [JsonProperty("onoff")]
         internal bool OnOff;
