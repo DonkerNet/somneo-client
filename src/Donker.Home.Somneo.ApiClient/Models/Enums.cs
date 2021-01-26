@@ -27,4 +27,23 @@ namespace Donker.Home.Somneo.ApiClient.Models
         [Description("AUX")]
         AUX
     }
+
+    /// <summary>
+    /// The direction in which to seek a station on the radio band.
+    /// </summary>
+    public enum RadioSeekDirection
+    {
+        /// <summary>
+        /// Seek a radio station on the band in forwards direction.
+        /// </summary>
+        [EnumMember(Value = "aux")]
+        [Description("AUX")]
+        Up,
+        /// <summary>
+        /// Seek a radio station on the band in backwards direction.
+        /// </summary>
+        [EnumMember(Value = "aux")]
+        [Description("AUX")]
+        Down
+    }
 }

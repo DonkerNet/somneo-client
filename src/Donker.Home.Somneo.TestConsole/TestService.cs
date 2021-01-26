@@ -47,6 +47,7 @@ namespace Donker.Home.Somneo.TestConsole
             RegisterCommand("fm-radio-state", args => GetFMRadioState());
             RegisterCommand("enable-fm-radio", args => EnableFMRadio());
             RegisterCommand("enable-fm-radio-preset", args => EnableFMRadioPreset(args));
+            RegisterCommand("seek-fm-radio-station", args => SeekFMRadioStation(args));
 
             RegisterCommand("player-state", args => GetPlayerState());
             RegisterCommand("set-player-volume", args => SetPlayerVolume(args));
@@ -149,6 +150,7 @@ $@"Available commands:
     fm-radio-state
     enable-fm-radio
     enable-fm-radio-preset [1-5]
+    seek-fm-radio-station [up/down]
     ----
     player-state
     set-player-volume [1-25]
@@ -483,7 +485,7 @@ $@"FM radio state:
         private void EnableFMRadio()
         {
             _somneoApiClient.EnableFMRadio();
-            Console.WriteLine("FM radio enabled for the default preset.");
+            Console.WriteLine("FM radio enabled for the current preset.");
         }
 
         private void EnableFMRadioPreset(string args)
@@ -496,6 +498,26 @@ $@"FM radio state:
             }
 
             Console.WriteLine("The preset should be between 1 and 5.");
+        }
+
+        private void SeekFMRadioStation(string args)
+        {
+            switch (args?.ToLower())
+            {
+                case "up":
+                    _somneoApiClient.SeekFMRadioStation(RadioSeekDirection.Up);
+                    Console.WriteLine("Seeking for a new FM radio station in forward direction.");
+                    break;
+
+                case "down":
+                    _somneoApiClient.SeekFMRadioStation(RadioSeekDirection.Down);
+                    Console.WriteLine("Seeking for a new FM radio station in backward direction.");
+                    break;
+
+                default:
+                    Console.WriteLine("Specify \"up\" or \"down\".");
+                    break;
+            }
         }
 
         private void GetPlayerState()

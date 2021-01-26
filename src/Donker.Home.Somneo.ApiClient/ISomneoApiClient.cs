@@ -178,6 +178,14 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void EnableFMRadioPreset(int preset);
 
+        /// <summary>
+        /// Seeks a new FM radio station in the specified direction for the currently selected preset, if the FM radio is enabled.
+        /// </summary>
+        /// <param name="direction">The seek direction.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="direction"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SeekFMRadioStation(RadioSeekDirection direction);
+
         #endregion
 
         #region Audio player

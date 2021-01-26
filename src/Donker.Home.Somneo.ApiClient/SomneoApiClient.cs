@@ -428,6 +428,25 @@ namespace Donker.Home.Somneo.ApiClient
             ExecutePutRequest("di/v1/products/1/wuply", data);
         }
 
+        /// <summary>
+        /// Seeks a new FM radio station in the specified direction for the currently selected preset, if the FM radio is enabled.
+        /// </summary>
+        /// <param name="direction">The seek direction.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="direction"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void SeekFMRadioStation(RadioSeekDirection direction)
+        {
+            if (!Enum.IsDefined(direction))
+                throw new ArgumentException("The direction is invalid.", nameof(direction));
+
+            object data = new
+            {
+                fmcmd = direction == RadioSeekDirection.Up ? "seekup" : "seekdown"
+            };
+
+            ExecutePutRequest("di/v1/products/1/wufmr", data);
+        }
+
         #endregion
 
         #region Audio player
