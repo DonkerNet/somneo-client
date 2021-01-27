@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
@@ -45,5 +46,18 @@ namespace Donker.Home.Somneo.ApiClient.Models
         [EnumMember(Value = "aux")]
         [Description("AUX")]
         Down
+    }
+
+    [Flags]
+    internal enum DayFlags : byte
+    {
+        None = 0,
+        Monday = 2,
+        Tuesday = 4,
+        Wednesday = 8,
+        Thursday = 16,
+        Friday = 32,
+        Saturday = 64,
+        Sunday = 128
     }
 }

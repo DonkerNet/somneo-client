@@ -11,7 +11,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
     {
         [JsonProperty("dst")]
         [JsonConverter(typeof(TimeSpanOffsetJsonConverter))]
-        internal TimeSpan CurrentDSTOffset;
+        internal TimeSpan CurrentDSTOffset { get; init; }
 
         /// <summary>
         /// The date and time set for the device.

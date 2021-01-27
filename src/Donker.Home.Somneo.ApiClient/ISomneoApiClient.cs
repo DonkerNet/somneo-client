@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.ApiClient
@@ -210,6 +211,17 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void DisablePlayer();
+
+        #endregion
+
+        #region Alarms
+
+        /// <summary>
+        /// Retrieves the alarms that are set.
+        /// </summary>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> containing <see cref="Alarm"/> objects.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        IReadOnlyList<Alarm> GetAlarms();
 
         #endregion
     }

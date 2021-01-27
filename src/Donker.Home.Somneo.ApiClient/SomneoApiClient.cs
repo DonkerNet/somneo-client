@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 
 namespace Donker.Home.Somneo.ApiClient
@@ -416,6 +420,63 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Alarms
+
+        /// <summary>
+        /// Retrieves the alarms that are set.
+        /// </summary>
+        /// <returns>An <see cref="IReadOnlyList{T}"/> containing <see cref="Alarm"/> objects.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public IReadOnlyList<Alarm> GetAlarms()
+        {
+            // TODO: two requests needed below. make this async? can Somneo even handle concurrent requests?
+
+            AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs").Data;
+            AlarmSchedules alarmSchedules = ExecuteGetRequest<AlarmSchedules>("di/v1/products/1/wualm/aalms").Data;
+
+            int alarmCount = alarmStates.Set.Length;
+            List<Alarm> alarms = new List<Alarm>(alarmCount);
+
+            for (int i = 0; i < alarmCount; ++i)
+            {
+                if (!alarmStates.Set[i])
+                    continue;
+
+                int powerWakeIndex = i * 3;
+
+                bool enabled = alarmStates.Enabled[i];
+                bool powerWakeEnabled = alarmStates.PowerWake[powerWakeIndex] == 255;
+                int? powerWakeHour = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 1] : null;
+                int? powerWakeMinute = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 2] : null;
+
+                DayFlags repeatDayFlags = alarmSchedules.RepeatDays[i];
+                List<DayOfWeek> repeatDays = Enum.GetValues<DayFlags>()
+                    .Where(df => df != DayFlags.None && repeatDayFlags.HasFlag(df))
+                    .Select(df => Enum.Parse<DayOfWeek>(df.ToString()))
+                    .ToList();
+
+                int hour = alarmSchedules.Hours[i];
+                int minute = alarmSchedules.Minutes[i];
+
+                Alarm alarm = new Alarm
+                {
+                    Enabled = enabled,
+                    Hour = hour,
+                    Minute = minute,
+                    RepeatDays = new ReadOnlyCollection<DayOfWeek>(repeatDays),
+                    PowerWakeEnabled = powerWakeEnabled,
+                    PowerWakeHour = powerWakeHour,
+                    PowerWakeMinute = powerWakeMinute
+                };
+
+                alarms.Add(alarm);
+            }
+
+            return new ReadOnlyCollection<Alarm>(alarms);
+        }
+
+        #endregion
+
         #region Private methods
 
         private IRestResponse<T> ExecuteGetRequest<T>(string resource)
@@ -428,6 +489,17 @@ namespace Donker.Home.Somneo.ApiClient
             };
 
             return ExecuteRequest<T>(request);
+        }
+
+        private IRestResponse ExecuteGetRequest(string resource)
+        {
+            IRestRequest request = new RestRequest
+            {
+                Resource = resource,
+                Method = Method.GET
+            };
+
+            return ExecuteRequest(request);
         }
 
         private IRestResponse ExecutePostRequest(string resource, object data) => ExecuteRequestWithBody(resource, Method.POST, data);

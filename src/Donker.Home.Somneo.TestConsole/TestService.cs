@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -52,6 +53,8 @@ namespace Donker.Home.Somneo.TestConsole
             RegisterCommand("player-state", args => GetPlayerState());
             RegisterCommand("set-player-volume", args => SetPlayerVolume(args));
             RegisterCommand("disable-player", args => DisablePlayer());
+
+            RegisterCommand("alarms", args => GetAlarms());
 
             RegisterCommand("exit", args => _canRun = false);
         }
@@ -155,6 +158,8 @@ $@"Available commands:
     player-state
     set-player-volume [1-25]
     disable-player
+    ----
+    alarms
     ----
     exit");
         }
@@ -554,6 +559,34 @@ $@"Audio player state:
         {
             _somneoApiClient.DisablePlayer();
             Console.WriteLine("Audio player disabled.");
+        }
+
+        private void GetAlarms()
+        {
+            IReadOnlyList<Alarm> alarms = _somneoApiClient.GetAlarms();
+
+            if (alarms.Count == 0)
+            {
+                Console.WriteLine("0/16 alarms set.");
+                return;
+            }
+
+            StringBuilder consoleMessageBuilder = new StringBuilder();
+
+            consoleMessageBuilder.Append($@"{alarms.Count}/16 alarm(s) set:");
+            
+            foreach (Alarm alarm in alarms.OrderBy(a => a.Hour).ThenBy(a => a.Minute))
+            {
+                consoleMessageBuilder.AppendFormat(@"
+  {0} {1:00}:{2:00}{3} (PowerWake: {4})",
+alarm.Enabled ? "OFF:" : "ON: ",
+alarm.Hour,
+alarm.Minute,
+alarm.RepeatDays.Count > 0 ? " " + string.Join(",", alarm.RepeatDays.Select(d => string.Concat(d.ToString().Take(3)))) : string.Empty,
+alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour.Value:00}:{alarm.PowerWakeMinute.Value:00}" : "off");
+            }
+
+            Console.WriteLine(consoleMessageBuilder);
         }
     }
 }
