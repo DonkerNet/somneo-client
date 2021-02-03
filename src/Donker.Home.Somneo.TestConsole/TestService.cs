@@ -22,64 +22,40 @@ namespace Donker.Home.Somneo.TestConsole
             
             _commands = new OrderedDictionary(StringComparer.OrdinalIgnoreCase);
 
-            RegisterCommand("help", "Show available commands.", args => ShowHelp());
+            RegisterCommand("help", "Show available commands.", ShowHelp);
 
-            RegisterCommand("device", "Show the device information.", args => ShowDeviceDetails());
-            RegisterCommand("firmware", "Show the firmware information.", args => ShowFirmwareDetails());
-            RegisterCommand("wifi", "Show the wifi connection details.", args => ShowWifiDetails());
-            RegisterCommand("locale", "Show the locale set for the device.", args => ShowLocale());
-            RegisterCommand("time", "Show the time of the device.", args => ShowTime());
+            RegisterCommand("device", "Show the device information.", ShowDeviceDetails);
+            RegisterCommand("firmware", "Show the firmware information.", ShowFirmwareDetails);
+            RegisterCommand("wifi", "Show the wifi connection details.", ShowWifiDetails);
+            RegisterCommand("locale", "Show the locale set for the device.", ShowLocale);
+            RegisterCommand("time", "Show the time of the device.", ShowTime);
 
-            RegisterCommand("sensor", "Show sensor data.", args => ShowSensorData());
+            RegisterCommand("sensor", "Show sensor data.", ShowSensorData);
 
-            RegisterCommand("light", "Show the light state.", args => ShowLightState());
-            RegisterCommand("toggle-light [on/off]", "Toggle the light.", args => ToggleLight(args));
-            RegisterCommand("set-light-level [1-25]", "Set the light level.", args => SetLightLevel(args));
-            RegisterCommand("toggle-night-light [on/off]", "Toggle the night light.", args => ToggleNightLight(args));
-            RegisterCommand("toggle-sunrise-preview [on/off]", "Toggle the Sunrise Preview mode.", args => ToggleSunrisePreview(args));
+            RegisterCommand("light", "Show the light state.", ShowLightState);
+            RegisterCommand("toggle-light","[on/off]", "Toggle the light.", ToggleLight);
+            RegisterCommand("set-light-level", "[1-25]", "Set the light level.", SetLightLevel);
+            RegisterCommand("toggle-night-light", "[on/off]", "Toggle the night light.", ToggleNightLight);
+            RegisterCommand("toggle-sunrise-preview", "[on/off]", "Toggle the Sunrise Preview mode.", ToggleSunrisePreview);
 
-            RegisterCommand("display", "Show the display state.", args => ShowDisplayState());
-            RegisterCommand("toggle-permanent-display [on/off]", "Toggle the permanent display.", args => TogglePermanentDisplay(args));
-            RegisterCommand("set-display-level [1-6]", "Set the display level.", args => SetDisplayLevel(args));
+            RegisterCommand("display", "Show the display state.", ShowDisplayState);
+            RegisterCommand("toggle-permanent-display", "[on/off]", "Toggle the permanent display.", TogglePermanentDisplay);
+            RegisterCommand("set-display-level", "[1-6]", "Set the display level.", SetDisplayLevel);
 
-            RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", args => ShowFMRadioPresets());
-            RegisterCommand($"set-fm-radio-preset [1-5] [{87.50F:0.00}-{107.99F:0.00}]", "Set an FM-radio preset to a frequency.", args => SetFMRadioPreset(args));
-            RegisterCommand("fm-radio", "Show the FM-radio state.", args => ShowFMRadioState());
-            RegisterCommand("enable-fm-radio", "Enable the FM-radion.", args => EnableFMRadio());
-            RegisterCommand("enable-fm-radio-preset [1-5]", "Enable an FM-radio preset.", args => EnableFMRadioPreset(args));
-            RegisterCommand("seek-fm-radio-station [up/down]", "Seek a next FM-radio station.", args => SeekFMRadioStation(args));
+            RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresets);
+            RegisterCommand("set-fm-radio-preset", $"[1-5] [{87.50F:0.00}-{107.99F:0.00}]", "Set an FM-radio preset to a frequency.", SetFMRadioPreset);
+            RegisterCommand("fm-radio", "Show the FM-radio state.", ShowFMRadioState);
+            RegisterCommand("enable-fm-radio", "Enable the FM-radion.", EnableFMRadio);
+            RegisterCommand("enable-fm-radio-preset", "[1-5]", "Enable an FM-radio preset.", EnableFMRadioPreset);
+            RegisterCommand("seek-fm-radio-station", "[up/down]", "Seek a next FM-radio station.", SeekFMRadioStation);
 
-            RegisterCommand("player", "Show the player state.", args => ShowPlayerState());
-            RegisterCommand("set-player-volume [1-25]", "Set the player volume.", args => SetPlayerVolume(args));
-            RegisterCommand("disable-player", "Disable the player.", args => DisablePlayer());
+            RegisterCommand("player", "Show the player state.", ShowPlayerState);
+            RegisterCommand("set-player-volume", "[1-25]", "Set the player volume.", SetPlayerVolume);
+            RegisterCommand("disable-player", "Disable the player.", DisablePlayer);
 
-            RegisterCommand("alarms", "Show the alarms.", args => ShowAlarms());
+            RegisterCommand("alarms", "Show the alarms.", ShowAlarms);
 
-            RegisterCommand("exit", "Exit the application.", args => _canRun = false);
-        }
-
-        private void RegisterCommand(string commandNameWithArgumentDescription, string description, Action<string> commandHandler)
-        {
-            string[] commandParts = commandNameWithArgumentDescription.Split(new[] { ' ' }, 2);
-            string commandName = commandParts[0];
-            string commandArgumentsDescription = commandParts.Length > 1 ? commandParts[1] : null;
-
-            CommandInfo command = new CommandInfo
-            {
-                Name = commandName,
-                ArgumentsDescription = commandArgumentsDescription,
-                Description = description,
-                Handler = commandHandler
-            };
-
-            _commands.Add(commandName, command);
-        }
-
-        private CommandInfo GetCommandInfo(string commandName)
-        {
-            if (_commands.Contains(commandName))
-                return _commands[commandName] as CommandInfo;
-            return null;
+            RegisterCommand("exit", "Exit the application.", Exit);
         }
 
         public void Run()
@@ -102,6 +78,31 @@ Type ""help"" to get started.");
 
             Console.WriteLine();
             Console.WriteLine("Bye!");
+        }
+
+        private void RegisterCommand(string commandName, string argumentsDescription, string description, Action<string> commandHandler)
+        {
+            CommandInfo command = new CommandInfo
+            {
+                Name = commandName,
+                ArgumentsDescription = argumentsDescription,
+                Description = description,
+                Handler = commandHandler
+            };
+
+            _commands.Add(commandName, command);
+        }
+
+        private void RegisterCommand(string commandName, string description, Action<string> commandHandler)
+        {
+            RegisterCommand(commandName, null, description, commandHandler);
+        }
+
+        private CommandInfo GetCommandInfo(string commandName)
+        {
+            if (_commands.Contains(commandName))
+                return _commands[commandName] as CommandInfo;
+            return null;
         }
 
         private void RunCommand(string command)
@@ -135,7 +136,9 @@ Type ""help"" to get started.");
             }
         }
 
-        private void ShowHelp()
+        #region Command handler methods
+
+        private void ShowHelp(string args)
         {
             Console.WriteLine("Available commands:");
 
@@ -154,7 +157,7 @@ Type ""help"" to get started.");
                 if (counter % pageSize == 0 && counter < commandCount)
                 {
                     Console.WriteLine(@$"
-{counter}/{commandCount} command(s) shown. [C]ontinue of [S]top.");
+{counter}/{commandCount} command(s) shown. [C]ontinue or [S]top.");
 
                     bool requestInput = true;
 
@@ -179,7 +182,7 @@ Type ""help"" to get started.");
 Command list finished.");
         }
 
-        private void ShowDeviceDetails()
+        private void ShowDeviceDetails(string args)
         {
             DeviceDetails deviceDetails = _somneoApiClient.GetDeviceDetails();
 
@@ -199,7 +202,7 @@ $@"Device details:
   Product ID: {deviceDetails.ProductId}");
         }
 
-        private void ShowFirmwareDetails()
+        private void ShowFirmwareDetails(string args)
         {
             FirmwareDetails firmwareDetails = _somneoApiClient.GetFirmwareDetails();
 
@@ -224,7 +227,7 @@ $@"
   Update progress: {firmwareDetails.Progress}
   Status message: {firmwareDetails.StatusMessage}");
             }
-            
+
             if (firmwareDetails.CanUpgrade)
             {
                 consoleMessageBuilder.Append(
@@ -236,7 +239,7 @@ $@"
             Console.WriteLine(consoleMessageBuilder);
         }
 
-        private void ShowWifiDetails()
+        private void ShowWifiDetails(string args)
         {
             WifiDetails wifiDetails = _somneoApiClient.GetWifiDetails();
 
@@ -256,7 +259,7 @@ $@"Wifi details:
   MAC address: {wifiDetails.MACAddress}");
         }
 
-        private void ShowLocale()
+        private void ShowLocale(string args)
         {
             Locale locale = _somneoApiClient.GetLocale();
 
@@ -272,7 +275,7 @@ $@"Locale:
   Timezone: {locale.Timezone}");
         }
 
-        private void ShowTime()
+        private void ShowTime(string args)
         {
             Time time = _somneoApiClient.GetTime();
 
@@ -290,7 +293,7 @@ $@"Time:
   Next DST change: {time.DSTChangeOver}");
         }
 
-        private void ShowSensorData()
+        private void ShowSensorData(string args)
         {
             SensorData sensorData = _somneoApiClient.GetSensorData();
 
@@ -308,7 +311,7 @@ $@"Sensor data:
   Humidity: {sensorData.CurrentHumidity} % (avg: {sensorData.AverageHumidity} %)");
         }
 
-        private void ShowLightState()
+        private void ShowLightState(string args)
         {
             LightState lightState = _somneoApiClient.GetLightState();
 
@@ -398,7 +401,7 @@ $@"Light state:
             }
         }
 
-        private void ShowDisplayState()
+        private void ShowDisplayState(string args)
         {
             DisplayState displayState = _somneoApiClient.GetDisplayState();
 
@@ -446,7 +449,7 @@ $@"Display state:
             Console.WriteLine("Specify a light level between 1 and 6.");
         }
 
-        private void ShowFMRadioPresets()
+        private void ShowFMRadioPresets(string args)
         {
             FMRadioPresets fmRadioPresets = _somneoApiClient.GetFMRadioPresets();
 
@@ -486,7 +489,7 @@ $@"FM radio presets:
             Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
         }
 
-        private void ShowFMRadioState()
+        private void ShowFMRadioState(string args)
         {
             FMRadioState fmRadioState = _somneoApiClient.GetFMRadioState();
 
@@ -502,7 +505,7 @@ $@"FM radio state:
   Preset: {fmRadioState.Preset}/5");
         }
 
-        private void EnableFMRadio()
+        private void EnableFMRadio(string args)
         {
             _somneoApiClient.EnableFMRadio();
             Console.WriteLine("FM radio enabled for the current preset.");
@@ -540,7 +543,7 @@ $@"FM radio state:
             }
         }
 
-        private void ShowPlayerState()
+        private void ShowPlayerState(string args)
         {
             PlayerState playerState = _somneoApiClient.GetPlayerState();
 
@@ -569,14 +572,14 @@ $@"Audio player state:
 
             Console.WriteLine("Specify a volume between 1 and 25.");
         }
-        
-        private void DisablePlayer()
+
+        private void DisablePlayer(string args)
         {
             _somneoApiClient.DisablePlayer();
             Console.WriteLine("Audio player disabled.");
         }
 
-        private void ShowAlarms()
+        private void ShowAlarms(string args)
         {
             IReadOnlyList<Alarm> alarms = _somneoApiClient.GetAlarms();
 
@@ -589,7 +592,7 @@ $@"Audio player state:
             StringBuilder consoleMessageBuilder = new StringBuilder();
 
             consoleMessageBuilder.Append($@"{alarms.Count}/16 alarm(s) set:");
-            
+
             foreach (Alarm alarm in alarms.OrderBy(a => a.Hour).ThenBy(a => a.Minute))
             {
                 consoleMessageBuilder.AppendFormat(@"
@@ -603,5 +606,9 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour.Value:00}:{alarm.PowerWakeMinute
 
             Console.WriteLine(consoleMessageBuilder);
         }
+
+        private void Exit(string args) => _canRun = false;
+
+        #endregion
     }
 }
