@@ -597,7 +597,7 @@ $@"Audio player state:
             {
                 consoleMessageBuilder.AppendFormat(@"
   {0} {1:00}:{2:00}{3} (PowerWake: {4})",
-alarm.Enabled ? "OFF:" : "ON: ",
+alarm.Enabled ? "ON:" : "OFF: ",
 alarm.Hour,
 alarm.Minute,
 alarm.RepeatDays.Count > 0 ? " " + string.Join(",", alarm.RepeatDays.Select(d => string.Concat(d.ToString().Take(3)))) : string.Empty,
