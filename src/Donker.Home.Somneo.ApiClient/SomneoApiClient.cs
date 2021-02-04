@@ -423,7 +423,7 @@ namespace Donker.Home.Somneo.ApiClient
         #region Alarms
 
         /// <summary>
-        /// Retrieves the alarms that are set.
+        /// Retrieves the alarms.
         /// </summary>
         /// <returns>An <see cref="IReadOnlyList{T}"/> containing <see cref="Alarm"/> objects.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
@@ -460,6 +460,7 @@ namespace Donker.Home.Somneo.ApiClient
 
                 Alarm alarm = new Alarm
                 {
+                    Position = i + 1,
                     Enabled = enabled,
                     Hour = hour,
                     Minute = minute,
@@ -473,6 +474,71 @@ namespace Donker.Home.Somneo.ApiClient
             }
 
             return new ReadOnlyCollection<Alarm>(alarms);
+        }
+
+        /// <summary>
+        /// Toggles an alarm by it's position in the alarm collection. If the alarm does not exist yet, it will be added with default settings for that position.
+        /// </summary>
+        /// <param name="position">The position of the alarm to toggle. Value must be between 1 and 16.</param>
+        /// <param name="enabled">Whether to enable or disable the alarm.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void ToggleAlarm(int position, bool enabled)
+        {
+            if (position < 1 || position > 16)
+                throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+
+            object data;
+
+            if (enabled)
+            {
+                data = new
+                {
+                    prfnr = position,
+                    prfvs = true,       // Make sure the alarm is set for the specified position (will use default values if it does not exist)
+                    prfen = true        // Enable the alarm
+                };
+            }
+            else
+            {
+                data = new
+                {
+                    prfnr = position,
+                    prfen = false       // Disable the alarm
+                };
+            }
+
+            ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        }
+
+        /// <summary>
+        /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
+        /// </summary>
+        /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void RemoveAlarm(int position)
+        {
+            if (position < 1 || position > 16)
+                throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+
+            object data = new
+            {
+                prfnr = position,   // Position of the alarm to remove
+                prfen = false,      // Disable the alarm
+                prfvs = false,      // Remove the alarm from the set alarms list
+                almhr = 7,          // Set the default alarm hour
+                almmn = 30,         // Set the default alarm minute
+                pwrsz = 0,          // Disable the PowerWake
+                pszhr = 0,          // Set the default PowerWake hour
+                pszmn = 0,          // Set the default PowerWake minute
+                ctype = 0,          // Set the default sunrise to "Sunny day"
+                curve = 20,         // Set the default light level
+                durat = 30,         // Set the default sunrise duration
+                daynm = 254,        // Set the default to repeat every day
+                snddv = "wus",      // Set the default sound device to wakeup sound
+                snztm = 0           // Set the default snooze time
+            };
+
+            ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
         }
 
         #endregion
@@ -545,7 +611,7 @@ namespace Donker.Home.Somneo.ApiClient
                 throw new SomneoApiException("Failed to execute the request.", response.ErrorException);
 
             if (statusCode < 200 || statusCode >= 300)
-                throw new SomneoApiException($"The response returned status code {statusCode}, with the following data: {response.Content}", response.ErrorException, response.StatusCode, response.Content);
+                throw new SomneoApiException($"The response returned status code {statusCode}.", response.ErrorException, response.StatusCode, response.Content);
         }
 
         #endregion

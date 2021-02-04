@@ -217,11 +217,26 @@ namespace Donker.Home.Somneo.ApiClient
         #region Alarms
 
         /// <summary>
-        /// Retrieves the alarms that are set.
+        /// Retrieves the alarms.
         /// </summary>
         /// <returns>An <see cref="IReadOnlyList{T}"/> containing <see cref="Alarm"/> objects.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         IReadOnlyList<Alarm> GetAlarms();
+
+        /// <summary>
+        /// Toggles an alarm by it's position in the alarm list. If the alarm does not exist yet, it will be added with default settings for that position.
+        /// </summary>
+        /// <param name="position">The position of the alarm to toggle. Value must be between 1 and 16.</param>
+        /// <param name="enabled">Whether to enable or disable the alarm.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void ToggleAlarm(int position, bool enabled);
+
+        /// <summary>
+        /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
+        /// </summary>
+        /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void RemoveAlarm(int position);
 
         #endregion
     }

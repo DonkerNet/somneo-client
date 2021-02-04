@@ -54,6 +54,8 @@ namespace Donker.Home.Somneo.TestConsole
             RegisterCommand("disable-player", "Disable the player.", DisablePlayer);
 
             RegisterCommand("alarms", "Show the alarms.", ShowAlarms);
+            RegisterCommand("toggle-alarm", "[0-15] [on/off]", "Toggle an alarm.", ToggleAlarm);
+            RegisterCommand("remove-alarm", "[0-15]", "Remove an alarm.", RemoveAlarm);
 
             RegisterCommand("exit", "Exit the application.", Exit);
         }
@@ -593,11 +595,12 @@ $@"Audio player state:
 
             consoleMessageBuilder.Append($@"{alarms.Count}/16 alarm(s) set:");
 
-            foreach (Alarm alarm in alarms.OrderBy(a => a.Hour).ThenBy(a => a.Minute))
+            foreach (Alarm alarm in alarms)
             {
                 consoleMessageBuilder.AppendFormat(@"
-  {0} {1:00}:{2:00}{3} (PowerWake: {4})",
-alarm.Enabled ? "ON:" : "OFF: ",
+  #{0} {1} {2:00}:{3:00}{4} (PowerWake: {5})",
+alarm.Position,
+alarm.Enabled ? "ON: " : "OFF:",
 alarm.Hour,
 alarm.Minute,
 alarm.RepeatDays.Count > 0 ? " " + string.Join(",", alarm.RepeatDays.Select(d => string.Concat(d.ToString().Take(3)))) : string.Empty,
@@ -605,6 +608,46 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour.Value:00}:{alarm.PowerWakeMinute
             }
 
             Console.WriteLine(consoleMessageBuilder);
+        }
+
+        private void ToggleAlarm(string args)
+        {
+            if (!string.IsNullOrEmpty(args))
+            {
+                string[] argsArray = args.Split(new[] { ' ' }, 2);
+
+                if (argsArray.Length == 2
+                    && int.TryParse(argsArray[0], out int position)
+                    && position >= 0 && position <= 15)
+                {
+                    switch (argsArray[1].ToLower())
+                    {
+                        case "on":
+                            _somneoApiClient.ToggleAlarm(position, true);
+                            Console.WriteLine($"Alarm #{position} enabled.");
+                            return;
+
+                        case "off":
+                            _somneoApiClient.ToggleAlarm(position, true);
+                            Console.WriteLine($"Alarm #{position} disabled.");
+                            return;
+                    }
+                }
+            }
+
+            Console.WriteLine("Specify a position between 1 and 16, followed by \"on\" or \"off\".");
+        }
+
+        private void RemoveAlarm(string args)
+        {
+            if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int position) && position >= 0 && position <= 15)
+            {
+                _somneoApiClient.RemoveAlarm(position);
+                Console.WriteLine($"Alarm #{position} removed.");
+                return;
+            }
+
+            Console.WriteLine("Specify a position between 1 and 16.");
         }
 
         private void Exit(string args) => _canRun = false;

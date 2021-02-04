@@ -9,6 +9,10 @@ namespace Donker.Home.Somneo.ApiClient.Models
     public sealed class Alarm
     {
         /// <summary>
+        /// The position of the alarm in the alarm list. Can be between 1 and 16.
+        /// </summary>
+        public int Position { get; init; }
+        /// <summary>
         /// Whether the alarm is enabled or disabled.
         /// </summary>
         public bool Enabled { get; init; }
@@ -36,7 +40,5 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// The minute of the PowerWake, if enabled.
         /// </summary>
         public int? PowerWakeMinute { get; init; }
-
-        // TODO: slumber, sunlight theme, sound
     }
 }
