@@ -449,7 +449,7 @@ namespace Donker.Home.Somneo.ApiClient
                 int? powerWakeHour = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 1] : null;
                 int? powerWakeMinute = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 2] : null;
 
-                DayFlags repeatDayFlags = alarmSchedules.RepeatDays[i];
+                DayFlags repeatDayFlags = alarmSchedules.RepeatDayFlags[i];
                 List<DayOfWeek> repeatDays = Enum.GetValues<DayFlags>()
                     .Where(df => df != DayFlags.None && repeatDayFlags.HasFlag(df))
                     .Select(df => Enum.Parse<DayOfWeek>(df.ToString()))
@@ -494,7 +494,7 @@ namespace Donker.Home.Somneo.ApiClient
                 data = new
                 {
                     prfnr = position,
-                    prfvs = true,       // Make sure the alarm is set for the specified position (will use default values if it does not exist)
+                    prfvs = true,       // Make sure the alarm is set for the specified position
                     prfen = true        // Enable the alarm
                 };
             }
@@ -530,7 +530,7 @@ namespace Donker.Home.Somneo.ApiClient
                 pwrsz = 0,          // Disable the PowerWake
                 pszhr = 0,          // Set the default PowerWake hour
                 pszmn = 0,          // Set the default PowerWake minute
-                ctype = 0,          // Set the default sunrise to "Sunny day"
+                ctype = 0,          // Set the default sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
                 curve = 20,         // Set the default light level
                 durat = 30,         // Set the default sunrise duration
                 daynm = 254,        // Set the default to repeat every day
@@ -539,6 +539,30 @@ namespace Donker.Home.Somneo.ApiClient
             };
 
             ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        }
+
+        /// <summary>
+        /// Gets the settings of an alarm by it's position in the alarm list.
+        /// </summary>
+        /// <param name="position">The position of the alarm to retrieve the settings for. Value must be between 1 and 16.</param>
+        /// <returns>The settings as an <see cref="AlarmSettings"/> object if the alarm is set; otherwise, <c>null</c>.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public AlarmSettings GetAlarmSettings(int position)
+        {
+            if (position < 1 || position > 16)
+                throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+
+            object data = new
+            {
+                prfnr = position
+            };
+
+            var alarmSettings = ExecutePutRequest<AlarmSettings>("di/v1/products/1/wualm", data).Data;
+
+            if (alarmSettings?.IsSet == true)
+                return alarmSettings;
+
+            return null;
         }
 
         #endregion
@@ -572,6 +596,8 @@ namespace Donker.Home.Somneo.ApiClient
 
         private IRestResponse ExecutePutRequest(string resource, object data) => ExecuteRequestWithBody(resource, Method.PUT, data);
 
+        private IRestResponse<T> ExecutePutRequest<T>(string resource, object data) where T : new() => ExecuteRequestWithBody<T>(resource, Method.PUT, data);
+
         private IRestResponse ExecuteRequestWithBody(string resource, Method method, object data)
         {
             IRestRequest request = new RestRequest
@@ -586,6 +612,23 @@ namespace Donker.Home.Somneo.ApiClient
                 request.AddJsonBody(data);
 
             return ExecuteRequest(request);
+        }
+
+        private IRestResponse<T> ExecuteRequestWithBody<T>(string resource, Method method, object data)
+            where T : new()
+        {
+            IRestRequest request = new RestRequest
+            {
+                Resource = resource,
+                Method = method,
+                RequestFormat = DataFormat.Json,
+                JsonSerializer = _serializer
+            };
+
+            if (data != null)
+                request.AddJsonBody(data);
+
+            return ExecuteRequest<T>(request);
         }
 
         private IRestResponse ExecuteRequest(IRestRequest request)

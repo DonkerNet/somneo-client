@@ -238,6 +238,14 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void RemoveAlarm(int position);
 
+        /// <summary>
+        /// Gets the settings of an alarm by it's position in the alarm list.
+        /// </summary>
+        /// <param name="position">The position of the alarm to retrieve the settings for. Value must be between 1 and 16.</param>
+        /// <returns>The settings as an <see cref="AlarmSettings"/> object if the alarm is set; otherwise, <c>null</c>.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        AlarmSettings GetAlarmSettings(int position);
+
         #endregion
     }
 }

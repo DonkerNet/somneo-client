@@ -5,24 +5,30 @@ using System.Runtime.Serialization;
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     /// <summary>
-    /// The type of audio device in use by the Somneo's audio player.
+    /// The type of sound device usable by the Somneo's audio player.
     /// </summary>
-    public enum PlayerDeviceType
+    public enum SoundDeviceType
     {
         /// <summary>
-        /// The Somneo is not playing anything.
+        /// No sound device.
         /// </summary>
         [EnumMember(Value = "off")]
         [Description("None")]
         None,
         /// <summary>
-        /// The Somneo is playing the FM radio.
+        /// Wake-up sounds.
+        /// </summary>
+        [EnumMember(Value = "wus")]
+        [Description("Wake-up sound")]
+        WakeUpSound,
+        /// <summary>
+        /// FM radio.
         /// </summary>
         [EnumMember(Value = "fmr")]
         [Description("FM radio")]
         FMRadio,
         /// <summary>
-        /// The Somneo is playing music from the auxiliary input.
+        /// Auxiliary input.
         /// </summary>
         [EnumMember(Value = "aux")]
         [Description("AUX")]
@@ -38,14 +44,93 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// Seek a radio station on the band in forwards direction.
         /// </summary>
         [EnumMember(Value = "aux")]
-        [Description("AUX")]
+        [Description("Up")]
         Up,
         /// <summary>
         /// Seek a radio station on the band in backwards direction.
         /// </summary>
         [EnumMember(Value = "aux")]
-        [Description("AUX")]
+        [Description("Down")]
         Down
+    }
+
+    /// <summary>
+    /// The type of sunrise used for an alarm.
+    /// </summary>
+    public enum SunriseType
+    {
+        /// <summary>
+        /// No sunrise.
+        /// </summary>
+        [Description("No light")]
+        NoLight,
+        /// <summary>
+        /// Sunny day sunrise.
+        /// </summary>
+        [Description("Sunny day")]
+        SunnyDay,
+        /// <summary>
+        /// Island red sunrise.
+        /// </summary>
+        [Description("Island red")]
+        IslandRed,
+        /// <summary>
+        /// Nordic white sunrise.
+        /// </summary>
+        [Description("Nordic white")]
+        NordicWhite,
+        /// <summary>
+        /// Carribean red sunrise.
+        /// </summary>
+        [Description("Carribean red")]
+        CarribeanRed
+    }
+
+    /// <summary>
+    /// The wake-up sound used by an alarm.
+    /// </summary>
+    public enum WakeUpSound
+    {
+        /// <summary>
+        /// Forest birds wake-up sound.
+        /// </summary>
+        [Description("Forest birds")]
+        ForestBirds = 1,
+        /// <summary>
+        /// Summer birds wake-up sound.
+        /// </summary>
+        [Description("Summer birds")]
+        SummerBirds = 2,
+        /// <summary>
+        /// Buddha wake-up sound.
+        /// </summary>
+        [Description("Buddha wake-up")]
+        BuddhaWakeUp = 3,
+        /// <summary>
+        /// Morning alps wake-up sound.
+        /// </summary>
+        [Description("Morning alps")]
+        MorningAlps = 4,
+        /// <summary>
+        /// Yoga harmony wake-up sound.
+        /// </summary>
+        [Description("Yoga harmony")]
+        YogaHarmony = 5,
+        /// <summary>
+        /// Nepal bowls wake-up sound.
+        /// </summary>
+        [Description("Nepal bowls")]
+        NepalBowls = 6,
+        /// <summary>
+        /// Summer lake wake-up sound.
+        /// </summary>
+        [Description("Summer lake")]
+        SummerLake = 7,
+        /// <summary>
+        /// Ocean waves wake-up sound.
+        /// </summary>
+        [Description("Ocean waves")]
+        OceanWaves = 8
     }
 
     [Flags]

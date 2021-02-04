@@ -5,10 +5,10 @@ namespace Donker.Home.Somneo.ApiClient.Models
     internal class AlarmSchedules
     {
         [JsonProperty("daynm")]
-        public DayFlags[] RepeatDays { get; init; }
+        internal DayFlags[] RepeatDayFlags { get; init; }
         [JsonProperty("almhr")]
-        public int[] Hours { get; init; }
+        internal int[] Hours { get; init; }
         [JsonProperty("almmn")]
-        public int[] Minutes { get; init; }
+        internal int[] Minutes { get; init; }
     }
 }

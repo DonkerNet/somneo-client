@@ -8,11 +8,11 @@ namespace Donker.Home.Somneo.ApiClient.Models
     public sealed class LightState
     {
         [JsonProperty("onoff")]
-        internal bool OnOff;
+        internal bool OnOff { get; init; }
         [JsonProperty("tempy")]
-        internal bool TempY;
+        internal bool TempY { get; init; }
         [JsonProperty("ngtlt")]
-        internal bool NgtLt;
+        internal bool NgtLt { get; init; }
 
         /// <summary>
         /// Whether the light is enabled or not.
