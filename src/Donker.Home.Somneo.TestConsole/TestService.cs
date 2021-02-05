@@ -23,6 +23,8 @@ namespace Donker.Home.Somneo.TestConsole
                 new DisplayCommandHandler(somneoApiClient),
                 new PlayerCommandHandler(somneoApiClient),
                 new FMRadioCommandHandler(somneoApiClient),
+                new WakeUpSoundCommandHandler(somneoApiClient),
+                new AUXCommandHandler(somneoApiClient),
                 new AlarmCommandHandler(somneoApiClient)
             };
 

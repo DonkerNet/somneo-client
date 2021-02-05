@@ -139,6 +139,18 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Wake-up sounds
+
+        /// <summary>
+        /// Plays a wake-up sound.
+        /// </summary>
+        /// <param name="wakeUpSound">The wake-up sound to play.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void PlayWakeUpSound(WakeUpSound wakeUpSound);
+
+        #endregion
+
         #region FM radio
 
         /// <summary>
@@ -167,7 +179,6 @@ namespace Donker.Home.Somneo.ApiClient
         /// <summary>
         /// Enables the FM radio.
         /// </summary>
-        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void EnableFMRadio();
 
@@ -186,6 +197,16 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="ArgumentException">Exception thrown when the <paramref name="direction"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void SeekFMRadioStation(RadioSeekDirection direction);
+
+        #endregion
+
+        #region AUX
+
+        /// <summary>
+        /// Enables the auxiliary input device.
+        /// </summary>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void EnableAUX();
 
         #endregion
 

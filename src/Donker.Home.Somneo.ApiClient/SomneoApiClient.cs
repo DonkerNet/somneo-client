@@ -274,6 +274,33 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Wake-up sounds
+
+        /// <summary>
+        /// Plays a wake-up sound.
+        /// </summary>
+        /// <param name="wakeUpSound">The wake-up sound to play.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void PlayWakeUpSound(WakeUpSound wakeUpSound)
+        {
+            if (!Enum.IsDefined(wakeUpSound))
+                throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
+
+            object data = new
+            {
+                sndss = 1000,   // What is this?
+                onoff = true,   // Enable the player
+                tempy = true,   // ?
+                snddv = "wus",  // Set the player to wake-up sound
+                sndch = ((int)wakeUpSound).ToString()
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
+        }
+
+        #endregion
+
         #region FM radio
 
         /// <summary>
@@ -317,7 +344,6 @@ namespace Donker.Home.Somneo.ApiClient
         /// <summary>
         /// Enables the FM radio.
         /// </summary>
-        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public void EnableFMRadio()
         {
@@ -325,7 +351,7 @@ namespace Donker.Home.Somneo.ApiClient
             {
                 sndss = 0,      // What is this?
                 onoff = true,   // Enable the player
-                tempy = false,  // Disables the sunrise preview?
+                tempy = false,  // ?
                 snddv = "fmr"   // Set the player to FM radio
             };
 
@@ -372,6 +398,27 @@ namespace Donker.Home.Somneo.ApiClient
             };
 
             ExecutePutRequest("di/v1/products/1/wufmr", data);
+        }
+
+        #endregion
+
+        #region AUX
+
+        /// <summary>
+        /// Enables the auxiliary input device.
+        /// </summary>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void EnableAUX()
+        {
+            object data = new
+            {
+                sndss = 0,      // What is this?
+                onoff = true,   // Enable the player
+                tempy = false,  // ?
+                snddv = "aux"   // Set the player to AUX
+            };
+
+            ExecutePutRequest("di/v1/products/1/wuply", data);
         }
 
         #endregion
