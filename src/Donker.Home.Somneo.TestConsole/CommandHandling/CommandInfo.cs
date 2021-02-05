@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Donker.Home.Somneo.TestConsole
+namespace Donker.Home.Somneo.TestConsole.CommandHandling
 {
     public class CommandInfo
     {
