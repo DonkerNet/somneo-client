@@ -21,6 +21,7 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
             commandRegistry.RegisterCommand("alarm-settings", "[1-16]", "Show the settings of an alarm.", ShowAlarmSettings);
             commandRegistry.RegisterCommand("toggle-alarm", "[1-16] [on/off]", "Toggle an alarm.", ToggleAlarm);
             commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarm);
+            commandRegistry.RegisterCommand("set-snooze-time", "[1-20]", "Sets the snooze time in minutes.", SetSnoozeTime);
         }
 
         private void ShowAlarms(string args)
@@ -143,6 +144,18 @@ $@"Alarm #{alarmSettings.Position} settings:
             }
 
             Console.WriteLine("Specify a position between 1 and 16.");
+        }
+
+        private void SetSnoozeTime(string args)
+        {
+            if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int minutes) && minutes >= 1 && minutes <= 20)
+            {
+                SomneoApiClient.SetSnoozeTime(minutes);
+                Console.WriteLine($"Snooze set to {minutes} minute(s).");
+                return;
+            }
+
+            Console.WriteLine("Specify snooze minutes between 1 and 20.");
         }
     }
 }

@@ -249,6 +249,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <param name="position">The position of the alarm to toggle. Value must be between 1 and 16.</param>
         /// <param name="enabled">Whether to enable or disable the alarm.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void ToggleAlarm(int position, bool enabled);
 
@@ -256,6 +257,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
         /// </summary>
         /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         void RemoveAlarm(int position);
 
@@ -264,8 +266,17 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <param name="position">The position of the alarm to retrieve the settings for. Value must be between 1 and 16.</param>
         /// <returns>The settings as an <see cref="AlarmSettings"/> object if the alarm is set; otherwise, <c>null</c>.</returns>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         AlarmSettings GetAlarmSettings(int position);
+
+        /// <summary>
+        /// Sets the snooze time in minutes for all alarms.
+        /// </summary>
+        /// <param name="minutes">The snooze time in minutes. Value must be between 1 and 20.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="minutes"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SetSnoozeTime(int minutes);
 
         #endregion
     }
