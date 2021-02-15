@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
 using RestSharp;
@@ -474,8 +475,6 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public IReadOnlyList<Alarm> GetAlarms()
         {
-            // TODO: two requests needed below. make this async? can Somneo even handle concurrent requests?
-
             AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs").Data;
             AlarmSchedules alarmSchedules = ExecuteGetRequest<AlarmSchedules>("di/v1/products/1/wualm/aalms").Data;
 
@@ -494,11 +493,7 @@ namespace Donker.Home.Somneo.ApiClient
                 int? powerWakeHour = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 1] : null;
                 int? powerWakeMinute = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 2] : null;
 
-                DayFlags repeatDayFlags = alarmSchedules.RepeatDayFlags[i];
-                List<DayOfWeek> repeatDays = Enum.GetValues<DayFlags>()
-                    .Where(df => df != DayFlags.None && repeatDayFlags.HasFlag(df))
-                    .Select(df => Enum.Parse<DayOfWeek>(df.ToString()))
-                    .ToList();
+                List<DayOfWeek> repeatDays = EnumHelper.DayFlagsToDaysOfWeek(alarmSchedules.RepeatDayFlags[i]).ToList();
 
                 int hour = alarmSchedules.Hours[i];
                 int minute = alarmSchedules.Minutes[i];
