@@ -4,10 +4,8 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 
 namespace Donker.Home.Somneo.ApiClient
@@ -629,6 +627,8 @@ namespace Donker.Home.Somneo.ApiClient
             object data = new
             {
                 snztm = minutes,
+
+                // Don't specify any alarms to update
                 aalms = Array.Empty<object>(),
                 aenvs = Array.Empty<object>(),
                 prfsh = 0
@@ -641,67 +641,11 @@ namespace Donker.Home.Somneo.ApiClient
 
         #region Private methods
 
-        private IRestResponse<T> ExecuteGetRequest<T>(string resource)
-            where T : new()
-        {
-            IRestRequest request = new RestRequest
-            {
-                Resource = resource,
-                Method = Method.GET
-            };
+        private IRestResponse<T> ExecuteGetRequest<T>(string resource) where T : new() => ExecuteRequest<T>(CreateGetRequest(resource));
 
-            return ExecuteRequest<T>(request);
-        }
+        private IRestResponse ExecutePutRequest(string resource, object data) => ExecuteRequest(CreateRequestWithBody(resource, Method.PUT, data));
 
-        private IRestResponse ExecuteGetRequest(string resource)
-        {
-            IRestRequest request = new RestRequest
-            {
-                Resource = resource,
-                Method = Method.GET
-            };
-
-            return ExecuteRequest(request);
-        }
-
-        private IRestResponse ExecutePostRequest(string resource, object data) => ExecuteRequestWithBody(resource, Method.POST, data);
-
-        private IRestResponse ExecutePutRequest(string resource, object data) => ExecuteRequestWithBody(resource, Method.PUT, data);
-
-        private IRestResponse<T> ExecutePutRequest<T>(string resource, object data) where T : new() => ExecuteRequestWithBody<T>(resource, Method.PUT, data);
-
-        private IRestResponse ExecuteRequestWithBody(string resource, Method method, object data)
-        {
-            IRestRequest request = new RestRequest
-            {
-                Resource = resource,
-                Method = method,
-                RequestFormat = DataFormat.Json,
-                JsonSerializer = _serializer
-            };
-
-            if (data != null)
-                request.AddJsonBody(data);
-
-            return ExecuteRequest(request);
-        }
-
-        private IRestResponse<T> ExecuteRequestWithBody<T>(string resource, Method method, object data)
-            where T : new()
-        {
-            IRestRequest request = new RestRequest
-            {
-                Resource = resource,
-                Method = method,
-                RequestFormat = DataFormat.Json,
-                JsonSerializer = _serializer
-            };
-
-            if (data != null)
-                request.AddJsonBody(data);
-
-            return ExecuteRequest<T>(request);
-        }
+        private IRestResponse<T> ExecutePutRequest<T>(string resource, object data) where T : new() => ExecuteRequest<T>(CreateRequestWithBody(resource, Method.PUT, data));
 
         private IRestResponse ExecuteRequest(IRestRequest request)
         {
@@ -716,6 +660,31 @@ namespace Donker.Home.Somneo.ApiClient
             IRestResponse<T> response = _restClient.Execute<T>(request);
             ValidateResponse(response);
             return response;
+        }
+
+        private IRestRequest CreateGetRequest(string resource)
+        {
+            return new RestRequest
+            {
+                Resource = resource,
+                Method = Method.GET
+            };
+        }
+
+        private IRestRequest CreateRequestWithBody(string resource, Method method, object data)
+        {
+            IRestRequest request = new RestRequest
+            {
+                Resource = resource,
+                Method = method,
+                RequestFormat = DataFormat.Json,
+                JsonSerializer = _serializer
+            };
+
+            if (data != null)
+                request.AddJsonBody(data);
+
+            return request;
         }
 
         private void ValidateResponse(IRestResponse response)
