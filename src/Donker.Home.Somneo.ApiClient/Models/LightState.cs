@@ -28,7 +28,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// </summary>
         public bool NightLightEnabled => NgtLt;
         /// <summary>
-        /// Whether the night light is enabled or not.
+        /// Whether the sunrise preview is enabled or not.
         /// </summary>
         public bool SunrisePreviewEnabled => TempY;
     }

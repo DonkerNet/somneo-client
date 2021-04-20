@@ -43,13 +43,11 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// Seek a radio station on the band in forwards direction.
         /// </summary>
-        [EnumMember(Value = "aux")]
         [Description("Up")]
         Up,
         /// <summary>
         /// Seek a radio station on the band in backwards direction.
         /// </summary>
-        [EnumMember(Value = "aux")]
         [Description("Down")]
         Down
     }

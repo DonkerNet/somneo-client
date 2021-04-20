@@ -7,8 +7,6 @@ namespace Donker.Home.Somneo.TestConsole
     {
         static void Main()
         {
-            // TODO: alarmen, RelaxBreathe, Zonsondergang, FM radio
-
             IConfiguration config = new ConfigurationBuilder()
                 .AddJsonFile($"appsettings.json", true, true)
                 .AddEnvironmentVariables()

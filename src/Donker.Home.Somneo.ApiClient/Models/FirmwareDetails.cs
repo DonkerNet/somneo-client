@@ -38,7 +38,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// </summary>
         public bool CanUpgrade { get; init; }
         /// <summary>
-        /// Whether the firmware upgrade is mandatory or not.
+        /// Whether the available firmware upgrade is mandatory or not.
         /// </summary>
         public bool Mandatory { get; init; }
         /// <summary>
