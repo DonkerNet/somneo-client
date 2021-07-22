@@ -254,6 +254,68 @@ namespace Donker.Home.Somneo.ApiClient
         void ToggleAlarm(int position, bool enabled);
 
         /// <summary>
+        /// Sets and enables an alarm with a wake-up sound at the specified position in the alarm list and configures it with the specified settings.
+        /// </summary>
+        /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
+        /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
+        /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
+        /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
+        /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
+        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseIntensity">
+        /// The intensity of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 1 and 25.
+        /// </param>
+        /// <param name="sunriseDuration">
+        /// The duration of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 5 and 40, with 5 minute steps in between.
+        /// </param>
+        /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
+        /// <param name="volume">The volume of the wake-up sound that is played. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SetAlarmWithWakeUpSound(
+            int position,
+            int hour, int minute,
+            int? powerWakeMinutes,
+            ICollection<DayOfWeek> repeatDays,
+            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            WakeUpSound wakeUpSound, int volume);
+
+        /// <summary>
+        /// Sets and enables an alarm with FM radio at the specified position in the alarm list and configures it with the specified settings.
+        /// </summary>
+        /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
+        /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
+        /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
+        /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
+        /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
+        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseIntensity">
+        /// The intensity of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 1 and 25.
+        /// </param>
+        /// <param name="sunriseDuration">
+        /// The duration of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 5 and 40, with 5 minute steps in between.
+        /// </param>
+        /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
+        /// <param name="volume">The volume of the FM radio that is played. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void SetAlarmWithFMRadio(
+            int position,
+            int hour, int minute,
+            int? powerWakeMinutes,
+            ICollection<DayOfWeek> repeatDays,
+            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            int fmRadioPreset, int volume);
+
+        /// <summary>
         /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
         /// </summary>
         /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
@@ -279,5 +341,13 @@ namespace Donker.Home.Somneo.ApiClient
         void SetSnoozeTime(int minutes);
 
         #endregion
+
+        /*
+        TODO:
+        - Add/edit alarm
+        - RelaxBreathe
+        - Sunset
+        - Bedtime?
+        */
     }
 }

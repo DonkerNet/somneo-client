@@ -552,6 +552,183 @@ namespace Donker.Home.Somneo.ApiClient
         }
 
         /// <summary>
+        /// Sets and enables an alarm with a wake-up sound at the specified position in the alarm list and configures it with the specified settings.
+        /// </summary>
+        /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
+        /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
+        /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
+        /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
+        /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
+        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseIntensity">
+        /// The intensity of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 1 and 25.
+        /// </param>
+        /// <param name="sunriseDuration">
+        /// The duration of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 5 and 40, with 5 minute steps in between.
+        /// </param>
+        /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
+        /// <param name="volume">The volume of the wake-up sound that is played. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void SetAlarmWithWakeUpSound(
+            int position,
+            int hour, int minute,
+            int? powerWakeMinutes,
+            ICollection<DayOfWeek> repeatDays,
+            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            WakeUpSound wakeUpSound, int volume)
+        {
+            if (!Enum.IsDefined(wakeUpSound))
+                throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
+
+            SetAlarm(
+                position,
+                hour, minute,
+                powerWakeMinutes,
+                repeatDays,
+                sunriseType, sunriseIntensity, sunriseDuration,
+                volume, SoundDeviceType.WakeUpSound, wakeUpSound, null);
+        }
+
+        /// <summary>
+        /// Sets and enables an alarm with FM radio at the specified position in the alarm list and configures it with the specified settings.
+        /// </summary>
+        /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
+        /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
+        /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
+        /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
+        /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
+        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseIntensity">
+        /// The intensity of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 1 and 25.
+        /// </param>
+        /// <param name="sunriseDuration">
+        /// The duration of the sunrise to show when the alarm is triggerd.
+        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// Value must be between 5 and 40, with 5 minute steps in between.
+        /// </param>
+        /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
+        /// <param name="volume">The volume of the FM radio that is played. Value must be between 1 and 25.</param>
+        /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void SetAlarmWithFMRadio(
+            int position,
+            int hour, int minute,
+            int? powerWakeMinutes,
+            ICollection<DayOfWeek> repeatDays,
+            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            int fmRadioPreset, int volume)
+        {
+            if (fmRadioPreset < 1 || fmRadioPreset > 5)
+                throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
+
+            SetAlarm(
+                position,
+                hour, minute,
+                powerWakeMinutes,
+                repeatDays,
+                sunriseType, sunriseIntensity, sunriseDuration,
+                volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
+        }
+
+        private void SetAlarm(int position,
+            int hour, int minute,
+            int? powerWakeMinutes,
+            ICollection<DayOfWeek> repeatDays,
+            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            int volume,
+            // Supplied by overloads:
+            SoundDeviceType soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
+        {
+            if (position < 1 || position > 16)
+                throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+            if (hour < 0 || hour > 23)
+                throw new ArgumentException("The hour must be between 0 and 23.", nameof(hour));
+            if (minute < 0 || minute > 59)
+                throw new ArgumentException("The minute must be between 0 and 23.", nameof(minute));
+            if (volume < 1 || volume > 25)
+                throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+            if (!Enum.IsDefined(sunriseType))
+                throw new ArgumentException("The sunrise type is invalid.", nameof(sunriseType));
+            if (repeatDays != null && repeatDays.Any(rd => !Enum.IsDefined(rd)))
+                throw new ArgumentException("One or more repeat days are invalid.", nameof(repeatDays));
+
+            int powerWakeSize = 0;
+            int definitivePowerWakeHour = 0;
+            int definitivePowerWakeMinute = 0;
+
+            if (powerWakeMinutes.HasValue)
+            {
+                if (powerWakeMinutes.Value < 0 || powerWakeMinutes.Value > 59)
+                    throw new ArgumentException("The PowerWake minutes must be between 0 and 59.", nameof(powerWakeMinutes));
+
+                TimeSpan powerWakeTime = new TimeSpan(hour, minute, 0)
+                    .Add(TimeSpan.FromMinutes(powerWakeMinutes.Value));
+
+                powerWakeSize = 255;
+                definitivePowerWakeHour = powerWakeTime.Hours;
+                definitivePowerWakeMinute = powerWakeTime.Minutes;
+            }
+
+            int definitiveSunriseIntensity = 0;
+            int definitiveSunriseDuration = 0;
+
+            if (sunriseType != SunriseType.NoLight)
+            {
+                if (!sunriseIntensity.HasValue || sunriseIntensity.Value < 1 || sunriseIntensity.Value > 25)
+                    throw new ArgumentException("When the sunrise type is set to something other than no light, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
+                if (!sunriseDuration.HasValue || sunriseDuration.Value < 5 || sunriseDuration.Value > 40 || sunriseDuration.Value % 5 != 0)
+                    throw new ArgumentException("When the sunrise type is set to something other than no light, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
+                definitiveSunriseIntensity = sunriseIntensity.Value;
+                definitiveSunriseDuration = sunriseDuration.Value;
+            }
+
+            int soundChannel = 0;
+
+            switch (soundDevice)
+            {
+                case SoundDeviceType.WakeUpSound:
+                    soundChannel = (int)wakeUpSound.GetValueOrDefault();
+                    break;
+
+                case SoundDeviceType.FMRadio:
+                    soundChannel = fmRadioPreset.GetValueOrDefault();
+                    break;
+            }
+
+            byte repeatDaysNumber = (byte)EnumHelper.DaysOfWeekToDayFlags(repeatDays);
+            int sunriseTypeNumber = EnumHelper.GetSunriseTypeNumber(sunriseType);
+            string soundDeviceName = EnumHelper.GetEnumMemberValue(soundDevice);
+
+            object data = new
+            {
+                prfnr = position,                   // Position of the alarm to set
+                prfen = true,                       // Enable the alarm
+                prfvs = true,                       // Add the alarm to the set alarms list
+                almhr = hour,                       // The alarm hour
+                almmn = minute,                     // The alarm minute
+                pwrsz = powerWakeSize,              // The PowerWake to enabled (255) or disabled (0)
+                pszhr = definitivePowerWakeHour,    // The PowerWake hour
+                pszmn = definitivePowerWakeMinute,  // The PowerWake minute
+                ctype = sunriseTypeNumber,          // The sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
+                curve = definitiveSunriseIntensity, // The light level
+                durat = definitiveSunriseDuration,  // The sunrise duration
+                daynm = repeatDaysNumber,           // The days on which to repeat the alarm
+                snddv = soundDeviceName,            // The sound device to play
+                sndch = soundChannel.ToString(),    // The wake-up sound or FM radio preset to play
+                sndlv = volume                      // The volume level of the sound device to play
+            };
+
+            ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        }
+
+        /// <summary>
         /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
         /// </summary>
         /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>

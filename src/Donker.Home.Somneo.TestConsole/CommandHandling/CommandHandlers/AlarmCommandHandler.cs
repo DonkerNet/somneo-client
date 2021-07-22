@@ -20,6 +20,16 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
             commandRegistry.RegisterCommand("alarms", "Show the alarms.", ShowAlarms);
             commandRegistry.RegisterCommand("alarm-settings", "[1-16]", "Show the settings of an alarm.", ShowAlarmSettings);
             commandRegistry.RegisterCommand("toggle-alarm", "[1-16] [on/off]", "Toggle an alarm.", ToggleAlarm);
+            commandRegistry.RegisterCommand(
+                "set-fm-radio-alarm",
+                "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-4] [1-25,_] [5-40,_] [1-5] [1-25]",
+                "Sets an alarm for the specified position, hour, minute, PowerWake minutes (optional), repeat days, sunrise type, sunrise intensity, sunrise duration, FM radio preset and volume.",
+                args => SetAlarm(args, SoundDeviceType.FMRadio));
+            commandRegistry.RegisterCommand(
+                "set-wake-up-sound-alarm",
+                "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-4] [1-25,_] [5-40,_] [1-8] [1-25]",
+                "Sets an alarm for the specified position, hour, minute, PowerWake minutes (optional), repeat days, sunrise type, sunrise intensity, sunrise duration, wake-up sound and volume.",
+                args => SetAlarm(args, SoundDeviceType.WakeUpSound));
             commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarm);
             commandRegistry.RegisterCommand("set-snooze-time", "[1-20]", "Sets the snooze time in minutes.", SetSnoozeTime);
         }
@@ -106,6 +116,199 @@ $@"Alarm #{alarmSettings.Position} settings:
             Console.WriteLine("Specify a position between 1 and 16.");
         }
 
+        private void SetAlarm(string args, SoundDeviceType soundDevice)
+        {
+            if (string.IsNullOrEmpty(args))
+            {
+                Console.WriteLine("Specify the parameters to configure the alarm with.");
+                return;
+            }
+
+            string[] argsArray = args.Split(new[] { ' ' }, 11);
+
+            if (argsArray.Length < 10)
+            {
+                Console.WriteLine("Insufficient number of parameters specified to configure the alarm with.");
+                return;
+            }
+
+            if (!int.TryParse(argsArray[0], out int position) || position < 1 || position > 16)
+            {
+                Console.WriteLine("Specify a position between 1 and 16.");
+                return;
+            }
+
+            if (!int.TryParse(argsArray[1], out int hour) || hour < 0 || hour > 23)
+            {
+                Console.WriteLine("Specify an hour between 0 and 23.");
+                return;
+            }
+
+            if (!int.TryParse(argsArray[2], out int minute) || minute < 0 || minute > 59)
+            {
+                Console.WriteLine("Specify a minute between 0 and 59.");
+                return;
+            }
+
+            int? definitivePowerWakeMinutes = null;
+            if (argsArray[3] != "_")
+            {
+                if (!int.TryParse(argsArray[3], out int powerWakeMinutes) || powerWakeMinutes < 0 || powerWakeMinutes > 59)
+                {
+                    Console.WriteLine("Specify the PowerWake minutes between 0 and 59, or an underscore (_) to leave empty.");
+                    return;
+                }
+
+                definitivePowerWakeMinutes = powerWakeMinutes;
+            }
+
+            HashSet<DayOfWeek> repeatDays = new HashSet<DayOfWeek>();
+            if (argsArray[4] != "_")
+            {
+                foreach (string repeatDayString in argsArray[4].Split('|'))
+                {
+                    if (!Enum.TryParse(repeatDayString, true, out DayOfWeek repeatDay))
+                    {
+                        Console.WriteLine("Specify one or more repeat days that are valid days of the week, or an underscore (_) to leave empty.");
+                        return;
+                    }
+
+                    repeatDays.Add(repeatDay);
+                }
+            }
+
+            if (!Enum.TryParse(argsArray[5], out SunriseType sunriseType))
+            {
+                Console.WriteLine("Specify a valid sunrise type.");
+                return;
+            }
+
+            int? definitiveSunriseIntensity = null;
+            if (argsArray[6] != "_")
+            {
+                if (!int.TryParse(argsArray[6], out int sunriseIntensity) || sunriseIntensity < 1 || sunriseIntensity > 25)
+                {
+                    Console.WriteLine("Specify a sunrise intensity between 1 and 25, or an underscore (_) to leave empty.");
+                    return;
+                }
+
+                definitiveSunriseIntensity = sunriseIntensity;
+            }
+
+            if (sunriseType != SunriseType.NoLight && !definitiveSunriseIntensity.HasValue)
+            {
+                Console.WriteLine("Specify a sunrise intensity when the sunrise type is set to something other than NoLight.");
+                return;
+            }
+
+            int? definitiveSunriseDuration = null;
+            if (argsArray[7] != "_")
+            {
+                if (!int.TryParse(argsArray[7], out int sunriseDuration) || sunriseDuration < 5 || sunriseDuration > 40 || sunriseDuration % 5 != 0)
+                {
+                    Console.WriteLine("Specify a sunrise duration between 5 and 40, with 5 minutes in between, or an underscore (_) to leave empty.");
+                    return;
+                }
+
+                definitiveSunriseDuration = sunriseDuration;
+            }
+
+            if (sunriseType != SunriseType.NoLight && !definitiveSunriseDuration.HasValue)
+            {
+                Console.WriteLine("Specify a sunrise duration when the sunrise type is set to something other than NoLight.");
+                return;
+            }
+
+            int fmRadioPreset = 0;
+            int wakeUpSound = 0;
+
+            switch (soundDevice)
+            {
+                case SoundDeviceType.FMRadio:
+                    if (!int.TryParse(argsArray[8], out fmRadioPreset) || fmRadioPreset < 1 || fmRadioPreset > 5)
+                    {
+                        Console.WriteLine("Specify an FM radio present between 1 and 5.");
+                        return;
+                    }
+                    break;
+
+                case SoundDeviceType.WakeUpSound:
+                    if (!int.TryParse(argsArray[8], out wakeUpSound) || wakeUpSound < 1 || wakeUpSound > 5)
+                    {
+                        Console.WriteLine("Specify a wake-up sound between 1 and 8.");
+                        return;
+                    }
+                    break;
+            }
+
+            if (!int.TryParse(argsArray[9], out int volume) || volume < 1 || volume > 25)
+            {
+                Console.WriteLine("Specify a volume between 1 and 5.");
+                return;
+            }
+
+            switch (soundDevice)
+            {
+                case SoundDeviceType.FMRadio:
+                    SomneoApiClient.SetAlarmWithFMRadio(
+                        position,
+                        hour,
+                        minute,
+                        definitivePowerWakeMinutes,
+                        repeatDays,
+                        sunriseType,
+                        definitiveSunriseIntensity,
+                        definitiveSunriseDuration,
+                        fmRadioPreset,
+                        volume);
+                    break;
+
+                case SoundDeviceType.WakeUpSound:
+                    SomneoApiClient.SetAlarmWithWakeUpSound(
+                        position,
+                        hour,
+                        minute,
+                        definitivePowerWakeMinutes,
+                        repeatDays,
+                        sunriseType,
+                        definitiveSunriseIntensity,
+                        definitiveSunriseDuration,
+                        (WakeUpSound)wakeUpSound,
+                        volume);
+                    break;
+            }
+
+            string daysState = null;
+            if (repeatDays.Count > 0)
+                daysState = $"{Environment.NewLine}  Days: {string.Join(",", repeatDays.Select(d => string.Concat(d.ToString().Take(3))))}";
+
+            string powerWakeState = definitivePowerWakeMinutes.HasValue
+                ? new TimeSpan(hour, minute, 0).Add(TimeSpan.FromMinutes(definitivePowerWakeMinutes.Value)).ToString("hh\\:mm")
+                : "off";
+
+            string sunriseState = null;
+            if (sunriseType != SunriseType.NoLight)
+                sunriseState = $" (intensity: {definitiveSunriseIntensity}/25, duration: {definitiveSunriseDuration}/40 minutes)";
+
+            string channelOrPresetState = null;
+            switch (soundDevice)
+            {
+                case SoundDeviceType.FMRadio:
+                    channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {fmRadioPreset}";
+                    break;
+                case SoundDeviceType.WakeUpSound:
+                    channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription((WakeUpSound)wakeUpSound)}";
+                    break;
+            }
+
+            Console.WriteLine(
+$@"Set alarm #{position} with the settings:
+  Time: {hour:00}:{minute:00}{daysState}
+  PowerWake: {powerWakeState}
+  Sunrise: {EnumHelper.GetDescription(sunriseType)}{sunriseState}
+  Sound device: {EnumHelper.GetDescription(soundDevice)} (volume: {volume}/25){channelOrPresetState}");
+        }
+
         private void ToggleAlarm(string args)
         {
             if (!string.IsNullOrEmpty(args))
@@ -124,7 +327,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                             return;
 
                         case "off":
-                            SomneoApiClient.ToggleAlarm(position, true);
+                            SomneoApiClient.ToggleAlarm(position, false);
                             Console.WriteLine($"Alarm #{position} disabled.");
                             return;
                     }

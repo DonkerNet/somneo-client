@@ -17,6 +17,7 @@ namespace Donker.Home.Somneo.TestConsole
 
             var commandHandlers = new CommandHandlerBase[]
             {
+                new ValuesCommandHandler(somneoApiClient),
                 new DeviceCommandHandler(somneoApiClient),
                 new SensorCommandHandler(somneoApiClient),
                 new LightCommandHandler(somneoApiClient),
@@ -70,6 +71,7 @@ Type ""help"" to get started.");
             if (commandInfo == null)
             {
                 Console.WriteLine($"Invalid input: \"{command}\"");
+                Console.WriteLine("Type \"help\" to show available commands.");
                 return;
             }
 
