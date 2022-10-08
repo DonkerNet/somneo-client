@@ -170,6 +170,14 @@ namespace Donker.Home.Somneo.ApiClient
         void SetFMRadioPreset(int position, float frequency);
 
         /// <summary>
+        /// Gets the FM frequency of a preset with the specified position.
+        /// </summary>
+        /// <param name="position">The preset position. Value must be between 1 and 5.</param>
+        /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        float GetFMRadioPreset(int position);
+
+        /// <summary>
         /// Retrieves the state of the FM radio.
         /// </summary>
         /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>

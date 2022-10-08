@@ -15,6 +15,7 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
         {
             commandRegistry.RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresets);
             commandRegistry.RegisterCommand("set-fm-radio-preset", $"[1-5] [{87.50F:0.00}-{107.99F:0.00}]", "Set an FM-radio preset to a frequency.", SetFMRadioPreset);
+            commandRegistry.RegisterCommand("get-fm-radio-preset", "[1-5]", "Gets the frequency of an FM-radio preset.", GetFMRadioPreset);
             commandRegistry.RegisterCommand("fm-radio", "Show the FM-radio state.", ShowFMRadioState);
             commandRegistry.RegisterCommand("enable-fm-radio", "Enable the FM-radion.", EnableFMRadio);
             commandRegistry.RegisterCommand("enable-fm-radio-preset", "[1-5]", "Enable an FM-radio preset.", EnableFMRadioPreset);
@@ -59,6 +60,18 @@ $@"FM radio presets:
             }
 
             Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
+        }
+
+        private void GetFMRadioPreset(string args)
+        {
+            if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int preset) && preset >= 1 && preset <= 5)
+            {
+                float frequency = SomneoApiClient.GetFMRadioPreset(preset);
+                Console.WriteLine($"Preset {preset} is currently set to {frequency:0.00} FM.");
+                return;
+            }
+
+            Console.WriteLine("Specify a position between 1 and 5.");
         }
 
         private void ShowFMRadioState(string args)
