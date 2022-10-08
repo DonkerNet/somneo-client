@@ -4,7 +4,7 @@ using System;
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     /// <summary>
-    /// Describes the current timer state for the Somneo device, used for the RelaxBreathe and Sunset functions.
+    /// Describes the current timer state for the Somneo device, used for the RelaxBreathe and sunset functions.
     /// </summary>
     public sealed class TimerState
     {

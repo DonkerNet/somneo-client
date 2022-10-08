@@ -13,7 +13,7 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
 
         public override void RegisterCommands(CommandRegistry commandRegistry)
         {
-            commandRegistry.RegisterCommand("timer-state", "Get the state of the timer, used for RelaxBreathe or Sunset.", GetTimerState);
+            commandRegistry.RegisterCommand("timer-state", "Get the state of the timer, used for RelaxBreathe or sunset.", GetTimerState);
         }
 
         private void GetTimerState(string args)
@@ -32,7 +32,7 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
                 return;
             }
 
-            string enabledFor = timerState.RelaxBreatheEnabled ? "RelaxBreathe" : "Sunset";
+            string enabledFor = timerState.RelaxBreatheEnabled ? "RelaxBreathe" : "sunset";
             TimeSpan duration = timerState.RelaxBreatheTime ?? timerState.SunsetTime.Value;
             DateTimeOffset startTime = timerState.StartTime.Value;
             DateTimeOffset currentTime = DateTimeOffset.UtcNow.ToOffset(startTime.Offset);

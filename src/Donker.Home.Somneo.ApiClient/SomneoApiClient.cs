@@ -841,11 +841,38 @@ namespace Donker.Home.Somneo.ApiClient
         #region Timer
 
         /// <summary>
-        /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and Sunset functions.
+        /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and sunset functions.
         /// </summary>
         /// <returns>The timer state as a <see cref="TimerState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public TimerState GetTimerState() => ExecuteGetRequest<TimerState>("di/v1/products/1/wutmr").Data;
+
+        #endregion
+
+        #region Sunset
+
+        /// <summary>
+        /// Gets the settings of the Sunset function.
+        /// </summary>
+        /// <returns>The settings as a <see cref="SunsetSettings"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public SunsetSettings GetSunsetSettings() => ExecuteGetRequest<SunsetSettings>("di/v1/products/1/wudsk").Data;
+
+
+        /// <summary>
+        /// Toggles the Sunset function.
+        /// </summary>
+        /// <param name="enabled">Whether to enable or disable the sunset.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        public void ToggleSunset(bool enabled)
+        {
+            object data = new
+            {
+                onoff = enabled
+            };
+
+            ExecutePutRequest("di/v1/products/1/wudsk", data);
+        }
 
         #endregion
 

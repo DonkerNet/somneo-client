@@ -353,7 +353,7 @@ namespace Donker.Home.Somneo.ApiClient
         #region Timer
 
         /// <summary>
-        /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and Sunset functions.
+        /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and sunset functions.
         /// </summary>
         /// <returns>The timer state as a <see cref="TimerState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
@@ -361,11 +361,39 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Sunset
+
+        /// <summary>
+        /// Gets the settings of the Sunset function.
+        /// </summary>
+        /// <returns>The settings as a <see cref="SunsetSettings"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        SunsetSettings GetSunsetSettings();
+
+
+        /// <summary>
+        /// Toggles the Sunset function.
+        /// </summary>
+        /// <param name="enabled">Whether to enable or disable the sunset.</param>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        void ToggleSunset(bool enabled);
+
+        #endregion
+
         /*
-        TODO:
-        - Add/edit alarm
-        - RelaxBreathe
-        - Sunset
+        Methods left to add:
+        - Save sunset settings
+            PUT /di/v1/products/1/wudsk
+            {"snddv":"fmr","curve":10,"sndlv":8,"ctype":1,"durat":10,"sndch":"3"}        
+        - Get relax breathe settings
+            GET /di/v1/products/1/wurlx
+            {"durat":15,"onoff":false,"maxpr":7,"progr":3,"rtype":1,"intny":13,"sndlv":13,"sndss":0,"rlbpm":[4,5,6,7,8,9,10],"pause":[2000,2000,2000,2000,1000,1000,1000]}
+        - Save relax breathe settings (sound)
+            PUT /di/v1/products/1/wurlx
+            {"rtype":1,"durat":10,"progr":4,"sndlv":17}
+        - Save relax breathe settings (light)
+            PUT /di/v1/products/1/wurlx
+            {"rtype":0,"durat":10,"progr":4,"intny":13}
         - Bedtime?
         */
     }
