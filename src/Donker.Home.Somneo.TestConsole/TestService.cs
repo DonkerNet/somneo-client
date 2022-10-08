@@ -26,7 +26,8 @@ namespace Donker.Home.Somneo.TestConsole
                 new FMRadioCommandHandler(somneoApiClient),
                 new WakeUpSoundCommandHandler(somneoApiClient),
                 new AUXCommandHandler(somneoApiClient),
-                new AlarmCommandHandler(somneoApiClient)
+                new AlarmCommandHandler(somneoApiClient),
+                new TimerCommandHandler(somneoApiClient)
             };
 
             _commandRegistry.RegisterCommand("help", "Show available commands.", ShowHelp);

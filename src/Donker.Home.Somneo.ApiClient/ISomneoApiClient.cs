@@ -350,6 +350,17 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
+        #region Timer
+
+        /// <summary>
+        /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and Sunset functions.
+        /// </summary>
+        /// <returns>The timer state as a <see cref="TimerState"/> object.</returns>
+        /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+        TimerState GetTimerState();
+
+        #endregion
+
         /*
         TODO:
         - Add/edit alarm
