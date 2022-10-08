@@ -559,15 +559,15 @@ namespace Donker.Home.Somneo.ApiClient
         /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
         /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
         /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseColors">The type of sunrise to show when the alarm is triggered.</param>
         /// <param name="sunriseIntensity">
-        /// The intensity of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The intensity of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 1 and 25.
         /// </param>
         /// <param name="sunriseDuration">
-        /// The duration of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The duration of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 5 and 40, with 5 minute steps in between.
         /// </param>
         /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
@@ -579,7 +579,7 @@ namespace Donker.Home.Somneo.ApiClient
             int hour, int minute,
             int? powerWakeMinutes,
             ICollection<DayOfWeek> repeatDays,
-            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
             WakeUpSound wakeUpSound, int volume)
         {
             if (!Enum.IsDefined(wakeUpSound))
@@ -590,7 +590,7 @@ namespace Donker.Home.Somneo.ApiClient
                 hour, minute,
                 powerWakeMinutes,
                 repeatDays,
-                sunriseType, sunriseIntensity, sunriseDuration,
+                sunriseColors, sunriseIntensity, sunriseDuration,
                 volume, SoundDeviceType.WakeUpSound, wakeUpSound, null);
         }
 
@@ -602,15 +602,15 @@ namespace Donker.Home.Somneo.ApiClient
         /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
         /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
         /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
         /// <param name="sunriseIntensity">
-        /// The intensity of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The intensity of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 1 and 25.
         /// </param>
         /// <param name="sunriseDuration">
-        /// The duration of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The duration of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 5 and 40, with 5 minute steps in between.
         /// </param>
         /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
@@ -622,7 +622,7 @@ namespace Donker.Home.Somneo.ApiClient
             int hour, int minute,
             int? powerWakeMinutes,
             ICollection<DayOfWeek> repeatDays,
-            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
             int fmRadioPreset, int volume)
         {
             if (fmRadioPreset < 1 || fmRadioPreset > 5)
@@ -633,7 +633,7 @@ namespace Donker.Home.Somneo.ApiClient
                 hour, minute,
                 powerWakeMinutes,
                 repeatDays,
-                sunriseType, sunriseIntensity, sunriseDuration,
+                sunriseColors, sunriseIntensity, sunriseDuration,
                 volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
         }
 
@@ -641,7 +641,7 @@ namespace Donker.Home.Somneo.ApiClient
             int hour, int minute,
             int? powerWakeMinutes,
             ICollection<DayOfWeek> repeatDays,
-            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
             int volume,
             // Supplied by overloads:
             SoundDeviceType soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
@@ -654,8 +654,8 @@ namespace Donker.Home.Somneo.ApiClient
                 throw new ArgumentException("The minute must be between 0 and 23.", nameof(minute));
             if (volume < 1 || volume > 25)
                 throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
-            if (!Enum.IsDefined(sunriseType))
-                throw new ArgumentException("The sunrise type is invalid.", nameof(sunriseType));
+            if (!Enum.IsDefined(sunriseColors))
+                throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
             if (repeatDays != null && repeatDays.Any(rd => !Enum.IsDefined(rd)))
                 throw new ArgumentException("One or more repeat days are invalid.", nameof(repeatDays));
 
@@ -679,12 +679,12 @@ namespace Donker.Home.Somneo.ApiClient
             int definitiveSunriseIntensity = 0;
             int definitiveSunriseDuration = 0;
 
-            if (sunriseType != SunriseType.NoLight)
+            if (sunriseColors != ColorScheme.NoLight)
             {
                 if (!sunriseIntensity.HasValue || sunriseIntensity.Value < 1 || sunriseIntensity.Value > 25)
-                    throw new ArgumentException("When the sunrise type is set to something other than no light, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
+                    throw new ArgumentException("When the sunrise colors are set to something other than no light, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
                 if (!sunriseDuration.HasValue || sunriseDuration.Value < 5 || sunriseDuration.Value > 40 || sunriseDuration.Value % 5 != 0)
-                    throw new ArgumentException("When the sunrise type is set to something other than no light, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
+                    throw new ArgumentException("When the sunrise colors are set to something other than no light, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
                 definitiveSunriseIntensity = sunriseIntensity.Value;
                 definitiveSunriseDuration = sunriseDuration.Value;
             }
@@ -703,7 +703,7 @@ namespace Donker.Home.Somneo.ApiClient
             }
 
             byte repeatDaysNumber = (byte)EnumHelper.DaysOfWeekToDayFlags(repeatDays);
-            int sunriseTypeNumber = EnumHelper.GetSunriseTypeNumber(sunriseType);
+            int sunruseColorSchemNumber = EnumHelper.GetColorSchemeNumber(sunriseColors);
             string soundDeviceName = EnumHelper.GetEnumMemberValue(soundDevice);
 
             object data = new
@@ -716,7 +716,7 @@ namespace Donker.Home.Somneo.ApiClient
                 pwrsz = powerWakeSize,              // The PowerWake to enabled (255) or disabled (0)
                 pszhr = definitivePowerWakeHour,    // The PowerWake hour
                 pszmn = definitivePowerWakeMinute,  // The PowerWake minute
-                ctype = sunriseTypeNumber,          // The sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
+                ctype = sunruseColorSchemNumber,    // The sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
                 curve = definitiveSunriseIntensity, // The light level
                 durat = definitiveSunriseDuration,  // The sunrise duration
                 daynm = repeatDaysNumber,           // The days on which to repeat the alarm

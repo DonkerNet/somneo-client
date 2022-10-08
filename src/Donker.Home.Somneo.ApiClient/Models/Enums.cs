@@ -53,32 +53,32 @@ namespace Donker.Home.Somneo.ApiClient.Models
     }
 
     /// <summary>
-    /// The type of sunrise used for an alarm.
+    /// The color scheme used for a sunrise or sunset.
     /// </summary>
-    public enum SunriseType
+    public enum ColorScheme
     {
         /// <summary>
-        /// No sunrise.
+        /// No light.
         /// </summary>
         [Description("No light")]
         NoLight,
         /// <summary>
-        /// Sunny day sunrise.
+        /// Sunny day.
         /// </summary>
         [Description("Sunny day")]
         SunnyDay,
         /// <summary>
-        /// Island red sunrise.
+        /// Island red.
         /// </summary>
         [Description("Island red")]
         IslandRed,
         /// <summary>
-        /// Nordic white sunrise.
+        /// Nordic white.
         /// </summary>
         [Description("Nordic white")]
         NordicWhite,
         /// <summary>
-        /// Carribean red sunrise.
+        /// Carribean red.
         /// </summary>
         [Description("Carribean red")]
         CarribeanRed

@@ -25,7 +25,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         }
 
         [JsonProperty("ctype")]
-        internal byte SunriseTypeNumber { get; init; }
+        internal byte ColorSchemeNumber { get; init; }
 
         [JsonProperty("pwrsz")]
         internal byte PowerWakeSize { get; init; }
@@ -87,9 +87,9 @@ namespace Donker.Home.Somneo.ApiClient.Models
         [JsonProperty("curve")]
         public int SunriseIntensity { get; init; }
         /// <summary>
-        /// The type of sunrise.
+        /// The type of sunrise colors shown.
         /// </summary>
-        public SunriseType SunriseType => EnumHelper.GetSunriseType(SunriseTypeNumber, SunriseIntensity);
+        public ColorScheme SunriseColors => EnumHelper.GetColorScheme(ColorSchemeNumber, SunriseIntensity);
         /// <summary>
         /// The type of sound device used for the alarm sound.
         /// </summary>

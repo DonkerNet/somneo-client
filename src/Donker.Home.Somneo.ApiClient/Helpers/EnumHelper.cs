@@ -53,25 +53,25 @@ namespace Donker.Home.Somneo.ApiClient.Helpers
                 .Value;
         }
 
-        internal static SunriseType GetSunriseType(int number, int intensity)
+        internal static ColorScheme GetColorScheme(int number, int intensity)
         {
             return number switch
             {
-                0 when intensity > 0 => SunriseType.SunnyDay,
-                1 => SunriseType.IslandRed,
-                2 => SunriseType.NordicWhite,
-                3 => SunriseType.CarribeanRed,
-                _ => SunriseType.NoLight,
+                0 when intensity > 0 => ColorScheme.SunnyDay,
+                1 => ColorScheme.IslandRed,
+                2 => ColorScheme.NordicWhite,
+                3 => ColorScheme.CarribeanRed,
+                _ => ColorScheme.NoLight,
             };
         }
 
-        internal static int GetSunriseTypeNumber(SunriseType sunriseType)
+        internal static int GetColorSchemeNumber(ColorScheme colorScheme)
         {
-            return sunriseType switch
+            return colorScheme switch
             {
-                SunriseType.IslandRed => 1,
-                SunriseType.NordicWhite => 2,
-                SunriseType.CarribeanRed => 3,
+                ColorScheme.IslandRed => 1,
+                ColorScheme.NordicWhite => 2,
+                ColorScheme.CarribeanRed => 3,
                 _ => 0,
             };
         }

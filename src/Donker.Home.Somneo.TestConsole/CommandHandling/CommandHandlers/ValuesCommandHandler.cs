@@ -16,7 +16,7 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
         public override void RegisterCommands(CommandRegistry commandRegistry)
         {
             commandRegistry.RegisterCommand("wake-up-sounds", "Shows a list of available wake-up sounds used as parameters for other commands.", WakeUpSounds);
-            commandRegistry.RegisterCommand("sunrise-types", "Shows a list of available sunrise types used as parameters for other commands.", SunriseTypes);
+            commandRegistry.RegisterCommand("color-schemes", "Shows a list of available sunrise/sunset color schemes used as parameters for other commands.", ColorSchemes);
         }
 
         private void WakeUpSounds(string args)
@@ -25,10 +25,10 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers
             Console.WriteLine($"Available wake-up sounds:{wakeUpSoundList}");
         }
 
-        private void SunriseTypes(string args)
+        private void ColorSchemes(string args)
         {
-            string sunriseTypeList = string.Concat(Enum.GetValues<SunriseType>().Select(st => $"{Environment.NewLine}  [{(int)st}] {EnumHelper.GetDescription(st)}"));
-            Console.WriteLine($"Available sunrise types:{sunriseTypeList}");
+            string colorSchemeList = string.Concat(Enum.GetValues<ColorScheme>().Select(st => $"{Environment.NewLine}  [{(int)st}] {EnumHelper.GetDescription(st)}"));
+            Console.WriteLine($"Available color schemes:{colorSchemeList}");
         }
     }
 }

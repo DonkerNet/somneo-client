@@ -261,15 +261,15 @@ namespace Donker.Home.Somneo.ApiClient
         /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
         /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
         /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
         /// <param name="sunriseIntensity">
-        /// The intensity of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The intensity of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 1 and 25.
         /// </param>
         /// <param name="sunriseDuration">
-        /// The duration of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The duration of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 5 and 40, with 5 minute steps in between.
         /// </param>
         /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
@@ -281,7 +281,7 @@ namespace Donker.Home.Somneo.ApiClient
             int hour, int minute,
             int? powerWakeMinutes,
             ICollection<DayOfWeek> repeatDays,
-            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
             WakeUpSound wakeUpSound, int volume);
 
         /// <summary>
@@ -292,15 +292,15 @@ namespace Donker.Home.Somneo.ApiClient
         /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
         /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
         /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-        /// <param name="sunriseType">The type of sunrise to shown when the alarm is triggerd.</param>
+        /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
         /// <param name="sunriseIntensity">
-        /// The intensity of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The intensity of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 1 and 25.
         /// </param>
         /// <param name="sunriseDuration">
-        /// The duration of the sunrise to show when the alarm is triggerd.
-        /// Optional, but required when <paramref name="sunriseType"/> is set to something other than <see cref="SunriseType.NoLight"/>.
+        /// The duration of the sunrise to show when the alarm is triggered.
+        /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
         /// Value must be between 5 and 40, with 5 minute steps in between.
         /// </param>
         /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
@@ -312,7 +312,7 @@ namespace Donker.Home.Somneo.ApiClient
             int hour, int minute,
             int? powerWakeMinutes,
             ICollection<DayOfWeek> repeatDays,
-            SunriseType sunriseType, int? sunriseIntensity, int? sunriseDuration,
+            ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
             int fmRadioPreset, int volume);
 
         /// <summary>
