@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -7,11 +7,11 @@ namespace Donker.Home.Somneo.ApiClient.Models
     /// </summary>
     public sealed class LightState
     {
-        [JsonProperty("onoff")]
+        [JsonPropertyName("onoff")]
         internal bool OnOff { get; init; }
-        [JsonProperty("tempy")]
+        [JsonPropertyName("tempy")]
         internal bool TempY { get; init; }
-        [JsonProperty("ngtlt")]
+        [JsonPropertyName("ngtlt")]
         internal bool NgtLt { get; init; }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The level of the normal light.
         /// </summary>
-        [JsonProperty("ltlvl")]
+        [JsonPropertyName("ltlvl")]
         public int LightLevel { get; init; }
         /// <summary>
         /// Whether the night light is enabled or not.

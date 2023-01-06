@@ -22,8 +22,8 @@ namespace Donker.Home.Somneo.ApiClient
         {
         }
 
-        internal SomneoApiException(string message, Exception innerException, HttpStatusCode? statusCode, string content)
-            : this(message, innerException)
+        internal SomneoApiException(string message, HttpStatusCode statusCode, string content)
+            : base(message)
         {
             StatusCode = statusCode;
             Content = content;

@@ -1,19 +1,19 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Serialization.Converters
 {
     public class IPAddressJsonConverter : JsonConverter<IPAddress>
     {
-        public override IPAddress ReadJson(JsonReader reader, Type objectType, [AllowNull] IPAddress existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override IPAddress Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType != JsonToken.String)
+            if (reader.TokenType != JsonTokenType.String)
                 return null;
 
-            string valueString = reader.Value?.ToString();
-            
+            string valueString = reader.GetString();
+
             if (string.IsNullOrEmpty(valueString))
                 return null;
 
@@ -21,12 +21,12 @@ namespace Donker.Home.Somneo.ApiClient.Serialization.Converters
             return ipAddress;
         }
 
-        public override void WriteJson(JsonWriter writer, [AllowNull] IPAddress value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, IPAddress value, JsonSerializerOptions options)
         {
             if (value == null)
-                writer.WriteNull();
+                writer.WriteNullValue();
             else
-                writer.WriteValue(value.ToString());
+                writer.WriteStringValue(value.ToString());
         }
     }
 }

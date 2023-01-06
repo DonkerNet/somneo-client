@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -31,7 +31,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// Describes the status in case a firmware upgrade is in progress.
         /// </summary>
-        [JsonProperty("statusmsg")]
+        [JsonPropertyName("statusmsg")]
         public string StatusMessage { get; init; }
         /// <summary>
         /// Whether the firmware can be upgraded or not.

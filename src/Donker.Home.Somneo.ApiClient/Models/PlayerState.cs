@@ -1,5 +1,5 @@
 ﻿using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -11,22 +11,22 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// Whether the audio player is enabled or not.
         /// </summary>
-        [JsonProperty("onoff")]
+        [JsonPropertyName("onoff")]
         public bool Enabled { get; init; }
         /// <summary>
         /// The volume level currently set. Can be between 1 and 25.
         /// </summary>
-        [JsonProperty("sdvol")]
+        [JsonPropertyName("sdvol")]
         public int Volume { get; init; }
         /// <summary>
         /// The type of sounds device in use by the Somneo's audio player.
         /// </summary>
-        [JsonProperty("snddv")]
+        [JsonPropertyName("snddv")]
         public SoundDeviceType Device { get; init; }
         /// <summary>
         /// The current channel or preset that is selected.
         /// </summary>
-        [JsonProperty("sndch")]
+        [JsonPropertyName("sndch")]
         public string ChannelOrPreset { get; init; }
 
         /// <summary>

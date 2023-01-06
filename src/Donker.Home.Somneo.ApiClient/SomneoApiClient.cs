@@ -2,156 +2,199 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
-using RestSharp;
 
 namespace Donker.Home.Somneo.ApiClient
 {
     /// <summary>
     /// Client that provides communication with the Philips Somneo API.
     /// </summary>
-    public sealed class SomneoApiClient : ISomneoApiClient
+    public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     {
-        private readonly ISomneoApiSerializer _serializer;
-        private readonly IRestClient _restClient;
+        private readonly SomneoApiSerializer _serializer;
+        private readonly HttpClient _httpClient;
+        private readonly bool _disposeHttpClient;
+
+        private bool _disposed;
+        
+        private HttpClient HttpClient
+        {
+            get
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+                return _httpClient;
+            }
+        }
 
         #region Public properties
 
         /// <summary>
-        /// Gets the hostname of the Somneo device.
+        /// Gets the base address used for making requests to the Somneo device.
         /// </summary>
-        public string Host => _restClient.BaseUrl?.Host;
+        public Uri BaseAddress => HttpClient.BaseAddress;
 
         /// <summary>
         /// Gets or sets the maximum request timeout in milliseconds.
         /// </summary>
-        public int Timeout
+        public TimeSpan Timeout
         {
-            get => _restClient.Timeout;
-            set => _restClient.Timeout = value < 0 ? 0 : value;
+            get => HttpClient.Timeout;
+            set => HttpClient.Timeout = value > TimeSpan.Zero ? value : TimeSpan.Zero;
         }
 
         #endregion
 
         #region Constructors
 
-        internal SomneoApiClient(IRestClient restClient, string host)
+        private SomneoApiClient()
         {
-            if (host == null)
-                throw new ArgumentNullException(nameof(host), "The host cannot be null.");
-            if (host.Length == 0)
-                throw new ArgumentException("The host cannot be empty.", nameof(host));
-            if (!Uri.TryCreate($"https://{host}", UriKind.Absolute, out Uri baseUri))
-                throw new ArgumentException("The host is not valid.", nameof(host));
+            _serializer = new SomneoApiSerializer();
+        }
 
-            _serializer = SomneoApiSerializer.Instance;
-
-            _restClient = restClient;
-            _restClient.BaseUrl = baseUri;
-            _restClient.ClearHandlers();
-            _restClient.AddHandler(_serializer.ContentType, () => _serializer);
-
-            // Ignore SSL errors, as the Somneo device uses a self signed certificate
-            _restClient.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) =>
-            true;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SomneoApiClient"/> using a custom HTTP client.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client to use for making requests to the Somneo device.</param>
+        /// <param name="disposeHttpClient">Whether the HTTP client that is used should also be disposed when <see cref="SomneoApiClient.Dispose"/> is called.</param>
+        /// <exception cref="ArgumentNullException">The HTTP client is null.</exception>
+        public SomneoApiClient(HttpClient httpClient, bool disposeHttpClient)
+            : this()
+        {
+            if (httpClient == null)
+                ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
+            
+            _httpClient = httpClient;
+            _disposeHttpClient = disposeHttpClient;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SomneoApiClient"/> using the specified hostname.
         /// </summary>
-        /// <param name="host">The hostname of the Somneo device to connect with.</param>
-        /// <exception cref="ArgumentNullException">The host is null.</exception>
-        /// <exception cref="ArgumentException">The host is empty or in an invalid format.</exception>
-        public SomneoApiClient(string host)
-            : this(new RestClient(), host)
+        /// <param name="host">The hostname that resolves to the Somneo device to connect with.</param>
+        /// <exception cref="ArgumentNullException">The hostname is null.</exception>
+        /// <exception cref="ArgumentException">The hostname is empty.</exception>
+        /// <exception cref="UriFormatException">The hostname cannot be converted to a valid URI.</exception>
+        public SomneoApiClient(string hostname)
+            : this()
         {
+            ArgumentException.ThrowIfNullOrEmpty(hostname, nameof(hostname));
+
+            var parsedBaseAddress = new Uri($"https://{hostname}", UriKind.Absolute);
+
+            _httpClient = CreateHttpClient(parsedBaseAddress);
+            _disposeHttpClient = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SomneoApiClient"/> using the hostname of the specified URI.
+        /// Initializes a new instance of the <see cref="SomneoApiClient"/> using the specified base address.
         /// </summary>
-        /// <param name="host">The URI with the hostname of the Somneo device to connect with.</param>
-        /// <exception cref="ArgumentNullException">The URI with the hostname is null.</exception>
-        /// <exception cref="InvalidOperationException">The URI with the hostname is not an absolute URL.</exception>
-        public SomneoApiClient(Uri host)
-            : this(host?.Host)
+        /// <param name="baseAddress">The base address of the Somneo device to use when making requests.</param>
+        /// <exception cref="ArgumentNullException">The base address is null.</exception>
+        public SomneoApiClient(Uri baseAddress)
+            : this()
         {
+            ArgumentNullException.ThrowIfNull(baseAddress, nameof(baseAddress));
+
+            _httpClient = CreateHttpClient(baseAddress);
+            _disposeHttpClient = true;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SomneoApiClient"/> using the specified IP address as host.
         /// </summary>
-        /// <param name="host">The host IP address of the Somneo device to connect with.</param>
-        /// <exception cref="ArgumentNullException">The host IP address is null.</exception>
-        public SomneoApiClient(IPAddress host)
-            : this(host?.ToString())
+        /// <param name="ipAddress">The IP address of the Somneo device to connect with.</param>
+        /// <exception cref="ArgumentNullException">The IP address is null.</exception>
+        public SomneoApiClient(IPAddress ipAddress)
+            : this()
         {
+            ArgumentNullException.ThrowIfNull(ipAddress, nameof(ipAddress));
+
+            var parsedBaseAddress = new Uri($"https://{ipAddress}", UriKind.Absolute);
+
+            _httpClient = CreateHttpClient(parsedBaseAddress);
+            _disposeHttpClient = true;
+        }
+
+        private static HttpClient CreateHttpClient(Uri baseAddress)
+        {
+            var handler = new HttpClientHandler
+            {
+                // Ignore SSL errors, as the Somneo device uses a self signed certificate
+                ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
+            };
+
+            return new HttpClient(handler, true)
+            {
+                BaseAddress = baseAddress
+            };
         }
 
         #endregion
 
-        #region General
+        #region Somneo: General
 
         /// <summary>
         /// Retrieves details about the Somneo device itself.
         /// </summary>
         /// <returns>The details of the device as a <see cref="DeviceDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public DeviceDetails GetDeviceDetails() => ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device").Data;
+        public DeviceDetails GetDeviceDetails() => ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device");
 
         /// <summary>
         /// Retrieves details about the Somneo's wifi connection.
         /// </summary>
         /// <returns>The details of the wifi connection as a <see cref="WifiDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public WifiDetails GetWifiDetails() => ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi").Data;
+        public WifiDetails GetWifiDetails() => ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi");
 
         /// <summary>
         /// Retrieves details about the Somneo's firmware.
         /// </summary>
         /// <returns>The firmware details as a <see cref="FirmwareDetails"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FirmwareDetails GetFirmwareDetails() => ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware").Data;
+        public FirmwareDetails GetFirmwareDetails() => ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware");
 
         /// <summary>
         /// Retrieves details about the locale set for the Somneo device.
         /// </summary>
         /// <returns>The locale details as a <see cref="Locale"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public Locale GetLocale() => ExecuteGetRequest<Locale>("di/v1/products/0/locale").Data;
+        public Locale GetLocale() => ExecuteGetRequest<Locale>("di/v1/products/0/locale");
 
         /// <summary>
         /// Retrieves details about the time set for the Somneo device.
         /// </summary>
         /// <returns>The time details as a <see cref="Time"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public Time GetTime() => ExecuteGetRequest<Time>("di/v1/products/0/time").Data;
+        public Time GetTime() => ExecuteGetRequest<Time>("di/v1/products/0/time");
 
         #endregion
 
-        #region Sensors
+        #region Somneo: Sensors
 
         /// <summary>
         /// Retrieves the Somneo's sensor data, containing the temperature, light level, sound level and humidity.
         /// </summary>
         /// <returns>The sensor data as a <see cref="SensorData"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public SensorData GetSensorData() => ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd").Data;
+        public SensorData GetSensorData() => ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd");
 
         #endregion
 
-        #region Light
+        #region Somneo: Light
 
         /// <summary>
         /// Retrieves the current light state.
         /// </summary>
         /// <returns>The light state as a <see cref="LightState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public LightState GetLightState() => ExecuteGetRequest<LightState>("di/v1/products/1/wulgt").Data;
+        public LightState GetLightState() => ExecuteGetRequest<LightState>("di/v1/products/1/wulgt");
 
         /// <summary>
         /// Toggles the normal light.
@@ -228,14 +271,14 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Display
+        #region Somneo: Display
 
         /// <summary>
         /// Retrieves the current state of the display.
         /// </summary>
         /// <returns>The display state as a <see cref="DisplayState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public DisplayState GetDisplayState() => ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts").Data;
+        public DisplayState GetDisplayState() => ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts");
 
         /// <summary>
         /// Toggles whether the display should always be shown or if it should disable automatically after a period of time.
@@ -273,7 +316,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Wake-up sounds
+        #region Somneo: Wake-up sounds
 
         /// <summary>
         /// Plays a wake-up sound.
@@ -300,14 +343,14 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region FM radio
+        #region Somneo: FM radio
 
         /// <summary>
         /// Retrieves the configured presets of FM radio frequencies.
         /// </summary>
         /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FMRadioPresets GetFMRadioPresets() => ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00").Data;
+        public FMRadioPresets GetFMRadioPresets() => ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00");
 
         /// <summary>
         /// Sets the preset of the specified position to the specified FM frequency.
@@ -350,7 +393,7 @@ namespace Donker.Home.Somneo.ApiClient
                 prstn = position
             };
 
-            var result = ExecutePutRequest<Dictionary<string, object>>("di/v1/products/1/wufmr", data).Data;
+            var result = ExecutePutRequest<Dictionary<string, object>>("di/v1/products/1/wufmr", data);
 
             if (result.TryGetValue("fmfrq", out object frequencyObj)
                 && frequencyObj != null
@@ -365,7 +408,7 @@ namespace Donker.Home.Somneo.ApiClient
         /// </summary>
         /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public FMRadioState GetFMRadioState() => ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr").Data;
+        public FMRadioState GetFMRadioState() => ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr");
 
         /// <summary>
         /// Enables the FM radio.
@@ -428,7 +471,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region AUX
+        #region Somneo: AUX
 
         /// <summary>
         /// Enables the auxiliary input device.
@@ -449,14 +492,14 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Audio player
+        #region Somneo: Audio player
 
         /// <summary>
         /// Retrieves the state of the audio player.
         /// </summary>
         /// <returns>The audio player state as a <see cref="PlayerState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public PlayerState GetPlayerState() => ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply").Data;
+        public PlayerState GetPlayerState() => ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply");
 
         /// <summary>
         /// Sets the volume of the audio player.
@@ -493,7 +536,7 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Alarms
+        #region Somneo: Alarms
 
         /// <summary>
         /// Retrieves the alarms.
@@ -502,8 +545,8 @@ namespace Donker.Home.Somneo.ApiClient
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
         public IReadOnlyList<Alarm> GetAlarms()
         {
-            AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs").Data;
-            AlarmSchedules alarmSchedules = ExecuteGetRequest<AlarmSchedules>("di/v1/products/1/wualm/aalms").Data;
+            AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs");
+            AlarmSchedules alarmSchedules = ExecuteGetRequest<AlarmSchedules>("di/v1/products/1/wualm/aalms");
 
             int alarmCount = alarmStates.Set.Length;
             List<Alarm> alarms = new List<Alarm>(alarmCount);
@@ -804,7 +847,7 @@ namespace Donker.Home.Somneo.ApiClient
                 prfnr = position
             };
 
-            var alarmSettings = ExecutePutRequest<AlarmSettings>("di/v1/products/1/wualm", data).Data;
+            var alarmSettings = ExecutePutRequest<AlarmSettings>("di/v1/products/1/wualm", data);
 
             if (alarmSettings?.IsSet == true)
                 return alarmSettings;
@@ -838,25 +881,25 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Timer
+        #region Somneo: Timer
 
         /// <summary>
         /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and sunset functions.
         /// </summary>
         /// <returns>The timer state as a <see cref="TimerState"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public TimerState GetTimerState() => ExecuteGetRequest<TimerState>("di/v1/products/1/wutmr").Data;
+        public TimerState GetTimerState() => ExecuteGetRequest<TimerState>("di/v1/products/1/wutmr");
 
         #endregion
 
-        #region Sunset
+        #region Somneo: Sunset
 
         /// <summary>
         /// Gets the settings of the Sunset function.
         /// </summary>
         /// <returns>The settings as a <see cref="SunsetSettings"/> object.</returns>
         /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-        public SunsetSettings GetSunsetSettings() => ExecuteGetRequest<SunsetSettings>("di/v1/products/1/wudsk").Data;
+        public SunsetSettings GetSunsetSettings() => ExecuteGetRequest<SunsetSettings>("di/v1/products/1/wudsk");
 
 
         /// <summary>
@@ -876,63 +919,98 @@ namespace Donker.Home.Somneo.ApiClient
 
         #endregion
 
-        #region Private methods
+        #region HTTP requests
 
-        private IRestResponse<T> ExecuteGetRequest<T>(string resource) where T : new() => ExecuteRequest<T>(CreateGetRequest(resource));
+        private T ExecuteGetRequest<T>(string resource) => ExecuteRequest<T>(resource, HttpMethod.Get, null);
 
-        private IRestResponse ExecutePutRequest(string resource, object data) => ExecuteRequest(CreateRequestWithBody(resource, Method.PUT, data));
+        private void ExecutePutRequest(string resource, object data) => ExecuteRequest(resource, HttpMethod.Put, data);
 
-        private IRestResponse<T> ExecutePutRequest<T>(string resource, object data) where T : new() => ExecuteRequest<T>(CreateRequestWithBody(resource, Method.PUT, data));
+        private T ExecutePutRequest<T>(string resource, object data) => ExecuteRequest<T>(resource, HttpMethod.Put, data);
 
-        private IRestResponse ExecuteRequest(IRestRequest request)
+        private void ExecuteRequest(string resource, HttpMethod method, object data)
         {
-            IRestResponse response = _restClient.Execute(request);
-            ValidateResponse(response);
-            return response;
+            using var request = CreateRequest(resource, method, data);
+            using var response = ExecuteRequest(request);
         }
 
-        private IRestResponse<T> ExecuteRequest<T>(IRestRequest request)
-            where T : new()
+        private T ExecuteRequest<T>(string resource, HttpMethod method, object data)
         {
-            IRestResponse<T> response = _restClient.Execute<T>(request);
-            ValidateResponse(response);
-            return response;
+            using var request = CreateRequest(resource, method, data);
+            using var response = ExecuteRequest(request);
+            return _serializer.ReadHttpContent<T>(response.Content);
         }
 
-        private IRestRequest CreateGetRequest(string resource)
+        private HttpRequestMessage CreateRequest(string resource, HttpMethod method, object data)
         {
-            return new RestRequest
-            {
-                Resource = resource,
-                Method = Method.GET
-            };
-        }
-
-        private IRestRequest CreateRequestWithBody(string resource, Method method, object data)
-        {
-            IRestRequest request = new RestRequest
-            {
-                Resource = resource,
-                Method = method,
-                RequestFormat = DataFormat.Json,
-                JsonSerializer = _serializer
-            };
+            var request = new HttpRequestMessage(method, resource);
 
             if (data != null)
-                request.AddJsonBody(data);
+                request.Content = _serializer.CreateHttpContent(data);
 
             return request;
         }
 
-        private void ValidateResponse(IRestResponse response)
+        private HttpResponseMessage ExecuteRequest(HttpRequestMessage request)
         {
-            int statusCode = (int)response.StatusCode;
+            HttpResponseMessage response;
 
-            if (statusCode == 0)
-                throw new SomneoApiException("Failed to execute the request.", response.ErrorException);
+            try
+            {
+                response = HttpClient.Send(request);
+            }
+            catch (Exception ex)
+            {
+                throw new SomneoApiException("Failed to execute the request.", ex);
+            }
 
-            if (statusCode < 200 || statusCode >= 300)
-                throw new SomneoApiException($"The response returned status code {statusCode}.", response.ErrorException, response.StatusCode, response.Content);
+            ValidateResponse(response);
+
+            return response;
+        }
+
+        private static void ValidateResponse(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
+                return;
+
+            using var contentStream = response.Content.ReadAsStream();
+            using var streamReader = new StreamReader(contentStream);
+            
+            string content = streamReader.ReadToEnd();
+
+            throw new SomneoApiException($"The response returned status code {(int)response.StatusCode}.", response.StatusCode, content);
+        }
+
+        #endregion
+
+        #region Disposing
+
+        /// <summary>
+        /// Disposes this <see cref="SomneoApiClient"/> instance and it's inner <see cref="HttpClient"/> if allowed.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~SomneoApiClient()
+        {
+            Dispose(false);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            _disposed = true;
+
+            if (disposing)
+            {
+                if (_disposeHttpClient)
+                    _httpClient.Dispose();
+            }
         }
 
         #endregion

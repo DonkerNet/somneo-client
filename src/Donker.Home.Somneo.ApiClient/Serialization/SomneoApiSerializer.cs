@@ -1,66 +1,41 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using RestSharp;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Serialization
 {
-    // JSON serialization settings for the API, automatically applied to the request body
-    internal class SomneoApiSerializer : ISomneoApiSerializer
+    internal class SomneoApiSerializer
     {
-        private static readonly Lazy<SomneoApiSerializer> LazyInstance;
+        private readonly MediaTypeHeaderValue _mediaType;
+        private readonly JsonSerializerOptions _options;
 
-        private readonly JsonSerializerSettings _settings;
-        private const string _contentType = "application/json";
-
-        public static SomneoApiSerializer Instance => LazyInstance.Value;
-
-        public string ContentType
+        public SomneoApiSerializer()
         {
-            get { return _contentType; }
-            set { }
-        }
+            var namingPolicy = new LowercaseNamingPolicy();
 
-        static SomneoApiSerializer()
-        {
-            LazyInstance = new Lazy<SomneoApiSerializer>(() => new SomneoApiSerializer());
-        }
-
-        private SomneoApiSerializer()
-        {
-            _settings = new JsonSerializerSettings
+            _options = new JsonSerializerOptions
             {
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                NullValueHandling = NullValueHandling.Include,
-                DefaultValueHandling = DefaultValueHandling.Include,
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new LowercaseNamingStrategy()
-                }
+                DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+                DictionaryKeyPolicy = namingPolicy,
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = namingPolicy,
+                WriteIndented = false
             };
 
-            _settings.Converters.Add(new StringEnumConverter(typeof(LowercaseNamingStrategy)));
+            _options.Converters.Add(new JsonStringEnumConverter(namingPolicy));
+
+            _mediaType = new MediaTypeHeaderValue("application/json");
         }
 
-        public string Serialize(object obj)
-        {
-            if (obj == null)
-                return string.Empty;
+        public HttpContent CreateHttpContent(object data) => JsonContent.Create(data, data.GetType(), _mediaType, _options);
 
-            string json = JsonConvert.SerializeObject(obj, Formatting.None, _settings);
-            return json;
-        }
-
-        public T Deserialize<T>(string content)
+        public T ReadHttpContent<T>(HttpContent content)
         {
-            T obj = JsonConvert.DeserializeObject<T>(content, _settings);
-            return obj;
-        }
-
-        public T Deserialize<T>(IRestResponse response)
-        {
-            return Deserialize<T>(response.Content);
+            using var contentStream = content.ReadAsStream();
+            return JsonSerializer.Deserialize<T>(contentStream, _options);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -8,19 +8,19 @@ namespace Donker.Home.Somneo.ApiClient.Models
     /// </summary>
     public sealed class TimerState
     {
-        [JsonProperty("rlxmn")]
+        [JsonPropertyName("rlxmn")]
         internal int RelaxBreatheMinutes { get; init; }
-        [JsonProperty("rlxsc")]
+        [JsonPropertyName("rlxsc")]
         internal int RelaxBreatheSeconds { get; init; }
-        [JsonProperty("dskmn")]
+        [JsonPropertyName("dskmn")]
         internal int SunsetMinutes { get; init; }
-        [JsonProperty("dsksc")]
+        [JsonPropertyName("dsksc")]
         internal int SunsetSeconds { get; init; }
 
         /// <summary>
         /// The initial start time of the timer.
         /// </summary>
-        [JsonProperty("stime")]
+        [JsonPropertyName("stime")]
         public DateTimeOffset? StartTime { get; init; }
         /// <summary>
         /// Whether the timer is enabled for the RelaxBreathe function or not.

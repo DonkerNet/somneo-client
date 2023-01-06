@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using System.Linq;
 using Donker.Home.Somneo.ApiClient.Helpers;
-using Newtonsoft.Json;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -15,40 +15,40 @@ namespace Donker.Home.Somneo.ApiClient.Models
         private int? _powerWakeHour;
         private int? _powerWakeMinute;
 
-        [JsonProperty("prfvs")]
+        [JsonPropertyName("prfvs")]
         internal bool IsSet { get; init; }
 
-        [JsonProperty("daynm")]
+        [JsonPropertyName("daynm")]
         internal DayFlags RepeatDayFlags
         {
             init => RepeatDays = new ReadOnlyCollection<DayOfWeek>(EnumHelper.DayFlagsToDaysOfWeek(value).ToList());
         }
 
-        [JsonProperty("ctype")]
+        [JsonPropertyName("ctype")]
         internal byte ColorSchemeNumber { get; init; }
 
-        [JsonProperty("pwrsz")]
+        [JsonPropertyName("pwrsz")]
         internal byte PowerWakeSize { get; init; }
 
         /// <summary>
         /// The position of the alarm in the alarm list. Can be between 1 and 16.
         /// </summary>
-        [JsonProperty("prfnr")]
+        [JsonPropertyName("prfnr")]
         public int Position { get; init; }
         /// <summary>
         /// Whether the alarm is enabled or disabled.
         /// </summary>
-        [JsonProperty("prfen")]
+        [JsonPropertyName("prfen")]
         public bool Enabled { get; init; }
         /// <summary>
         /// The hour of the alarm.
         /// </summary>
-        [JsonProperty("almhr")]
+        [JsonPropertyName("almhr")]
         public int Hour { get; init; }
         /// <summary>
         /// The minute of the alarm.
         /// </summary>
-        [JsonProperty("almmn")]
+        [JsonPropertyName("almmn")]
         public int Minute { get; init; }
         /// <summary>
         /// On which days of the week the alarm is repeated.
@@ -61,7 +61,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The hour of the PowerWake, if enabled.
         /// </summary>
-        [JsonProperty("pszhr")]
+        [JsonPropertyName("pszhr")]
         public int? PowerWakeHour
         {
             get => PowerWakeEnabled ? _powerWakeHour : null;
@@ -70,7 +70,7 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The minute of the PowerWake, if enabled.
         /// </summary>
-        [JsonProperty("pszmn")]
+        [JsonPropertyName("pszmn")]
         public int? PowerWakeMinute
         {
             get => PowerWakeEnabled ? _powerWakeMinute : null;
@@ -79,12 +79,12 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The duration of the sunrise.
         /// </summary>
-        [JsonProperty("durat")]
+        [JsonPropertyName("durat")]
         public int SunriseDuration { get; init; }
         /// <summary>
         /// The maximum light level of the sunrise.
         /// </summary>
-        [JsonProperty("curve")]
+        [JsonPropertyName("curve")]
         public int SunriseIntensity { get; init; }
         /// <summary>
         /// The type of sunrise colors shown.
@@ -93,17 +93,17 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The type of sound device used for the alarm sound.
         /// </summary>
-        [JsonProperty("snddv")]
+        [JsonPropertyName("snddv")]
         public SoundDeviceType Device { get; init; }
         /// <summary>
         /// The channel or preset that is selected for the alarm sound.
         /// </summary>
-        [JsonProperty("sndch")]
+        [JsonPropertyName("sndch")]
         public string ChannelOrPreset { get; init; }
         /// <summary>
         /// The alarm's volume level. Can be between 1 and 25.
         /// </summary>
-        [JsonProperty("sndlv")]
+        [JsonPropertyName("sndlv")]
         public int Volume { get; init; }
 
         /// <summary>

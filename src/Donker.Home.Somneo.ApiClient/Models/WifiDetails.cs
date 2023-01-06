@@ -1,6 +1,6 @@
 ﻿using System.Net;
+using System.Text.Json.Serialization;
 using Donker.Home.Somneo.ApiClient.Serialization.Converters;
-using Newtonsoft.Json;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {

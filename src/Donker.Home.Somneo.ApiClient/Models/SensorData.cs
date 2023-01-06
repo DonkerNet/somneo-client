@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -10,42 +10,42 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The current temperature in °C.
         /// </summary>
-        [JsonProperty("mstmp")]
+        [JsonPropertyName("mstmp")]
         public float CurrentTemperature { get; init; }
         /// <summary>
         /// The average temperature in °C.
         /// </summary>
-        [JsonProperty("avtmp")]
+        [JsonPropertyName("avtmp")]
         public float AverageTemperature { get; init; }
         /// <summary>
         /// The current amount of light in lux.
         /// </summary>
-        [JsonProperty("mslux")]
+        [JsonPropertyName("mslux")]
         public float CurrentLight { get; init; }
         /// <summary>
         /// The average amount of light in lux.
         /// </summary>
-        [JsonProperty("avlux")]
+        [JsonPropertyName("avlux")]
         public float AverageLight { get; init; }
         /// <summary>
         /// The current sound level in dB.
         /// </summary>
-        [JsonProperty("mssnd")]
+        [JsonPropertyName("mssnd")]
         public float CurrentSound { get; init; }
         /// <summary>
         /// The average sound level in dB.
         /// </summary>
-        [JsonProperty("avsnd")]
+        [JsonPropertyName("avsnd")]
         public float AverageSound { get; init; }
         /// <summary>
         /// The current humidity in %.
         /// </summary>
-        [JsonProperty("msrhu")]
+        [JsonPropertyName("msrhu")]
         public float CurrentHumidity { get; init; }
         /// <summary>
         /// The average humidity in %.
         /// </summary>
-        [JsonProperty("avhum")]
+        [JsonPropertyName("avhum")]
         public float AverageHumidity { get; init; }
     }
 }

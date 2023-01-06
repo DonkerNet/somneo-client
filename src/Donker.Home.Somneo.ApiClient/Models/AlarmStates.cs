@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     internal class AlarmStates
     {
-        [JsonProperty("prfen")]
+        [JsonPropertyName("prfen")]
         internal bool[] Enabled { get; init; }
-        [JsonProperty("prfvs")]
+        [JsonPropertyName("prfvs")]
         internal bool[] Set { get; init; }
-        [JsonProperty("pwrsv")]
+        [JsonPropertyName("pwrsv")]
         internal byte[] PowerWake { get; init; }
     }
 }

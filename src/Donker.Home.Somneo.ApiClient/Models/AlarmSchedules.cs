@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
     internal class AlarmSchedules
     {
-        [JsonProperty("daynm")]
+        [JsonPropertyName("daynm")]
         internal DayFlags[] RepeatDayFlags { get; init; }
-        [JsonProperty("almhr")]
+        [JsonPropertyName("almhr")]
         internal int[] Hours { get; init; }
-        [JsonProperty("almmn")]
+        [JsonPropertyName("almmn")]
         internal int[] Minutes { get; init; }
     }
 }

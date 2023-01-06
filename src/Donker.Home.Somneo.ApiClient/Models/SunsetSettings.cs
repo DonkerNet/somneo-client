@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using Donker.Home.Somneo.ApiClient.Helpers;
-using Newtonsoft.Json;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -9,23 +9,23 @@ namespace Donker.Home.Somneo.ApiClient.Models
     /// </summary>
     public sealed class SunsetSettings
     {
-        [JsonProperty("ctype")]
+        [JsonPropertyName("ctype")]
         internal byte ColorSchemeNumber { get; init; }
 
         /// <summary>
         /// Whether the sunset is enabled or disabled.
         /// </summary>
-        [JsonProperty("onoff")]
+        [JsonPropertyName("onoff")]
         public bool Enabled { get; init; }
         /// <summary>
         /// The maximum light level of the sunset.
         /// </summary>
-        [JsonProperty("curve")]
+        [JsonPropertyName("curve")]
         public int SunsetIntensity { get; init; }
         /// <summary>
         /// The duration of the sunset in minutes.
         /// </summary>
-        [JsonProperty("durat")]
+        [JsonPropertyName("durat")]
         public int SunsetDuration { get; init; }
         /// <summary>
         /// The type of sunset colors shown.
@@ -34,17 +34,17 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The type of sound device used for the sunset sound.
         /// </summary>
-        [JsonProperty("snddv")]
+        [JsonPropertyName("snddv")]
         public SoundDeviceType Device { get; init; }
         /// <summary>
         /// The channel or preset that is selected for the sunset sound.
         /// </summary>
-        [JsonProperty("sndch")]
+        [JsonPropertyName("sndch")]
         public string ChannelOrPreset { get; init; }
         /// <summary>
         /// The sunset sound's volume level. Can be between 1 and 25.
         /// </summary>
-        [JsonProperty("sndlv")]
+        [JsonPropertyName("sndlv")]
         public int Volume { get; init; }
 
         /// <summary>

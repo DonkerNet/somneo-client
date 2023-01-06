@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -10,12 +10,12 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// Whether the display is permanently shown or automatically disables after a period of time.
         /// </summary>
-        [JsonProperty("dspon")]
+        [JsonPropertyName("dspon")]
         public bool Permanent { get; init; }
         /// <summary>
         /// The brightness level of the display.
         /// </summary>
-        [JsonProperty("brght")]
+        [JsonPropertyName("brght")]
         public int Brightness { get; init; }
     }
 }

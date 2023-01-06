@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -10,27 +10,27 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The frequency of the first preset.
         /// </summary>
-        [JsonProperty("1")]
+        [JsonPropertyName("1")]
         public float Preset1 { get; init; }
         /// <summary>
         /// The frequency of the second preset.
         /// </summary>
-        [JsonProperty("2")]
+        [JsonPropertyName("2")]
         public float Preset2 { get; init; }
         /// <summary>
         /// The frequency of the third preset.
         /// </summary>
-        [JsonProperty("3")]
+        [JsonPropertyName("3")]
         public float Preset3 { get; init; }
         /// <summary>
         /// The frequency of the fourth preset.
         /// </summary>
-        [JsonProperty("4")]
+        [JsonPropertyName("4")]
         public float Preset4 { get; init; }
         /// <summary>
         /// The frequency of the fifth preset.
         /// </summary>
-        [JsonProperty("5")]
+        [JsonPropertyName("5")]
         public float Preset5 { get; init; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using Donker.Home.Somneo.ApiClient.Serialization.Converters;
-using Newtonsoft.Json;
 
 namespace Donker.Home.Somneo.ApiClient.Models
 {
@@ -16,13 +16,13 @@ namespace Donker.Home.Somneo.ApiClient.Models
         /// <summary>
         /// The UTC offset of the timezone set for the device.
         /// </summary>
-        [JsonProperty("timezone")]
+        [JsonPropertyName("timezone")]
         [JsonConverter(typeof(TimeSpanOffsetJsonConverter))]
         public TimeSpan TimezoneOffset { get; init; }
         /// <summary>
         /// The offset that is applied to the date and time when DST is in progress.
         /// </summary>
-        [JsonProperty("dst")]
+        [JsonPropertyName("dst")]
         [JsonConverter(typeof(TimeSpanOffsetJsonConverter))]
         public TimeSpan CurrentDSTOffset { get; init; }
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.ApiClient
@@ -12,14 +13,14 @@ namespace Donker.Home.Somneo.ApiClient
         #region Public properties
 
         /// <summary>
-        /// Gets the hostname of the Somneo device.
+        /// Gets the base address used for making requests to the Somneo device.
         /// </summary>
-        string Host { get; }
+        Uri BaseAddress { get; }
 
         /// <summary>
-        /// Gets the maximum request timeout in milliseconds.
+        /// Gets the maximum request timeout.
         /// </summary>
-        int Timeout { get; }
+        TimeSpan Timeout { get; }
 
         #endregion
 
