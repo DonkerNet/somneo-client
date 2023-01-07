@@ -1,22 +1,14 @@
 ﻿using Donker.Home.Somneo.ApiClient;
+using Donker.Home.Somneo.TestConsole.Services;
 using Microsoft.Extensions.Configuration;
 
-namespace Donker.Home.Somneo.TestConsole
-{
-    class Program
-    {
-        static void Main()
-        {
-            IConfiguration config = new ConfigurationBuilder()
-                .AddJsonFile($"appsettings.json", true, true)
-                .AddEnvironmentVariables()
-                .Build();
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile($"appsettings.json", true, true)
+    .AddEnvironmentVariables()
+    .Build();
 
-            string somneoHost = config.GetValue<string>("SomneoHost");
+string somneoHost = config.GetValue<string>("SomneoHost")!;
 
-            ISomneoApiClient somneoApiClient = new SomneoApiClient(somneoHost);
-            TestService testService = new TestService(somneoApiClient);
-            testService.Run();
-        }
-    }
-}
+using var somneoApiClient = new SomneoApiClient(somneoHost);
+var testService = new TestService(somneoApiClient);
+testService.Run();
