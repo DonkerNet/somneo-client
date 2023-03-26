@@ -32,4 +32,15 @@ public sealed class FMRadioPresets
     /// </summary>
     [JsonPropertyName("5")]
     public float Preset5 { get; init; }
+
+    /* Example JSON:
+{
+  "0": "",
+  "1": "92.60",
+  "2": "96.80",
+  "3": "103.20",
+  "4": "103.80",
+  "5": "90.30"
+}
+     */
 }

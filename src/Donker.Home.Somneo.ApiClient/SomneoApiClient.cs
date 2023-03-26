@@ -1,15 +1,15 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient;
 
-/// <summary>
-/// Client that provides communication with the Philips Somneo API.
-/// </summary>
+/// <inheritdoc cref="ISomneoApiClient"/>
 public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 {
     private readonly SomneoApiSerializer _serializer = new();
@@ -28,15 +28,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     #region Public properties
-
-    /// <summary>
-    /// Gets the base address used for making requests to the Somneo device.
-    /// </summary>
+    
     public Uri? BaseAddress => HttpClient.BaseAddress;
 
-    /// <summary>
-    /// Gets or sets the maximum request timeout in milliseconds.
-    /// </summary>
     public TimeSpan Timeout
     {
         get => HttpClient.Timeout;
@@ -125,86 +119,40 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: General
 
-    /// <summary>
-    /// Retrieves details about the Somneo device itself.
-    /// </summary>
-    /// <returns>The details of the device as a <see cref="DeviceDetails"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public DeviceDetails GetDeviceDetails() => ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device");
 
-    /// <summary>
-    /// Retrieves details about the Somneo's wifi connection.
-    /// </summary>
-    /// <returns>The details of the wifi connection as a <see cref="WifiDetails"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public WifiDetails GetWifiDetails() => ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi");
 
-    /// <summary>
-    /// Retrieves details about the Somneo's firmware.
-    /// </summary>
-    /// <returns>The firmware details as a <see cref="FirmwareDetails"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public FirmwareDetails GetFirmwareDetails() => ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware");
 
-    /// <summary>
-    /// Retrieves details about the locale set for the Somneo device.
-    /// </summary>
-    /// <returns>The locale details as a <see cref="Locale"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public Locale GetLocale() => ExecuteGetRequest<Locale>("di/v1/products/0/locale");
 
-    /// <summary>
-    /// Retrieves details about the time set for the Somneo device.
-    /// </summary>
-    /// <returns>The time details as a <see cref="Time"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public Time GetTime() => ExecuteGetRequest<Time>("di/v1/products/0/time");
 
     #endregion
 
     #region Somneo: Sensors
 
-    /// <summary>
-    /// Retrieves the Somneo's sensor data, containing the temperature, light level, sound level and humidity.
-    /// </summary>
-    /// <returns>The sensor data as a <see cref="SensorData"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public SensorData GetSensorData() => ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd");
 
     #endregion
 
     #region Somneo: Light
 
-    /// <summary>
-    /// Retrieves the current light state.
-    /// </summary>
-    /// <returns>The light state as a <see cref="LightState"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public LightState GetLightState() => ExecuteGetRequest<LightState>("di/v1/products/1/wulgt");
 
-    /// <summary>
-    /// Toggles the normal light.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the light.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void ToggleLight(bool enabled)
     {
         object data = new
         {
             onoff = enabled,    // Toggle the light
-            tempy = false,      // Disable sunrise preview
+            tempy = false,      // Specifies NOT to be in preview/temporary mode?
             ngtlt = false       // Disable the night light
         };
 
         ExecutePutRequest("di/v1/products/1/wulgt", data);
     }
 
-    /// <summary>
-    /// Sets the level of the normal light and enables the light as well.
-    /// </summary>
-    /// <param name="lightLevel">The light level to set. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="lightLevel"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetLightLevel(int lightLevel)
     {
         if (lightLevel < 1 || lightLevel > 25)
@@ -214,42 +162,20 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         {
             ltlvl = lightLevel, // Set the level
             onoff = true,       // Enable the light
-            tempy = false,      // Disable sunrise preview
+            tempy = false,      // Specifies NOT to be in preview/temporary mode?
             ngtlt = false       // Disable the night light
         };
 
         ExecutePutRequest("di/v1/products/1/wulgt", data);
     }
 
-    /// <summary>
-    /// Toggles the night light.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the night light.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void ToggleNightLight(bool enabled)
     {
         object data = new
         {
             onoff = false,  // Disable the regular light
-            tempy = false,  // Disable sunrise preview
+            tempy = false,  // Specifies NOT to be in preview/temporary mode?
             ngtlt = enabled // Enable the night light
-        };
-
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
-    }
-
-    /// <summary>
-    /// Toggles the sunrise preview mode.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the sunrise preview.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    public void ToggleSunrisePreview(bool enabled)
-    {
-        object data = new
-        {
-            onoff = enabled,    // Enable the light
-            tempy = enabled,    // Enable sunrise preview
-            ngtlt = false       // Disable the night light
         };
 
         ExecutePutRequest("di/v1/products/1/wulgt", data);
@@ -259,18 +185,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Display
 
-    /// <summary>
-    /// Retrieves the current state of the display.
-    /// </summary>
-    /// <returns>The display state as a <see cref="DisplayState"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public DisplayState GetDisplayState() => ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts");
 
-    /// <summary>
-    /// Toggles whether the display should always be shown or if it should disable automatically after a period of time.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the display permanently.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void TogglePermanentDisplay(bool enabled)
     {
         object data = new
@@ -281,12 +197,6 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wusts", data);
     }
 
-    /// <summary>
-    /// Sets the brightness level of the display.
-    /// </summary>
-    /// <param name="brightnessLevel">The brightness level to set. Value must be between 1 and 6.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="brightnessLevel"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetDisplayLevel(int brightnessLevel)
     {
         if (brightnessLevel < 1 || brightnessLevel > 6)
@@ -304,24 +214,32 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Wake-up sounds
 
-    /// <summary>
-    /// Plays a wake-up sound.
-    /// </summary>
-    /// <param name="wakeUpSound">The wake-up sound to play.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    public void PlayWakeUpSound(WakeUpSound wakeUpSound)
+    public void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume)
     {
         if (!Enum.IsDefined(wakeUpSound))
             throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
+        if (volume < 1 || volume > 25)
+            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
 
         object data = new
         {
             sndss = 1000,   // What is this?
             onoff = true,   // Enable the player
-            tempy = true,   // ?
+            tempy = true,   // Specifies to be in preview/temporary mode?
             snddv = "wus",  // Set the player to wake-up sound
-            sndch = ((int)wakeUpSound).ToString()
+            sndch = ((int)wakeUpSound).ToString(),
+            sdvol = volume
+        };
+
+        ExecutePutRequest("di/v1/products/1/wuply", data);
+    }
+
+    public void DisableWakeUpSoundPreview()
+    {
+        object data = new
+        {
+            onoff = false,  // Disable the player
+            tempy = true,   // Specifies to be in preview/temporary mode?
         };
 
         ExecutePutRequest("di/v1/products/1/wuply", data);
@@ -331,43 +249,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: FM radio
 
-    /// <summary>
-    /// Retrieves the configured presets of FM radio frequencies.
-    /// </summary>
-    /// <returns>The FM radio presets ad a <see cref="FMRadioPresets"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public FMRadioPresets GetFMRadioPresets() => ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00");
 
-    /// <summary>
-    /// Sets the preset of the specified position to the specified FM frequency.
-    /// </summary>
-    /// <param name="position">The preset position. Value must be between 1 and 5.</param>
-    /// <param name="frequency">The FM frequency. Value must be within the range of 87.50 to 107.99.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    public void SetFMRadioPreset(int position, float frequency)
-    {
-        if (position < 1 || position > 5)
-            throw new ArgumentException("The position must be between 1 and 5.", nameof(position));
-        if (frequency < 87.50F || frequency > 107.99F)
-            throw new ArgumentException("The frequency must be within the range of 87.50 to 107.99.", nameof(frequency));
-
-        object data = new
-        {
-            fmfrq = frequency.ToString("0.00", NumberFormatInfo.InvariantInfo),
-            fmcmd = "set",
-            prstn = position
-        };
-
-        ExecutePutRequest("di/v1/products/1/wufmr", data);
-    }
-
-    /// <summary>
-    /// Gets the FM frequency of a preset with the specified position.
-    /// </summary>
-    /// <param name="position">The preset position. Value must be between 1 and 5.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public float GetFMRadioPreset(int position)
     {
         if (position < 1 || position > 5)
@@ -379,46 +262,31 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prstn = position
         };
 
-        var result = ExecutePutRequest<Dictionary<string, object>>("di/v1/products/1/wufmr", data);
+        var result = ExecutePutRequest<Dictionary<string, JsonElement>>("di/v1/products/1/wufmr", data);
 
-        if (result.TryGetValue("fmfrq", out object? frequencyObj)
-            && frequencyObj != null
-            && float.TryParse(frequencyObj.ToString(), NumberStyles.None, NumberFormatInfo.InvariantInfo, out float frequency))
+        if (result.TryGetValue("fmfrq", out var frequencyElement)
+            && frequencyElement.ValueKind == JsonValueKind.String
+            && float.TryParse(frequencyElement.GetString(), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out float frequency))
             return frequency;
 
         return default;
     }
 
-    /// <summary>
-    /// Retrieves the state of the FM radio.
-    /// </summary>
-    /// <returns>The FM radio state as an <see cref="FMRadioState"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public FMRadioState GetFMRadioState() => ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr");
 
-    /// <summary>
-    /// Enables the FM radio.
-    /// </summary>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void EnableFMRadio()
     {
         object data = new
         {
             sndss = 0,      // What is this?
             onoff = true,   // Enable the player
-            tempy = false,  // ?
+            tempy = false,  // Specifies NOT to be in preview/temporary mode?
             snddv = "fmr"   // Set the player to FM radio
         };
 
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
-    /// <summary>
-    /// Enables the FM radio for the specified preset.
-    /// </summary>
-    /// <param name="preset">The preset. Value must be between 1 and 5.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void EnableFMRadioPreset(int preset)
     {
         if (preset < 1 || preset > 5)
@@ -428,7 +296,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         {
             sndss = 0,                  // What is this?
             onoff = true,               // Enable the player
-            tempy = false,              // Disables the sunrise preview?
+            tempy = false,              // Specifies NOT to be in preview/temporary mode?
             snddv = "fmr",              // Set the player to FM radio
             sndch = preset.ToString()   // Set the "channel" to the preset number
         };
@@ -436,12 +304,6 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
-    /// <summary>
-    /// Seeks a new FM radio station in the specified direction for the currently selected preset, if the FM radio is enabled.
-    /// </summary>
-    /// <param name="direction">The seek direction.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="direction"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SeekFMRadioStation(RadioSeekDirection direction)
     {
         if (!Enum.IsDefined(direction))
@@ -449,7 +311,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         object data = new
         {
-            fmcmd = direction == RadioSeekDirection.Up ? "seekup" : "seekdown"
+            fmcmd = EnumHelper.GetEnumMemberValue(direction)
         };
 
         ExecutePutRequest("di/v1/products/1/wufmr", data);
@@ -459,17 +321,15 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: AUX
 
-    /// <summary>
-    /// Enables the auxiliary input device.
-    /// </summary>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void EnableAUX()
     {
+        DisablePlayer(); // Disable the player first, because AUX does not enable right away for some reason
+
         object data = new
         {
             sndss = 0,      // What is this?
             onoff = true,   // Enable the player
-            tempy = false,  // ?
+            tempy = false,  // Specifies NOT to be in preview/temporary mode?
             snddv = "aux"   // Set the player to AUX
         };
 
@@ -480,19 +340,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Audio player
 
-    /// <summary>
-    /// Retrieves the state of the audio player.
-    /// </summary>
-    /// <returns>The audio player state as a <see cref="PlayerState"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public PlayerState GetPlayerState() => ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply");
 
-    /// <summary>
-    /// Sets the volume of the audio player.
-    /// </summary>
-    /// <param name="position">The volume. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="volume"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetPlayerVolume(int volume)
     {
         if (volume < 1 || volume > 25)
@@ -506,10 +355,6 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
-    /// <summary>
-    /// Disables the audio player.
-    /// </summary>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void DisablePlayer()
     {
         object data = new
@@ -524,11 +369,6 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Alarms
 
-    /// <summary>
-    /// Retrieves the alarms.
-    /// </summary>
-    /// <returns>An <see cref="IReadOnlyList{T}"/> containing <see cref="Alarm"/> objects.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public IReadOnlyList<Alarm> GetAlarms()
     {
         AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs");
@@ -572,75 +412,28 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return new ReadOnlyCollection<Alarm>(alarms);
     }
 
-    /// <summary>
-    /// Toggles an alarm by it's position in the alarm collection. If the alarm does not exist yet, it will be added with default settings for that position.
-    /// </summary>
-    /// <param name="position">The position of the alarm to toggle. Value must be between 1 and 16.</param>
-    /// <param name="enabled">Whether to enable or disable the alarm.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void ToggleAlarm(int position, bool enabled)
     {
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
 
-        object data;
-
-        if (enabled)
+        object data = new
         {
-            data = new
-            {
-                prfnr = position,
-                prfvs = true,       // Make sure the alarm is set for the specified position
-                prfen = true        // Enable the alarm
-            };
-        }
-        else
-        {
-            data = new
-            {
-                prfnr = position,
-                prfen = false       // Disable the alarm
-            };
-        }
+            prfnr = position,
+            prfen = enabled
+        };
 
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
-    /// <summary>
-    /// Sets and enables an alarm with a wake-up sound at the specified position in the alarm list and configures it with the specified settings.
-    /// </summary>
-    /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
-    /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
-    /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
-    /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
-    /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-    /// <param name="sunriseColors">The type of sunrise to show when the alarm is triggered.</param>
-    /// <param name="sunriseIntensity">
-    /// The intensity of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
-    /// Value must be between 1 and 25.
-    /// </param>
-    /// <param name="sunriseDuration">
-    /// The duration of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
-    /// Value must be between 5 and 40, with 5 minute steps in between.
-    /// </param>
-    /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
-    /// <param name="volume">The volume of the wake-up sound that is played. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetAlarmWithWakeUpSound(
         int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
-        ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
+        ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
         WakeUpSound wakeUpSound, int volume)
     {
-        if (!Enum.IsDefined(wakeUpSound))
-            throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
-
         SetAlarm(
             position,
             hour, minute,
@@ -650,40 +443,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             volume, SoundDeviceType.WakeUpSound, wakeUpSound, null);
     }
 
-    /// <summary>
-    /// Sets and enables an alarm with FM radio at the specified position in the alarm list and configures it with the specified settings.
-    /// </summary>
-    /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
-    /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
-    /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
-    /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
-    /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
-    /// <param name="sunriseIntensity">
-    /// The intensity of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
-    /// Value must be between 1 and 25.
-    /// </param>
-    /// <param name="sunriseDuration">
-    /// The duration of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
-    /// Value must be between 5 and 40, with 5 minute steps in between.
-    /// </param>
-    /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
-    /// <param name="volume">The volume of the FM radio that is played. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetAlarmWithFMRadio(
         int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
-        ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
+        ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
         int fmRadioPreset, int volume)
     {
-        if (fmRadioPreset < 1 || fmRadioPreset > 5)
-            throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
-
         SetAlarm(
             position,
             hour, minute,
@@ -693,14 +460,28 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
     }
 
+    public void SetAlarmWithoutSound(
+        int position,
+        int hour, int minute,
+        int? powerWakeMinutes,
+        ICollection<DayOfWeek> repeatDays,
+        ColorScheme sunriseColors, int sunriseIntensity, int sunriseDuration)
+    {
+        SetAlarm(
+            position,
+            hour, minute,
+            powerWakeMinutes,
+            repeatDays,
+            sunriseColors, sunriseIntensity, sunriseDuration,
+            null, SoundDeviceType.None, null, null);
+    }
+
     private void SetAlarm(int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek>? repeatDays,
-        ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
-        int volume,
-        // Supplied by overloads:
-        SoundDeviceType soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
+        ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
+        int? volume, SoundDeviceType soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
     {
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
@@ -708,12 +489,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             throw new ArgumentException("The hour must be between 0 and 23.", nameof(hour));
         if (minute < 0 || minute > 59)
             throw new ArgumentException("The minute must be between 0 and 23.", nameof(minute));
-        if (volume < 1 || volume > 25)
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
-        if (!Enum.IsDefined(sunriseColors))
-            throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
         if (repeatDays != null && repeatDays.Any(rd => !Enum.IsDefined(rd)))
             throw new ArgumentException("One or more repeat days are invalid.", nameof(repeatDays));
+        if (volume.HasValue && (volume < 1 || volume > 25))
+            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+        if (fmRadioPreset.HasValue && (fmRadioPreset < 1 || fmRadioPreset > 5))
+            throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
+        if (wakeUpSound.HasValue && !Enum.IsDefined(wakeUpSound.Value))
+            throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
 
         int powerWakeSize = 0;
         int definitivePowerWakeHour = 0;
@@ -732,20 +515,24 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             definitivePowerWakeMinute = powerWakeTime.Minutes;
         }
 
+        int sunriseColorSchemeNumber = 0;
         int definitiveSunriseIntensity = 0;
         int definitiveSunriseDuration = 0;
 
-        if (sunriseColors != ColorScheme.NoLight)
+        if (sunriseColors.HasValue)
         {
+            if (!Enum.IsDefined(sunriseColors.Value))
+                throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
             if (!sunriseIntensity.HasValue || sunriseIntensity.Value < 1 || sunriseIntensity.Value > 25)
-                throw new ArgumentException("When the sunrise colors are set to something other than no light, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
+                throw new ArgumentException("When the sunrise colors are set, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
             if (!sunriseDuration.HasValue || sunriseDuration.Value < 5 || sunriseDuration.Value > 40 || sunriseDuration.Value % 5 != 0)
-                throw new ArgumentException("When the sunrise colors are set to something other than no light, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
+                throw new ArgumentException("When the sunrise colors are set, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
+            sunriseColorSchemeNumber = (int)sunriseColors.Value;
             definitiveSunriseIntensity = sunriseIntensity.Value;
             definitiveSunriseDuration = sunriseDuration.Value;
         }
 
-        int soundChannel = 0;
+        int soundChannel = -1;
 
         switch (soundDevice)
         {
@@ -759,7 +546,6 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         }
 
         byte repeatDaysNumber = (byte)EnumHelper.DaysOfWeekToDayFlags(repeatDays);
-        int sunruseColorSchemNumber = EnumHelper.GetColorSchemeNumber(sunriseColors);
         string soundDeviceName = EnumHelper.GetEnumMemberValue(soundDevice)!;
 
         object data = new
@@ -772,24 +558,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             pwrsz = powerWakeSize,              // The PowerWake to enabled (255) or disabled (0)
             pszhr = definitivePowerWakeHour,    // The PowerWake hour
             pszmn = definitivePowerWakeMinute,  // The PowerWake minute
-            ctype = sunruseColorSchemNumber,    // The sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
+            ctype = sunriseColorSchemeNumber,   // The sunrise
             curve = definitiveSunriseIntensity, // The light level
             durat = definitiveSunriseDuration,  // The sunrise duration
             daynm = repeatDaysNumber,           // The days on which to repeat the alarm
             snddv = soundDeviceName,            // The sound device to play
             sndch = soundChannel.ToString(),    // The wake-up sound or FM radio preset to play
-            sndlv = volume                      // The volume level of the sound device to play
+            sndlv = volume ?? 12                // The volume level of the sound device to play
         };
 
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
-    /// <summary>
-    /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
-    /// </summary>
-    /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void RemoveAlarm(int position)
     {
         if (position < 1 || position > 16)
@@ -805,24 +585,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             pwrsz = 0,          // Disable the PowerWake
             pszhr = 0,          // Set the default PowerWake hour
             pszmn = 0,          // Set the default PowerWake minute
-            ctype = 0,          // Set the default sunrise ("Sunny day" if curve > 0 or "No light" if curve == 0)
+            ctype = 0,          // Set the default sunrise
             curve = 20,         // Set the default light level
             durat = 30,         // Set the default sunrise duration
-            daynm = 254,        // Set the default to repeat every day
-            snddv = "wus",      // Set the default sound device to wakeup sound
-            snztm = 0           // Set the default snooze time
+            daynm = 0,          // Set the default to never repeat
+            snddv = "wus",      // Set the default sound device to wake-up sound
+            sndch = "1",        // Set the default wake-up sound,
+            sndlv = 12          // Set the default volume
         };
 
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
-    /// <summary>
-    /// Gets the settings of an alarm by it's position in the alarm list.
-    /// </summary>
-    /// <param name="position">The position of the alarm to retrieve the settings for. Value must be between 1 and 16.</param>
-    /// <returns>The settings as an <see cref="AlarmSettings"/> object if the alarm is set; otherwise, <c>null</c>.</returns>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public AlarmSettings? GetAlarmSettings(int position)
     {
         if (position < 1 || position > 16)
@@ -838,25 +612,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return alarmSettings.IsSet ? alarmSettings : null;
     }
 
-    /// <summary>
-    /// Sets the snooze time in minutes for all alarms.
-    /// </summary>
-    /// <param name="minutes">The snooze time in minutes. Value must be between 1 and 20.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="minutes"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void SetSnoozeTime(int minutes)
     {
-        if (minutes < 1 || minutes > 16)
+        if (minutes < 1 || minutes > 20)
             throw new ArgumentException("The minutes must be between 1 and 20.", nameof(minutes));
 
         object data = new
         {
-            snztm = minutes,
-
-            // Don't specify any alarms to update
-            aalms = Array.Empty<object>(),
-            aenvs = Array.Empty<object>(),
-            prfsh = 0
+            snztm = minutes
         };
 
         ExecutePutRequest("di/v1/products/1/wualm", data);
@@ -866,30 +629,48 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Timer
 
-    /// <summary>
-    /// Gets the current state of the Somneo's timer, used for the RelaxBreathe and sunset functions.
-    /// </summary>
-    /// <returns>The timer state as a <see cref="TimerState"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public TimerState GetTimerState() => ExecuteGetRequest<TimerState>("di/v1/products/1/wutmr");
+
+    #endregion
+
+    #region Somneo: Sunrise
+
+    public void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity)
+    {
+        if (!Enum.IsDefined(sunriseColors))
+            throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
+        if (sunriseIntensity < 1 || sunriseIntensity > 25)
+            throw new ArgumentException("The sunrise intensity must be between 1 and 25.", nameof(sunriseIntensity));
+
+        object data = new
+        {
+            onoff = true,   // Enable the light
+            tempy = true,   // Specifies to be in preview/temporary mode?
+            ngtlt = false,  // Disable the night light
+            ctype = (int)sunriseColors,
+            ltlvl = sunriseIntensity
+        };
+
+        ExecutePutRequest("di/v1/products/1/wulgt", data);
+    }
+
+    public void DisableSunrisePreview()
+    {
+        object data = new
+        {
+            onoff = false,  // Disable the light
+            tempy = true,   // Specifies to be in preview/temporary mode?
+        };
+
+        ExecutePutRequest("di/v1/products/1/wulgt", data);
+    }
 
     #endregion
 
     #region Somneo: Sunset
 
-    /// <summary>
-    /// Gets the settings of the Sunset function.
-    /// </summary>
-    /// <returns>The settings as a <see cref="SunsetSettings"/> object.</returns>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public SunsetSettings GetSunsetSettings() => ExecuteGetRequest<SunsetSettings>("di/v1/products/1/wudsk");
 
-
-    /// <summary>
-    /// Toggles the Sunset function.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the sunset.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     public void ToggleSunset(bool enabled)
     {
         object data = new

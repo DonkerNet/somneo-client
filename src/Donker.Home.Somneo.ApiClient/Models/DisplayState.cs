@@ -17,4 +17,26 @@ public sealed class DisplayState
     /// </summary>
     [JsonPropertyName("brght")]
     public int Brightness { get; init; }
+
+    /* Example JSON:
+{
+  "wusts": 1,
+  "rpair": false,
+  "prvmd": false,
+  "sdemo": false,
+  "pwrsz": false,
+  "nrcur": 4,
+  "snztm": 5,
+  "wizrd": 99,
+  "brght": 4,
+  "dspon": false,
+  "canup": false,
+  "fmrna": false,
+  "wutim": 65535,
+  "dutim": 65535,
+  "sntim": 65535,
+  "updtm": 65280,
+  "updln": 65310
+}
+     */
 }

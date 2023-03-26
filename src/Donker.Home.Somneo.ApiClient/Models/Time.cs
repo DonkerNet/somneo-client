@@ -29,31 +29,29 @@ public sealed class Time
     /// </summary>
     public DateTimeOffset DSTChangeOver { get; init; }
     /// <summary>
-    /// The offset that is applied to the date and time when daylight saving time is in progress.
-    /// </summary>
-    [JsonConverter(typeof(TimeSpanOffsetJsonConverter))]
-    public TimeSpan DSTOffset { get; init; }
-    /// <summary>
     /// Whether daylight saving time is currently in progress and if the offset is applied to the date and time.
     /// </summary>
-    public bool IsDSTApplied => CurrentDSTOffset == DSTOffset;
+    public bool IsDSTApplied => CurrentDSTOffset != TimeSpan.Zero;
 
-    /*
-     
-    TODO:
+    /*    
+    Example JSON without DST:
+{
+  "datetime": "2023-03-24T17:49:49+01:00",
+  "dst": "+00:00",
+  "dstchangeover": "2023-03-26T02:00:00+01:00",
+  "dstoffset": "+01:00",
+  "timezone": "+01:00",
+  "calday": 5
+}
 
-    Check the above DST properties after next DST switch, to see if it's properly implemented.
-
-    What is the difference between "dst" and "dstoffset" in the JSON returned by Somneo?
-    "dst" = current offset, "dstoffset" = next offset ???
-    How can we use these to check if DST is currently applied?
-    What if the locale doesn't use DST?
-
-    Example with DST applied:
-    { "datetime":"2021-07-22T18:27:37+02:00", "dst":"+01:00", "dstchangeover":"2021-10-31T03:00:00+02:00", "dstoffset":"-01:00", "timezone":"+01:00", "calday":4 }
-
-    Example without:
-    ???
-    
+    Example JSON with DST:
+{
+  "datetime": "2023-03-26T14:22:11+02:00",
+  "dst": "+01:00",
+  "dstchangeover": "2023-10-29T03:00:00+02:00",
+  "dstoffset": "-01:00",
+  "timezone": "+01:00",
+  "calday": 7
+}
      */
 }

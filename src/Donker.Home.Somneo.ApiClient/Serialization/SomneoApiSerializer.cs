@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -28,11 +30,20 @@ internal class SomneoApiSerializer
         _mediaType = new MediaTypeHeaderValue("application/json");
     }
 
-    public HttpContent CreateHttpContent(object data) => JsonContent.Create(data, data.GetType(), _mediaType, _options);
+    public HttpContent CreateHttpContent(object data)
+    {
+        string json = JsonSerializer.Serialize(data, data.GetType(), _options);
+        return new StringContent(json, Encoding.UTF8, _mediaType);
+    }
 
     public T? ReadHttpContent<T>(HttpContent content)
     {
         using var contentStream = content.ReadAsStream();
         return JsonSerializer.Deserialize<T>(contentStream, _options);
     }
+}
+
+internal class SomneoApiEnumConverter
+{
+
 }

@@ -2,15 +2,106 @@
 
 namespace Donker.Home.Somneo.ApiClient.Models;
 
-internal class AlarmStates
+public class AlarmStates
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     [JsonPropertyName("prfen")]
-    internal bool[] Enabled { get; init; }
+    public bool[] Enabled { get; init; }
     [JsonPropertyName("prfvs")]
-    internal bool[] Set { get; init; }
+    public bool[] Set { get; init; }
     [JsonPropertyName("pwrsv")]
-    internal byte[] PowerWake { get; init; }
+    public int[] PowerWake { get; init; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
+    /* Example JSON:
+{
+  "prfen": [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "prfvs": [
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ],
+  "pwrsv": [
+    255,
+    7,
+    15,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45,
+    255,
+    8,
+    45
+  ],
+  "utcof": 60
+}
+     */
 }

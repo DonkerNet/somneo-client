@@ -8,11 +8,11 @@ namespace Donker.Home.Somneo.ApiClient.Models;
 public sealed class LightState
 {
     [JsonPropertyName("onoff")]
-    internal bool OnOff { get; init; }
+    public bool OnOff { get; init; }
     [JsonPropertyName("tempy")]
-    internal bool TempY { get; init; }
+    public bool TempY { get; init; }
     [JsonPropertyName("ngtlt")]
-    internal bool NgtLt { get; init; }
+    public bool NgtLt { get; init; }
 
     /// <summary>
     /// Whether the light is enabled or not.
@@ -28,7 +28,23 @@ public sealed class LightState
     /// </summary>
     public bool NightLightEnabled => NgtLt;
     /// <summary>
-    /// Whether the sunrise preview is enabled or not.
+    /// Whether the sunrise or sunset is enabled or not.
     /// </summary>
-    public bool SunrisePreviewEnabled => TempY;
+    public bool SunriseOrSunsetEnabled => TempY;
+
+    /* Example JSON:
+{
+  "ltlvl": 15,
+  "ltlch": 0,
+  "onoff": false,
+  "ctype": 0,
+  "tempy": false,
+  "ngtlt": false,
+  "wucrv": [],
+  "ltset": [],
+  "pwmon": false,
+  "pwmvs": [],
+  "diman": 0
+}
+     */
 }

@@ -21,12 +21,6 @@ public class DisplayCommandHandler : CommandHandlerBase
     {
         DisplayState displayState = SomneoApiClient.GetDisplayState();
 
-        if (displayState == null)
-        {
-            Console.WriteLine("Unable to retrieve the display state.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Display state:
   Permanent display enabled: {(displayState.Permanent ? "Yes" : "No")}

@@ -21,12 +21,6 @@ public class SunsetCommandHandler : CommandHandlerBase
     {
         SunsetSettings sunsetSettings = SomneoApiClient.GetSunsetSettings();
 
-        if (sunsetSettings == null)
-        {
-            Console.WriteLine("Unable to retrieve the sunset settings.");
-            return;
-        }
-
         string? channelOrPresetState = null;
         switch (sunsetSettings.Device)
         {
@@ -35,10 +29,10 @@ public class SunsetCommandHandler : CommandHandlerBase
                 if (fmRadioPreset.HasValue)
                     channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {fmRadioPreset.Value}";
                 break;
-            case SoundDeviceType.WakeUpSound:
-                WakeUpSound? wakeUpSound = sunsetSettings.GetWakeUpSound();
-                if (wakeUpSound.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(wakeUpSound.Value)}";
+            case SoundDeviceType.Sunset:
+                SunsetSound? sunsetSound = sunsetSettings.GetSunsetSound();
+                if (sunsetSound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSound.Value)}";
                 break;
         }
 

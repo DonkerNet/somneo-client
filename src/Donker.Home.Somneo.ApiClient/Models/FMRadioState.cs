@@ -17,4 +17,16 @@ public sealed class FMRadioState
     /// </summary>
     [JsonPropertyName("prstn")]
     public int Preset { get; init; }
+
+    /* Example JSON:
+{
+  "fmfrq": "96.80",
+  "fmcmd": "set",
+  "fmsts": true,
+  "fmspc": 100,
+  "fmbnd": 0,
+  "prstn": 2,
+  "chtot": 5
+}
+     */
 }

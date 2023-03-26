@@ -17,7 +17,7 @@ public static class EnumHelper
     /// <param name="enumValue">The value of the enum.</param>
     /// <returns>The description if present; otherwise, <c>null</c>.</returns>
     public static string? GetDescription<TEnum>(TEnum enumValue)
-        where TEnum : struct
+        where TEnum : struct, Enum
     {
         Type type = typeof(TEnum);
 
@@ -39,7 +39,7 @@ public static class EnumHelper
     /// <param name="enumValue">The value of the enum.</param>
     /// <returns>The <see cref="EnumMemberAttribute"/> value if present; otherwise, <c>null</c>.</returns>
     public static string? GetEnumMemberValue<TEnum>(TEnum enumValue)
-        where TEnum : struct
+        where TEnum : struct, Enum
     {
         Type type = typeof(TEnum);
         
@@ -52,29 +52,6 @@ public static class EnumHelper
             .GetField(enumMemberName)?
             .GetCustomAttribute<EnumMemberAttribute>()?
             .Value;
-    }
-
-    internal static ColorScheme GetColorScheme(int number, int intensity)
-    {
-        return number switch
-        {
-            0 when intensity > 0 => ColorScheme.SunnyDay,
-            1 => ColorScheme.IslandRed,
-            2 => ColorScheme.NordicWhite,
-            3 => ColorScheme.CarribeanRed,
-            _ => ColorScheme.NoLight,
-        };
-    }
-
-    internal static int GetColorSchemeNumber(ColorScheme colorScheme)
-    {
-        return colorScheme switch
-        {
-            ColorScheme.IslandRed => 1,
-            ColorScheme.NordicWhite => 2,
-            ColorScheme.CarribeanRed => 3,
-            _ => 0,
-        };
     }
 
     internal static IEnumerable<DayOfWeek> DayFlagsToDaysOfWeek(DayFlags dayFlags)

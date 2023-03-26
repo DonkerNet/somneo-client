@@ -45,6 +45,19 @@ public sealed class SensorData
     /// <summary>
     /// The average humidity in %.
     /// </summary>
-    [JsonPropertyName("avhum")]
+    [JsonPropertyName("avrhu")]
     public float AverageHumidity { get; init; }
+
+    /* Example JSON:
+{
+  "mslux": 0.5,
+  "mstmp": 16.7,
+  "msrhu": 55.5,
+  "mssnd": 36,
+  "avlux": 0.6,
+  "avtmp": 16.6,
+  "avrhu": 56,
+  "avsnd": 28
+}
+     */
 }

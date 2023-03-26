@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Donker.Home.Somneo.ApiClient.Serialization.Converters;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models;
 
@@ -21,6 +22,7 @@ public sealed class PlayerState
     /// The type of sounds device in use by the Somneo's audio player.
     /// </summary>
     [JsonPropertyName("snddv")]
+    [JsonConverter(typeof(EnumJsonConverter<SoundDeviceType, string>))]
     public SoundDeviceType Device { get; init; }
     /// <summary>
     /// The current channel or preset that is selected.
@@ -40,6 +42,7 @@ public sealed class PlayerState
 
         return null;
     }
+
     /// <summary>
     /// Gets the wake-up sound if the <see cref="Device"/> property is set to <see cref="SoundDeviceType.WakeUpSound"/>.
     /// </summary>
@@ -52,4 +55,29 @@ public sealed class PlayerState
 
         return null;
     }
+
+    /// <summary>
+    /// Gets the wake-up sound if the <see cref="Device"/> property is set to <see cref="SoundDeviceType.Sunset"/>.
+    /// </summary>
+    public SunsetSound? GetSunsetSound()
+    {
+        if (Device == SoundDeviceType.Sunset
+            && !string.IsNullOrEmpty(ChannelOrPreset)
+            && Enum.TryParse(ChannelOrPreset, out SunsetSound sunsetSound))
+            return sunsetSound;
+
+        return null;
+    }
+
+    /* Example JSON:
+{
+  "onoff": true,
+  "sdvol": 4,
+  "sdvch": 0,
+  "tempy": false,
+  "sndss": 0,
+  "snddv": "fmr",
+  "sndch": "1"
+}
+     */
 }

@@ -8,13 +8,13 @@ namespace Donker.Home.Somneo.ApiClient.Models;
 public sealed class TimerState
 {
     [JsonPropertyName("rlxmn")]
-    internal int RelaxBreatheMinutes { get; init; }
+    public int RelaxBreatheMinutes { get; init; }
     [JsonPropertyName("rlxsc")]
-    internal int RelaxBreatheSeconds { get; init; }
+    public int RelaxBreatheSeconds { get; init; }
     [JsonPropertyName("dskmn")]
-    internal int SunsetMinutes { get; init; }
+    public int SunsetMinutes { get; init; }
     [JsonPropertyName("dsksc")]
-    internal int SunsetSeconds { get; init; }
+    public int SunsetSeconds { get; init; }
 
     /// <summary>
     /// The initial start time of the timer.
@@ -41,4 +41,14 @@ public sealed class TimerState
     /// The time that was set for this timer, when enabled for the Sunset function.
     /// </summary>
     public TimeSpan? SunsetTime => SunsetEnabled ? TimeSpan.FromSeconds((SunsetMinutes * 60) + SunsetSeconds) : null;
+
+    /*
+{
+  "stime": "2023-03-24T19:28:24+01:00",
+  "rlxmn": 0,
+  "rlxsc": 0,
+  "dskmn": 29,
+  "dsksc": 59
+}
+     */
 }

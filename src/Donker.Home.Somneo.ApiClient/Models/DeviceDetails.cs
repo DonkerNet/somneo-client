@@ -11,17 +11,13 @@ public sealed class DeviceDetails
     /// <summary>
     /// The name of the device.
     /// </summary>
-    public string Name { get; init; }
+    [JsonPropertyName("name")]
+    public string AssignedName { get; init; }
     /// <summary>
-    /// The series of products the device is a part of.
+    /// The type number of the device.
     /// </summary>
-    [JsonPropertyName("type")] // For some reason, the series is described by the 'type' property (i.e.: HF367x)
-    public string Series { get; init; }
-    /// <summary>
-    /// The model of the device.
-    /// </summary>
-    [JsonPropertyName("ctn")] // For some reason, the 'ctn' property seems to describe the model instead of the 'modelid' property (i.e.: HF3671/01)
-    public string Model { get; init; }
+    [JsonPropertyName("ctn")]
+    public string TypeNumber { get; init; }
     /// <summary>
     /// The serial number of the device.
     /// </summary>
@@ -31,9 +27,34 @@ public sealed class DeviceDetails
     /// </summary>
     public string ProductId { get; init; }
     /// <summary>
-    /// The product range the device is a part of.
+    /// The product name of the device.
     /// </summary>
-    [JsonPropertyName("modelid")] // For some reason, the product range is described by the 'modelid' property (i.e.: Healthy Sleep)
-    public string ProductRange { get; init; }
+    public string ProductName { get; init; }
+    /// <summary>
+    /// The model ID of the device.
+    /// </summary>
+    public string ModelId { get; init; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+    /* Example JSON:
+{
+  "name": "Name given to the Somneo device",
+  "type": "HF367x",
+  "modelid": "123456789012",
+  "serial": "ABCD1234567890",
+  "ctn": "HF3672/01",
+  "allowuploads": true,
+  "allowpairing": false,
+  "wificountry": "NL/1",
+  "swverwifi": "4.8.3.0",
+  "cnversion": "4.8.3.0",
+  "productid": "1234567890123B",
+  "pkgver": 1113,
+  "swveruictrl": "R1.56.000.PRD",
+  "swverlight": "31",
+  "swvermp3": "MP 0.0.1",
+  "swvericons": "IC 0.0.11",
+  "productname": "Wake-up Light"
+}
+     */
 }

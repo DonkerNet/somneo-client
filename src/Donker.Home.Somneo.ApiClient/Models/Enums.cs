@@ -31,7 +31,19 @@ public enum SoundDeviceType
     /// </summary>
     [EnumMember(Value = "aux")]
     [Description("AUX")]
-    AUX
+    AUX,
+    /// <summary>
+    /// RelaxBreathe.
+    /// </summary>
+    [EnumMember(Value = "rlx")]
+    [Description("RelaxBreathe")]
+    RelaxBreathe,
+    /// <summary>
+    /// Sunset.
+    /// </summary>
+    [EnumMember(Value = "dus")]
+    [Description("Sunset")]
+    Sunset
 }
 
 /// <summary>
@@ -42,11 +54,13 @@ public enum RadioSeekDirection
     /// <summary>
     /// Seek a radio station on the band in forwards direction.
     /// </summary>
+    [EnumMember(Value = "seekup")]
     [Description("Up")]
     Up,
     /// <summary>
     /// Seek a radio station on the band in backwards direction.
     /// </summary>
+    [EnumMember(Value = "seekdown")]
     [Description("Down")]
     Down
 }
@@ -57,30 +71,20 @@ public enum RadioSeekDirection
 public enum ColorScheme
 {
     /// <summary>
-    /// No light.
-    /// </summary>
-    [Description("No light")]
-    NoLight,
-    /// <summary>
     /// Sunny day.
     /// </summary>
     [Description("Sunny day")]
-    SunnyDay,
+    SunnyDay = 0,
     /// <summary>
     /// Island red.
     /// </summary>
     [Description("Island red")]
-    IslandRed,
+    IslandRed = 1,
     /// <summary>
     /// Nordic white.
     /// </summary>
     [Description("Nordic white")]
-    NordicWhite,
-    /// <summary>
-    /// Carribean red.
-    /// </summary>
-    [Description("Carribean red")]
-    CarribeanRed
+    NordicWhite = 2
 }
 
 /// <summary>
@@ -130,8 +134,35 @@ public enum WakeUpSound
     OceanWaves = 8
 }
 
+/// <summary>
+/// The sound used for the sunset.
+/// </summary>
+public enum SunsetSound
+{
+    /// <summary>
+    /// Soft rain sunset sound.
+    /// </summary>
+    [Description("Soft rain")]
+    SoftRain = 1,
+    /// <summary>
+    /// Ocean waves sunset sound.
+    /// </summary>
+    [Description("Ocean waves")]
+    OceanWaves = 2,
+    /// <summary>
+    /// Under water sunset sound.
+    /// </summary>
+    [Description("Under water")]
+    UnderWater = 3,
+    /// <summary>
+    /// Summer lake sunset sound.
+    /// </summary>
+    [Description("Summer lake")]
+    SummerLake = 4
+}
+
 [Flags]
-internal enum DayFlags : byte
+public enum DayFlags : byte
 {
     None = 0,
     Monday = 2,

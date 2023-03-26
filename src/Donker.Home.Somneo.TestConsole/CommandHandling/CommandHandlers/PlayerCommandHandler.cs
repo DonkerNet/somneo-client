@@ -22,12 +22,6 @@ public class PlayerCommandHandler : CommandHandlerBase
     {
         PlayerState playerState = SomneoApiClient.GetPlayerState();
 
-        if (playerState == null)
-        {
-            Console.WriteLine("Unable to retrieve the audio player state.");
-            return;
-        }
-
         string? channelOrPresetState = null;
         switch (playerState.Device)
         {
@@ -40,6 +34,11 @@ public class PlayerCommandHandler : CommandHandlerBase
                 WakeUpSound? wakeUpSound = playerState.GetWakeUpSound();
                 if (wakeUpSound.HasValue)
                     channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(wakeUpSound.Value)}";
+                break;
+            case SoundDeviceType.Sunset:
+                SunsetSound? sunsetSound = playerState.GetSunsetSound();
+                if (sunsetSound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSound.Value)}";
                 break;
         }
 

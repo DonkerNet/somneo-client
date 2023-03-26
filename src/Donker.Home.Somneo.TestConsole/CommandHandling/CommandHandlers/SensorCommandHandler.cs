@@ -19,12 +19,6 @@ public class SensorCommandHandler : CommandHandlerBase
     {
         SensorData sensorData = SomneoApiClient.GetSensorData();
 
-        if (sensorData == null)
-        {
-            Console.WriteLine("Unable to retrieve the sensor data.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Sensor data:
   Temperature: {sensorData.CurrentTemperature} °C (avg: {sensorData.AverageTemperature} °C)

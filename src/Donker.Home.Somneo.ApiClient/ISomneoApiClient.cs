@@ -102,13 +102,6 @@ public interface ISomneoApiClient
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void ToggleNightLight(bool enabled);
 
-    /// <summary>
-    /// Toggles the sunrise preview mode.
-    /// </summary>
-    /// <param name="enabled">Whether to enable or disable the sunrise preview.</param>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    void ToggleSunrisePreview(bool enabled);
-
     #endregion
 
     #region Somneo: Display
@@ -140,12 +133,19 @@ public interface ISomneoApiClient
     #region Somneo: Wake-up sounds
 
     /// <summary>
-    /// Plays a wake-up sound.
+    /// Enables a preview of a wake-up sound.
     /// </summary>
     /// <param name="wakeUpSound">The wake-up sound to play.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> parameter is invalid.</exception>
+    /// <param name="volume">The volume. Value must be between 1 and 25.</param>
+    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> or <paramref name="volume"/> parameter is invalid.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    void PlayWakeUpSound(WakeUpSound wakeUpSound);
+    void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume);
+
+    /// <summary>
+    /// Disables the preview of a wake-up sound.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void DisableWakeUpSoundPreview();
 
     #endregion
 
@@ -157,15 +157,6 @@ public interface ISomneoApiClient
     /// <returns>The FM radio presets as an <see cref="FMRadioPresets"/> object.</returns>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     FMRadioPresets GetFMRadioPresets();
-
-    /// <summary>
-    /// Sets the preset of the specified position to the specified FM frequency.
-    /// </summary>
-    /// <param name="position">The preset position. Value must be between 1 and 5.</param>
-    /// <param name="frequency">The FM frequency. Value must be between 87.50 to 107.99.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> or <paramref name="frequency"/> parameter is invalid.</exception>
-    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    void SetFMRadioPreset(int position, float frequency);
 
     /// <summary>
     /// Gets the FM frequency of a preset with the specified position.
@@ -183,7 +174,7 @@ public interface ISomneoApiClient
     FMRadioState GetFMRadioState();
 
     /// <summary>
-    /// Enables the FM radio.
+    /// Enables the FM radio for the current preset.
     /// </summary>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void EnableFMRadio();
@@ -228,7 +219,7 @@ public interface ISomneoApiClient
     /// <summary>
     /// Sets the volume of the audio player.
     /// </summary>
-    /// <param name="position">The volume. Value must be between 1 and 25.</param>
+    /// <param name="volume">The volume. Value must be between 1 and 25.</param>
     /// <exception cref="ArgumentException">Exception thrown when the <paramref name="volume"/> parameter is invalid.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetPlayerVolume(int volume);
@@ -267,15 +258,15 @@ public interface ISomneoApiClient
     /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
     /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
     /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
+    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered. Optional.</param>
     /// <param name="sunriseIntensity">
     /// The intensity of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
+    /// Optional, but required when <paramref name="sunriseColors"/> is set.
     /// Value must be between 1 and 25.
     /// </param>
     /// <param name="sunriseDuration">
     /// The duration of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
+    /// Optional, but required when <paramref name="sunriseColors"/> is set.
     /// Value must be between 5 and 40, with 5 minute steps in between.
     /// </param>
     /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
@@ -287,7 +278,7 @@ public interface ISomneoApiClient
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
-        ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
+        ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
         WakeUpSound wakeUpSound, int volume);
 
     /// <summary>
@@ -298,15 +289,15 @@ public interface ISomneoApiClient
     /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
     /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
     /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
-    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
+    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered. Optional.</param>
     /// <param name="sunriseIntensity">
     /// The intensity of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
+    /// Optional, but required when <paramref name="sunriseColors"/> is set.
     /// Value must be between 1 and 25.
     /// </param>
     /// <param name="sunriseDuration">
     /// The duration of the sunrise to show when the alarm is triggered.
-    /// Optional, but required when <paramref name="sunriseColors"/> is set to something other than <see cref="ColorScheme.NoLight"/>.
+    /// Optional, but required when <paramref name="sunriseColors"/> is set.
     /// Value must be between 5 and 40, with 5 minute steps in between.
     /// </param>
     /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
@@ -318,8 +309,34 @@ public interface ISomneoApiClient
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
-        ColorScheme sunriseColors, int? sunriseIntensity, int? sunriseDuration,
+        ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
         int fmRadioPreset, int volume);
+
+    /// <summary>
+    /// Sets and enables an alarm with only a sunrise and without any sound.
+    /// </summary>
+    /// <param name="position">The position of the alarm to set. Value must be between 1 and 16.</param>
+    /// <param name="hour">The hour of the alarm to set. Value must be between 0 and 23.</param>
+    /// <param name="minute">The minute of the alarm to set. Value must be between 0 and 59.</param>
+    /// <param name="powerWakeMinutes">Sets the amount of minutes when the PowerWake should start after the alarm is triggered. Optional. Value must be between 0 and 59.</param>
+    /// <param name="repeatDays">The days on which to repeat the alarm. Optional.</param>
+    /// <param name="sunriseColors">The type of sunrise colors to show when the alarm is triggered.</param>
+    /// <param name="sunriseIntensity">
+    /// The intensity of the sunrise to show when the alarm is triggered.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <param name="sunriseDuration">
+    /// The duration of the sunrise to show when the alarm is triggered.
+    /// Value must be between 5 and 40, with 5 minute steps in between.
+    /// </param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetAlarmWithoutSound(
+        int position,
+        int hour, int minute,
+        int? powerWakeMinutes,
+        ICollection<DayOfWeek> repeatDays,
+        ColorScheme sunriseColors, int sunriseIntensity, int sunriseDuration);
 
     /// <summary>
     /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
@@ -359,6 +376,28 @@ public interface ISomneoApiClient
 
     #endregion
 
+    #region Somneo: Sunrise
+
+    /// <summary>
+    /// Enables a preview of a sunrise with the specified settings.
+    /// </summary>
+    /// <param name="sunriseColors">The type of sunrise to preview.</param>
+    /// <param name="sunriseIntensity">
+    /// The intensity of the sunrise to preview.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="sunriseColors"/> or <paramref name="sunriseIntensity"/> parameter is invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity);
+
+    /// <summary>
+    /// Disables the preview of a sunrise.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void DisableSunrisePreview();
+
+    #endregion
+
     #region Somneo: Sunset
 
     /// <summary>
@@ -367,7 +406,6 @@ public interface ISomneoApiClient
     /// <returns>The settings as a <see cref="SunsetSettings"/> object.</returns>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     SunsetSettings GetSunsetSettings();
-
 
     /// <summary>
     /// Toggles the Sunset function.

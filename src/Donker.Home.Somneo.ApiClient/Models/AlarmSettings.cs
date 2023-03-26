@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using Donker.Home.Somneo.ApiClient.Helpers;
+using Donker.Home.Somneo.ApiClient.Serialization.Converters;
 
 namespace Donker.Home.Somneo.ApiClient.Models;
 
@@ -13,19 +14,19 @@ public sealed class AlarmSettings
     private int? _powerWakeMinute;
 
     [JsonPropertyName("prfvs")]
-    internal bool IsSet { get; init; }
+    public bool IsSet { get; init; }
 
     [JsonPropertyName("daynm")]
-    internal DayFlags RepeatDayFlags
+    public DayFlags RepeatDayFlags
     {
         init => RepeatDays = new ReadOnlyCollection<DayOfWeek>(EnumHelper.DayFlagsToDaysOfWeek(value).ToList());
     }
 
     [JsonPropertyName("ctype")]
-    internal byte ColorSchemeNumber { get; init; }
+    public int ColorSchemeNumber { get; init; }
 
     [JsonPropertyName("pwrsz")]
-    internal byte PowerWakeSize { get; init; }
+    public int PowerWakeSize { get; init; }
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     /// <summary>
@@ -88,11 +89,12 @@ public sealed class AlarmSettings
     /// <summary>
     /// The type of sunrise colors shown.
     /// </summary>
-    public ColorScheme SunriseColors => EnumHelper.GetColorScheme(ColorSchemeNumber, SunriseIntensity);
+    public ColorScheme? SunriseColors => SunriseIntensity > 0 ? (ColorScheme)ColorSchemeNumber : null;
     /// <summary>
     /// The type of sound device used for the alarm sound.
     /// </summary>
     [JsonPropertyName("snddv")]
+    [JsonConverter(typeof(EnumJsonConverter<SoundDeviceType, string>))]
     public SoundDeviceType Device { get; init; }
     /// <summary>
     /// The channel or preset that is selected for the alarm sound.
@@ -129,4 +131,29 @@ public sealed class AlarmSettings
 
         return null;
     }
+
+    /* Example JSON:
+{
+  "prfnr": 1,
+  "prfen": false,
+  "prfvs": true,
+  "pname": "Alarm",
+  "ayear": 0,
+  "amnth": 0,
+  "alday": 0,
+  "daynm": 254,
+  "almhr": 7,
+  "almmn": 0,
+  "curve": 20,
+  "durat": 30,
+  "ctype": 0,
+  "snddv": "wus",
+  "sndch": "2",
+  "sndlv": 15,
+  "sndss": 30000,
+  "pwrsz": 255,
+  "pszhr": 7,
+  "pszmn": 15
+}
+     */
 }

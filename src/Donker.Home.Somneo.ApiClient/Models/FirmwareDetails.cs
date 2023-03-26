@@ -22,7 +22,7 @@ public sealed class FirmwareDetails
     public string State { get; init; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     /// <summary>
-    /// The next firmware upgrade.
+    /// The firmware upgrade.
     /// </summary>
     public string? Upgrade { get; init; }
     /// <summary>
@@ -39,11 +39,32 @@ public sealed class FirmwareDetails
     /// </summary>
     public bool CanUpgrade { get; init; }
     /// <summary>
+    /// Whether firmware can be downloaded or not.
+    /// </summary>
+    public bool CanDownload { get; init; }
+    /// <summary>
     /// Whether the available firmware upgrade is mandatory or not.
     /// </summary>
     public bool Mandatory { get; init; }
-    /// <summary>
-    /// Whether the firmware is currently idle (not being upgraded) or not.
-    /// </summary>
-    public bool IsIdle => string.Equals(State, "idle", StringComparison.OrdinalIgnoreCase);
+
+    /* Example JSON:
+{
+  "name": "BE32-PROD-WF",
+  "version": "1113",
+  "versions": {
+    "cn": "1113"
+  },
+  "upgrade": "",
+  "state": "idle",
+  "progress": 0,
+  "statusmsg": "",
+  "mandatory": false,
+  "canupgrade": false,
+  "candownload": true,
+  "maxchunksize": 512,
+  "size": 0,
+  "data": "",
+  "request": ""
+}
+     */
 }
