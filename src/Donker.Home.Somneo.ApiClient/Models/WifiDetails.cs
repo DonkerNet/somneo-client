@@ -1,6 +1,4 @@
 ﻿using System.Net;
-using System.Text.Json.Serialization;
-using Donker.Home.Somneo.ApiClient.Serialization.Converters;
 
 namespace Donker.Home.Somneo.ApiClient.Models;
 
@@ -9,49 +7,44 @@ namespace Donker.Home.Somneo.ApiClient.Models;
 /// </summary>
 public sealed class WifiDetails
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     /// <summary>
     /// The SSID of the network the device is connected to.
     /// </summary>
-    public string SSID { get; init; }
+    public string SSID { get; }
     /// <summary>
     /// The type of protection used for the wifi connection.
     /// </summary>
-    public string Protection { get; init; }
+    public string Protection { get; }
     /// <summary>
     /// The IP address assigned to the device.
     /// </summary>
-    [JsonConverter(typeof(IPAddressJsonConverter))]
-    public IPAddress IPAddress { get; init; }
+    public IPAddress IPAddress { get; }
     /// <summary>
     /// The netmask of the network the device is connected to.
     /// </summary>
-    [JsonConverter(typeof(IPAddressJsonConverter))]
-    public IPAddress Netmask { get; init; }
+    public IPAddress Netmask { get; }
     /// <summary>
     /// The gateway of the network the device is connected to.
     /// </summary>
-    [JsonConverter(typeof(IPAddressJsonConverter))]
-    public IPAddress Gateway { get; init; }
+    public IPAddress Gateway { get; }
     /// <summary>
     /// The MAC address of the device.
     /// </summary>
-    public string MACAddress { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public string MACAddress { get; }
 
-    /* Example JSON:
-{
-  "ssid": "SSID",
-  "password": "",
-  "protection": "wpa-2",
-  "ipaddress": "192.168.0.123",
-  "netmask": "255.255.255.0",
-  "gateway": "192.168.0.1",
-  "dhcp": true,
-  "macaddress": "a1:b2:c3:d4:f5:ab",
-  "cppid": "a1b2c3d4f5ab",
-  "travelssid": "",
-  "travelpassword": ""
-}
-     */
+    internal WifiDetails(
+        string ssid,
+        string protection,
+        IPAddress ipAddress,
+        IPAddress netmask,
+        IPAddress gateway,
+        string macAddress)
+    {
+        SSID = ssid;
+        Protection = protection;
+        IPAddress = ipAddress;
+        Netmask = netmask;
+        Gateway = gateway;
+        MACAddress = macAddress;
+    }
 }

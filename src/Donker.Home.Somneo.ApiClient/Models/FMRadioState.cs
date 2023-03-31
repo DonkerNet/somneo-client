@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the state of the Somneo's FM radio
@@ -8,25 +6,19 @@ namespace Donker.Home.Somneo.ApiClient.Models;
 public sealed class FMRadioState
 {
     /// <summary>
-    /// The current frequency of the FM radio.
-    /// </summary>
-    [JsonPropertyName("fmfrq")]
-    public float Frequency { get; init; }
-    /// <summary>
     /// The current preset the frequency is set for. Can be between 1 and 5.
     /// </summary>
-    [JsonPropertyName("prstn")]
-    public int Preset { get; init; }
+    public int Preset { get; }
+    /// <summary>
+    /// The current frequency of the FM radio.
+    /// </summary>
+    public float Frequency { get; }
 
-    /* Example JSON:
-{
-  "fmfrq": "96.80",
-  "fmcmd": "set",
-  "fmsts": true,
-  "fmspc": 100,
-  "fmbnd": 0,
-  "prstn": 2,
-  "chtot": 5
-}
-     */
+    internal FMRadioState(
+        int preset,
+        float frequency)
+    {
+        Preset = preset;
+        Frequency = frequency;
+    }
 }

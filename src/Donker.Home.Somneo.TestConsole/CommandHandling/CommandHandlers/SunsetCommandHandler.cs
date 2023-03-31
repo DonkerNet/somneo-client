@@ -1,6 +1,6 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
+using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
@@ -21,23 +21,23 @@ public class SunsetCommandHandler : CommandHandlerBase
     {
         SunsetSettings sunsetSettings = SomneoApiClient.GetSunsetSettings();
 
+        string soundDevice = sunsetSettings.Device.HasValue ? EnumHelper.GetDescription(sunsetSettings.Device.Value)! : "None";
+
         string? channelOrPresetState = null;
         switch (sunsetSettings.Device)
         {
             case SoundDeviceType.FMRadio:
-                int? fmRadioPreset = sunsetSettings.GetFMRadioPreset();
-                if (fmRadioPreset.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {fmRadioPreset.Value}";
+                if (sunsetSettings.FMRadioPreset.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {sunsetSettings.FMRadioPreset.Value}";
                 break;
             case SoundDeviceType.Sunset:
-                SunsetSound? sunsetSound = sunsetSettings.GetSunsetSound();
-                if (sunsetSound.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSound.Value)}";
+                if (sunsetSettings.SunsetSound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSettings.SunsetSound.Value)}";
                 break;
         }
 
         string? soundVolumeState = null;
-        if (sunsetSettings.Device != SoundDeviceType.None)
+        if (sunsetSettings.Device.HasValue)
             soundVolumeState = $" (volume: {sunsetSettings.Volume}/25)";
 
         Console.WriteLine(
@@ -46,7 +46,7 @@ $@"Sunset settings:
   Colors: {EnumHelper.GetDescription(sunsetSettings.SunsetColors)}
   Intensity: {sunsetSettings.SunsetIntensity}/25
   Duration: {sunsetSettings.SunsetDuration}/40 minutes
-  Sound device: {EnumHelper.GetDescription(sunsetSettings.Device)}{soundVolumeState}{channelOrPresetState}");
+  Sound device: {soundDevice}{soundVolumeState}{channelOrPresetState}");
     }
 
     private void ToggleSunset(string? args)

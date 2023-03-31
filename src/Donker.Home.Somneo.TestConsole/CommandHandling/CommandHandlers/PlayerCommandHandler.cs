@@ -1,6 +1,6 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
+using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
@@ -22,23 +22,22 @@ public class PlayerCommandHandler : CommandHandlerBase
     {
         PlayerState playerState = SomneoApiClient.GetPlayerState();
 
+        string soundDevice = playerState.Device.HasValue ? EnumHelper.GetDescription(playerState.Device.Value)! : "None";
+
         string? channelOrPresetState = null;
         switch (playerState.Device)
         {
             case SoundDeviceType.FMRadio:
-                int? fmRadioPreset = playerState.GetFMRadioPreset();
-                if (fmRadioPreset.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {fmRadioPreset.Value}";
+                if (playerState.FMRadioPreset.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {playerState.FMRadioPreset.Value}";
                 break;
             case SoundDeviceType.WakeUpSound:
-                WakeUpSound? wakeUpSound = playerState.GetWakeUpSound();
-                if (wakeUpSound.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(wakeUpSound.Value)}";
+                if (playerState.WakeUpSound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(playerState.WakeUpSound.Value)}";
                 break;
             case SoundDeviceType.Sunset:
-                SunsetSound? sunsetSound = playerState.GetSunsetSound();
-                if (sunsetSound.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSound.Value)}";
+                if (playerState.SunsetSound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(playerState.SunsetSound.Value)}";
                 break;
         }
 
@@ -46,7 +45,7 @@ public class PlayerCommandHandler : CommandHandlerBase
 $@"Audio player state:
   Enabled: {(playerState.Enabled ? "Yes" : "No")}
   Volume: {playerState.Volume}/25
-  Device: {EnumHelper.GetDescription(playerState.Device)}{channelOrPresetState}");
+  Device: {soundDevice}{channelOrPresetState}");
     }
 
     private void SetPlayerVolume(string? args)

@@ -1,50 +1,36 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the light state for the Somneo device.
 /// </summary>
 public sealed class LightState
 {
-    [JsonPropertyName("onoff")]
-    public bool OnOff { get; init; }
-    [JsonPropertyName("tempy")]
-    public bool TempY { get; init; }
-    [JsonPropertyName("ngtlt")]
-    public bool NgtLt { get; init; }
-
     /// <summary>
     /// Whether the light is enabled or not.
     /// </summary>
-    public bool LightEnabled => OnOff && !TempY;
+    public bool LightEnabled { get; }
     /// <summary>
     /// The level of the normal light.
     /// </summary>
-    [JsonPropertyName("ltlvl")]
-    public int LightLevel { get; init; }
+    public int LightLevel { get; }
     /// <summary>
     /// Whether the night light is enabled or not.
     /// </summary>
-    public bool NightLightEnabled => NgtLt;
+    public bool NightLightEnabled { get; }
     /// <summary>
     /// Whether the sunrise or sunset is enabled or not.
     /// </summary>
-    public bool SunriseOrSunsetEnabled => TempY;
+    public bool SunriseOrSunsetEnabled { get; }
 
-    /* Example JSON:
-{
-  "ltlvl": 15,
-  "ltlch": 0,
-  "onoff": false,
-  "ctype": 0,
-  "tempy": false,
-  "ngtlt": false,
-  "wucrv": [],
-  "ltset": [],
-  "pwmon": false,
-  "pwmvs": [],
-  "diman": 0
-}
-     */
+    internal LightState(
+        bool lightEnabled,
+        int lightLevel,
+        bool nightLightEnabled,
+        bool sunriseOrSunsetEnabled)
+    {
+        LightEnabled = lightEnabled;
+        LightLevel = lightLevel;
+        NightLightEnabled = nightLightEnabled;
+        SunriseOrSunsetEnabled = sunriseOrSunsetEnabled;
+    }
 }

@@ -1,16 +1,18 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Donker.Home.Somneo.ApiClient.Models;
+namespace Donker.Home.Somneo.ApiClient.Dto;
 
-public class AlarmSchedules
+internal class AlarmSchedulesDto
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     [JsonPropertyName("daynm")]
-    public DayFlags[] RepeatDayFlags { get; init; }
+    public byte[] RepeatDayFlags { get; set; }
+
     [JsonPropertyName("almhr")]
-    public int[] Hours { get; init; }
+    public int[] Hours { get; set; }
+
     [JsonPropertyName("almmn")]
-    public int[] Minutes { get; init; }
+    public int[] Minutes { get; set; }
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
     /*Example JSON:

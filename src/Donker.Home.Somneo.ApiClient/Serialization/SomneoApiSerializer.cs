@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -41,9 +39,4 @@ internal class SomneoApiSerializer
         using var contentStream = content.ReadAsStream();
         return JsonSerializer.Deserialize<T>(contentStream, _options);
     }
-}
-
-internal class SomneoApiEnumConverter
-{
-
 }

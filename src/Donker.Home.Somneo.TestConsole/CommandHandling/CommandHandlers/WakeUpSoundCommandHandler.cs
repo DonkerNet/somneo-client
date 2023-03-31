@@ -1,6 +1,6 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
+using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 

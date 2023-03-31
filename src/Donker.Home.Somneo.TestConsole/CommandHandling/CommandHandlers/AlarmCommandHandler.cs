@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Helpers;
 using Donker.Home.Somneo.ApiClient.Models;
+using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
@@ -31,7 +31,7 @@ public class AlarmCommandHandler : CommandHandlerBase
             "set-silent-alarm",
             "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-2] [1-25] [5-40]",
             "Sets an alarm with only a sunrise and no sound for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity and sunrise duration.",
-            args => SetAlarm(args, SoundDeviceType.None));
+            args => SetAlarm(args, null));
         commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarm);
         commandRegistry.RegisterCommand("set-snooze-time", "[1-20]", "Sets the snooze time in minutes.", SetSnoozeTime);
     }
@@ -81,18 +81,18 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
             if (alarmSettings.RepeatDays.Count > 0)
                 daysState = $"{Environment.NewLine}  Days: {string.Join(",", alarmSettings.RepeatDays.Select(d => string.Concat(d.ToString().Take(3))))}";
 
+            string soundDevice = alarmSettings.Device.HasValue ? EnumHelper.GetDescription(alarmSettings.Device.Value)! : "None";
+
             string? channelOrPresetState = null;
             switch (alarmSettings.Device)
             {
                 case SoundDeviceType.FMRadio:
-                    int? fmRadioPreset = alarmSettings.GetFMRadioPreset();
-                    if (fmRadioPreset.HasValue)
-                        channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {fmRadioPreset.Value}";
+                    if (alarmSettings.FMRadioPreset.HasValue)
+                        channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {alarmSettings.FMRadioPreset.Value}";
                     break;
                 case SoundDeviceType.WakeUpSound:
-                    WakeUpSound? wakeUpSound = alarmSettings.GetWakeUpSound();
-                    if (wakeUpSound.HasValue)
-                        channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(wakeUpSound.Value)}";
+                    if (alarmSettings.WakeUpSound.HasValue)
+                        channelOrPresetState = $"{Environment.NewLine}  Wake-up sound: {EnumHelper.GetDescription(alarmSettings.WakeUpSound.Value)}";
                     break;
             }
 
@@ -101,7 +101,7 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
                 sunriseState = $" (intensity: {alarmSettings.SunriseIntensity}/25, duration: {alarmSettings.SunriseDuration}/40 minutes)";
 
             string? soundVolumeState = null;
-            if (alarmSettings.Device != SoundDeviceType.None)
+            if (alarmSettings.Device.HasValue)
                 soundVolumeState = $" (volume: {alarmSettings.Volume}/25)";
 
             Console.WriteLine(
@@ -110,7 +110,7 @@ $@"Alarm #{alarmSettings.Position} settings:
   Time: {alarmSettings.Hour:00}:{alarmSettings.Minute:00}{daysState}
   PowerWake: {(alarmSettings.PowerWakeEnabled ? $"{alarmSettings.PowerWakeHour!:00}:{alarmSettings.PowerWakeMinute!:00}" : "off")}
   Sunrise: {(alarmSettings.SunriseColors.HasValue ? EnumHelper.GetDescription(alarmSettings.SunriseColors.Value) : "none")}{sunriseState}
-  Sound device: {EnumHelper.GetDescription(alarmSettings.Device)}{soundVolumeState}{channelOrPresetState}");
+  Sound device: {soundDevice}{soundVolumeState}{channelOrPresetState}");
 
             return;
         }
@@ -118,7 +118,7 @@ $@"Alarm #{alarmSettings.Position} settings:
         Console.WriteLine("Specify a position between 1 and 16.");
     }
 
-    private void SetAlarm(string? args, SoundDeviceType soundDevice)
+    private void SetAlarm(string? args, SoundDeviceType? soundDevice)
     {
         if (string.IsNullOrEmpty(args))
         {
@@ -191,7 +191,7 @@ $@"Alarm #{alarmSettings.Position} settings:
             definitiveSunriseColors = sunriseColors;
         }
 
-        if (soundDevice == SoundDeviceType.None && !definitiveSunriseColors.HasValue)
+        if (!soundDevice.HasValue && !definitiveSunriseColors.HasValue)
         {
             Console.WriteLine("Specify a sunrise color scheme.");
             return;
@@ -256,7 +256,7 @@ $@"Alarm #{alarmSettings.Position} settings:
         }
 
         int volume = 0;
-        if (soundDevice != SoundDeviceType.None && (!int.TryParse(argsArray[9], out volume) || volume < 1 || volume > 25))
+        if (soundDevice.HasValue && (!int.TryParse(argsArray[9], out volume) || volume < 1 || volume > 25))
         {
             Console.WriteLine("Specify a volume between 1 and 25.");
             return;
@@ -292,7 +292,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                     volume);
                 break;
 
-            case SoundDeviceType.None:
+            case null:
                 SomneoApiClient.SetAlarmWithoutSound(
                     position,
                     hour,
@@ -333,7 +333,7 @@ $@"Set alarm #{position} with the settings:
   Time: {hour:00}:{minute:00}{daysState}
   PowerWake: {powerWakeState}
   Sunrise: {(definitiveSunriseColors.HasValue ? EnumHelper.GetDescription(definitiveSunriseColors.Value) : "none")}{sunriseState}
-  Sound device: {EnumHelper.GetDescription(soundDevice)}{soundDeviceState}");
+  Sound device: {(soundDevice.HasValue ? EnumHelper.GetDescription(soundDevice.Value) : "None")}{soundDeviceState}");
     }
 
     private void ToggleAlarm(string? args)

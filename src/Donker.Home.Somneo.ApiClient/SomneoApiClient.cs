@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using Donker.Home.Somneo.ApiClient.Helpers;
+using Donker.Home.Somneo.ApiClient.Dto;
+using Donker.Home.Somneo.ApiClient.Mapping;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
 
@@ -119,27 +119,95 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: General
 
-    public DeviceDetails GetDeviceDetails() => ExecuteGetRequest<DeviceDetails>("di/v1/products/1/device");
+    public DeviceDetails GetDeviceDetails()
+    {
+        var dto = ExecuteGetRequest<DeviceDetailsDto>("di/v1/products/1/device");
 
-    public WifiDetails GetWifiDetails() => ExecuteGetRequest<WifiDetails>("di/v1/products/0/wifi");
+        return new DeviceDetails(
+            dto.AssignedName,
+            dto.TypeNumber,
+            dto.Serial,
+            dto.ProductId,
+            dto.ProductName,
+            dto.ModelId);
+    }
 
-    public FirmwareDetails GetFirmwareDetails() => ExecuteGetRequest<FirmwareDetails>("di/v1/products/0/firmware");
+    public WifiDetails GetWifiDetails()
+    {
+        var dto = ExecuteGetRequest<WifiDetailsDto>("di/v1/products/0/wifi");
 
-    public Locale GetLocale() => ExecuteGetRequest<Locale>("di/v1/products/0/locale");
+        return new WifiDetails(
+            dto.SSID,
+            dto.Protection,
+            IPAddress.Parse(dto.IPAddress),
+            IPAddress.Parse(dto.Netmask),
+            IPAddress.Parse(dto.Gateway),
+            dto.MACAddress);
+    }
 
-    public Time GetTime() => ExecuteGetRequest<Time>("di/v1/products/0/time");
+    public FirmwareDetails GetFirmwareDetails()
+    {
+        var dto = ExecuteGetRequest<FirmwareDetailsDto>("di/v1/products/0/firmware");
+
+        return new FirmwareDetails(
+            dto.Name,
+            dto.Version,
+            dto.State,
+            dto.Upgrade,
+            dto.Progress,
+            dto.StatusMessage,
+            dto.CanDownload,
+            dto.CanDownload,
+            dto.Mandatory);
+    }
+
+    public Locale GetLocale()
+    {
+        var dto = ExecuteGetRequest<LocaleDto>("di/v1/products/0/locale");
+
+        return new Locale(dto.Country, dto.Timezone);
+    }
+
+    public Time GetTime()
+    {
+        var dto = ExecuteGetRequest<TimeDto>("di/v1/products/0/time");
+
+        return new Time(dto.DateTime, dto.TimezoneOffset, dto.CurrentDSTOffset, dto.DSTChangeOver);
+    }
 
     #endregion
 
     #region Somneo: Sensors
 
-    public SensorData GetSensorData() => ExecuteGetRequest<SensorData>("di/v1/products/1/wusrd");
+    public SensorData GetSensorData()
+    {
+        var dto = ExecuteGetRequest<SensorDataDto>("di/v1/products/1/wusrd");
+
+        return new SensorData(
+            dto.CurrentTemperature,
+            dto.AverageTemperature,
+            dto.CurrentLight,
+            dto.AverageLight,
+            dto.CurrentSound,
+            dto.AverageSound,
+            dto.CurrentHumidity,
+            dto.AverageHumidity);
+    }
 
     #endregion
 
     #region Somneo: Light
 
-    public LightState GetLightState() => ExecuteGetRequest<LightState>("di/v1/products/1/wulgt");
+    public LightState GetLightState()
+    {
+        var dto = ExecuteGetRequest<LightStateDto>("di/v1/products/1/wulgt");
+
+        return new LightState(
+            dto.Enabled && !dto.SunriseOrSunsetEnabled,
+            dto.LightLevel,
+            dto.NightLightEnabled,
+            dto.SunriseOrSunsetEnabled);
+    }
 
     public void ToggleLight(bool enabled)
     {
@@ -185,7 +253,12 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Display
 
-    public DisplayState GetDisplayState() => ExecuteGetRequest<DisplayState>("di/v1/products/1/wusts");
+    public DisplayState GetDisplayState()
+    {
+        var dto = ExecuteGetRequest<DisplayStateDto>("di/v1/products/1/wusts");
+
+        return new DisplayState(dto.Permanent, dto.Brightness);
+    }
 
     public void TogglePermanentDisplay(bool enabled)
     {
@@ -227,7 +300,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             onoff = true,   // Enable the player
             tempy = true,   // Specifies to be in preview/temporary mode?
             snddv = "wus",  // Set the player to wake-up sound
-            sndch = ((int)wakeUpSound).ToString(),
+            sndch = EnumMapper.GetWakeUpSoundValue(wakeUpSound)!.Value.ToString(),
             sdvol = volume
         };
 
@@ -249,7 +322,12 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: FM radio
 
-    public FMRadioPresets GetFMRadioPresets() => ExecuteGetRequest<FMRadioPresets>("di/v1/products/1/wufmp/00");
+    public FMRadioPresets GetFMRadioPresets()
+    {
+        var dto = ExecuteGetRequest<FMRadioPresetsDto>("di/v1/products/1/wufmp/00");
+
+        return new FMRadioPresets(dto.Preset1, dto.Preset2, dto.Preset3, dto.Preset4, dto.Preset5);
+    }
 
     public float GetFMRadioPreset(int position)
     {
@@ -272,7 +350,12 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return default;
     }
 
-    public FMRadioState GetFMRadioState() => ExecuteGetRequest<FMRadioState>("di/v1/products/1/wufmr");
+    public FMRadioState GetFMRadioState()
+    {
+        var dto = ExecuteGetRequest<FMRadioStateDto>("di/v1/products/1/wufmr");
+
+        return new FMRadioState(dto.Preset, dto.Frequency);
+    }
 
     public void EnableFMRadio()
     {
@@ -311,7 +394,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         object data = new
         {
-            fmcmd = EnumHelper.GetEnumMemberValue(direction)
+            fmcmd = direction == RadioSeekDirection.Up ? "seekup" : "seekdown"
         };
 
         ExecutePutRequest("di/v1/products/1/wufmr", data);
@@ -340,7 +423,21 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Audio player
 
-    public PlayerState GetPlayerState() => ExecuteGetRequest<PlayerState>("di/v1/products/1/wuply");
+    public PlayerState GetPlayerState()
+    {
+        var dto = ExecuteGetRequest<PlayerStateDto>("di/v1/products/1/wuply");
+
+        var device = EnumMapper.GetSoundDeviceType(dto.Device);
+        int channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : 0;
+
+        return new PlayerState(
+            dto.Enabled,
+            device.HasValue ? dto.Volume : null,
+            device,
+            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
+            device == SoundDeviceType.WakeUpSound ? EnumMapper.GetWakeUpSound(channelOrPreset) : null,
+            device == SoundDeviceType.Sunset ? EnumMapper.GetSunsetSound(channelOrPreset) : null);
+    }
 
     public void SetPlayerVolume(int volume)
     {
@@ -371,8 +468,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     public IReadOnlyList<Alarm> GetAlarms()
     {
-        AlarmStates alarmStates = ExecuteGetRequest<AlarmStates>("di/v1/products/1/wualm/aenvs");
-        AlarmSchedules alarmSchedules = ExecuteGetRequest<AlarmSchedules>("di/v1/products/1/wualm/aalms");
+        AlarmStatesDto alarmStates = ExecuteGetRequest<AlarmStatesDto>("di/v1/products/1/wualm/aenvs");
+        AlarmSchedulesDto alarmSchedules = ExecuteGetRequest<AlarmSchedulesDto>("di/v1/products/1/wualm/aalms");
 
         int alarmCount = alarmStates.Set.Length;
         var alarms = new List<Alarm>(alarmCount);
@@ -389,22 +486,20 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             int? powerWakeHour = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 1] : null;
             int? powerWakeMinute = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 2] : null;
 
-            var repeatDays = EnumHelper.DayFlagsToDaysOfWeek(alarmSchedules.RepeatDayFlags[i]).ToList();
+            var repeatDays = EnumMapper.GetDaysOfWeek(alarmSchedules.RepeatDayFlags[i]).ToList();
 
             int hour = alarmSchedules.Hours[i];
             int minute = alarmSchedules.Minutes[i];
 
-            var alarm = new Alarm
-            {
-                Position = i + 1,
-                Enabled = enabled,
-                Hour = hour,
-                Minute = minute,
-                RepeatDays = new ReadOnlyCollection<DayOfWeek>(repeatDays),
-                PowerWakeEnabled = powerWakeEnabled,
-                PowerWakeHour = powerWakeHour,
-                PowerWakeMinute = powerWakeMinute
-            };
+            var alarm = new Alarm(
+                repeatDays,
+                i + 1,
+                enabled,
+                hour,
+                minute,
+                powerWakeEnabled,
+                powerWakeHour,
+                powerWakeMinute);
 
             alarms.Add(alarm);
         }
@@ -473,7 +568,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             powerWakeMinutes,
             repeatDays,
             sunriseColors, sunriseIntensity, sunriseDuration,
-            null, SoundDeviceType.None, null, null);
+            null, null, null, null);
     }
 
     private void SetAlarm(int position,
@@ -481,7 +576,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         int? powerWakeMinutes,
         ICollection<DayOfWeek>? repeatDays,
         ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
-        int? volume, SoundDeviceType soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
+        int? volume, SoundDeviceType? soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
     {
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
@@ -527,7 +622,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
                 throw new ArgumentException("When the sunrise colors are set, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
             if (!sunriseDuration.HasValue || sunriseDuration.Value < 5 || sunriseDuration.Value > 40 || sunriseDuration.Value % 5 != 0)
                 throw new ArgumentException("When the sunrise colors are set, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
-            sunriseColorSchemeNumber = (int)sunriseColors.Value;
+            sunriseColorSchemeNumber = EnumMapper.GetColorSchemeValue(sunriseColors)!.Value;
             definitiveSunriseIntensity = sunriseIntensity.Value;
             definitiveSunriseDuration = sunriseDuration.Value;
         }
@@ -537,16 +632,16 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         switch (soundDevice)
         {
             case SoundDeviceType.WakeUpSound:
-                soundChannel = (int)wakeUpSound.GetValueOrDefault();
+                soundChannel = EnumMapper.GetWakeUpSoundValue(wakeUpSound)!.Value;
                 break;
 
             case SoundDeviceType.FMRadio:
-                soundChannel = fmRadioPreset.GetValueOrDefault();
+                soundChannel = fmRadioPreset!.Value;
                 break;
         }
 
-        byte repeatDaysNumber = (byte)EnumHelper.DaysOfWeekToDayFlags(repeatDays);
-        string soundDeviceName = EnumHelper.GetEnumMemberValue(soundDevice)!;
+        byte repeatDaysNumber = EnumMapper.GetDaysOfWeekValue(repeatDays);
+        string soundDeviceName = EnumMapper.GetSoundDeviceTypeValue(soundDevice);
 
         object data = new
         {
@@ -607,9 +702,32 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prfnr = position
         };
 
-        var alarmSettings = ExecutePutRequest<AlarmSettings>("di/v1/products/1/wualm", data);
+        var dto = ExecutePutRequest<AlarmSettingsDto>("di/v1/products/1/wualm", data);
 
-        return alarmSettings.IsSet ? alarmSettings : null;
+        if (!dto.IsSet)
+            return null;
+
+        bool powerWakeEnabled = dto.PowerWakeSize == 255;
+        bool hasSunrise = dto.SunriseIntensity > 0;
+        SoundDeviceType? device = EnumMapper.GetSoundDeviceType(dto.Device);
+        int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
+
+        return new AlarmSettings(
+            EnumMapper.GetDaysOfWeek(dto.RepeatDayFlags),
+            dto.Position,
+            dto.Enabled,
+            dto.Hour,
+            dto.Minute,
+            powerWakeEnabled,
+            powerWakeEnabled ? dto.PowerWakeHour : null,
+            powerWakeEnabled ? dto.PowerWakeMinute : null,
+            hasSunrise ? EnumMapper.GetColorScheme(dto.ColorSchemeNumber) : null,
+            hasSunrise ? dto.SunriseDuration : null,
+            hasSunrise ? dto.SunriseIntensity : null,
+            device,
+            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
+            device == SoundDeviceType.WakeUpSound ? EnumMapper.GetWakeUpSound(channelOrPreset) : null,
+            device.HasValue ? dto.Volume : null);
     }
 
     public void SetSnoozeTime(int minutes)
@@ -629,7 +747,23 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Timer
 
-    public TimerState GetTimerState() => ExecuteGetRequest<TimerState>("di/v1/products/1/wutmr");
+    public TimerState GetTimerState()
+    {
+        var dto = ExecuteGetRequest<TimerStateDto>("di/v1/products/1/wutmr");
+
+        var relaxBreatheTime = TimeSpan.FromSeconds((dto.RelaxBreatheMinutes * 60) + dto.RelaxBreatheSeconds);
+        bool relaxBreatheEnabled = relaxBreatheTime > TimeSpan.Zero;
+        var sunsetTime = TimeSpan.FromSeconds((dto.SunsetMinutes * 60) + dto.SunsetSeconds);
+        bool sunsetTimeEnabled = sunsetTime > TimeSpan.Zero;
+
+        return new TimerState(
+            dto.StartTime,
+            relaxBreatheEnabled,
+            sunsetTimeEnabled,
+            relaxBreatheEnabled || sunsetTimeEnabled,
+            relaxBreatheEnabled ? relaxBreatheTime : null,
+            sunsetTimeEnabled ? sunsetTime : null);
+    }
 
     #endregion
 
@@ -647,7 +781,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             onoff = true,   // Enable the light
             tempy = true,   // Specifies to be in preview/temporary mode?
             ngtlt = false,  // Disable the night light
-            ctype = (int)sunriseColors,
+            ctype = EnumMapper.GetColorSchemeValue(sunriseColors)!.Value,
             ltlvl = sunriseIntensity
         };
 
@@ -669,7 +803,23 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Sunset
 
-    public SunsetSettings GetSunsetSettings() => ExecuteGetRequest<SunsetSettings>("di/v1/products/1/wudsk");
+    public SunsetSettings GetSunsetSettings()
+    {
+        var dto = ExecuteGetRequest<SunsetSettingsDto>("di/v1/products/1/wudsk");
+
+        SoundDeviceType? device = EnumMapper.GetSoundDeviceType(dto.Device);
+        int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
+
+        return new SunsetSettings(
+            dto.Enabled,
+            dto.SunsetIntensity,
+            dto.SunsetDuration,
+            EnumMapper.GetColorScheme(dto.SunsetColors)!.Value,
+            device,
+            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
+            device == SoundDeviceType.Sunset ? EnumMapper.GetSunsetSound(channelOrPreset) : null,
+            device.HasValue ? dto.Volume : null);
+    }
 
     public void ToggleSunset(bool enabled)
     {
