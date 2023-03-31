@@ -12,7 +12,8 @@ public sealed class AlarmSettings
     /// </summary>
     public IReadOnlyList<DayOfWeek> RepeatDays { get; }
     /// <summary>
-    /// The position of the alarm in the alarm list. Can be between 1 and 16.
+    /// The position of the alarm in the alarm list.
+    /// Can be between 1 and 16.
     /// </summary>
     public int Position { get; }
     /// <summary>
@@ -41,10 +42,12 @@ public sealed class AlarmSettings
     public int? PowerWakeMinute { get; }
     /// <summary>
     /// The duration of the sunrise.
+    /// Can be between 1 and 40.
     /// </summary>
     public int? SunriseDuration { get; }
     /// <summary>
     /// The maximum light level of the sunrise.
+    /// Can be between 1 and 25.
     /// </summary>
     public int? SunriseIntensity { get; }
     /// <summary>
@@ -57,6 +60,7 @@ public sealed class AlarmSettings
     public SoundDeviceType? Device { get; }
     /// <summary>
     /// The preset that is selected if <see cref="Device"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
+    /// Can be between 1 and 5.
     /// </summary>
     public int? FMRadioPreset { get; }
     /// <summary>
@@ -65,6 +69,7 @@ public sealed class AlarmSettings
     public WakeUpSound? WakeUpSound { get; }
     /// <summary>
     /// The alarm's volume level.
+    /// Can be between 1 and 25.
     /// </summary>
     public int? Volume { get; }
 

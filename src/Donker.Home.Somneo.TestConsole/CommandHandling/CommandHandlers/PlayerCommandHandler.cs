@@ -22,10 +22,10 @@ public class PlayerCommandHandler : CommandHandlerBase
     {
         PlayerState playerState = SomneoApiClient.GetPlayerState();
 
-        string soundDevice = playerState.Device.HasValue ? EnumHelper.GetDescription(playerState.Device.Value)! : "None";
+        string soundDevice = playerState.SoundDevice.HasValue ? EnumHelper.GetDescription(playerState.SoundDevice.Value)! : "None";
 
         string? channelOrPresetState = null;
-        switch (playerState.Device)
+        switch (playerState.SoundDevice)
         {
             case SoundDeviceType.FMRadio:
                 if (playerState.FMRadioPreset.HasValue)

@@ -12,7 +12,8 @@ public sealed class Alarm
     /// </summary>
     public IReadOnlyList<DayOfWeek> RepeatDays { get; }
     /// <summary>
-    /// The position of the alarm in the alarm list. Can be between 1 and 16.
+    /// The position of the alarm in the alarm list.
+    /// Can be between 1 and 16.
     /// </summary>
     public int Position { get; }
     /// <summary>

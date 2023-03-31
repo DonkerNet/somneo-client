@@ -1,10 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using Donker.Home.Somneo.ApiClient.Serialization.Converters;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Dto;
 
 internal class FMRadioStateDto
 {
     [JsonPropertyName("fmfrq")]
+    [JsonConverter(typeof(FloatJsonConverter))]
     public float Frequency { get; set; }
 
     [JsonPropertyName("prstn")]

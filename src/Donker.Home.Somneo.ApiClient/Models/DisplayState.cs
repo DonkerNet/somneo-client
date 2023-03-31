@@ -11,6 +11,7 @@ public sealed class DisplayState
     public bool Permanent { get; }
     /// <summary>
     /// The brightness level of the display.
+    /// Can be between 1 and 6.
     /// </summary>
     public int Brightness { get; }
 

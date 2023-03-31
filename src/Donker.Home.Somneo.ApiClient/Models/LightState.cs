@@ -11,6 +11,7 @@ public sealed class LightState
     public bool LightEnabled { get; }
     /// <summary>
     /// The level of the normal light.
+    /// Can be between 1 and 25.
     /// </summary>
     public int LightLevel { get; }
     /// <summary>

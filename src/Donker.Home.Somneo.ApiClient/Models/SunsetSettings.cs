@@ -11,10 +11,12 @@ public sealed class SunsetSettings
     public bool Enabled { get; }
     /// <summary>
     /// The maximum light level of the sunset.
+    /// Can be between 1 and 25.
     /// </summary>
     public int SunsetIntensity { get; }
     /// <summary>
     /// The duration of the sunset in minutes.
+    /// Can be between 1 and 60.
     /// </summary>
     public int SunsetDuration { get; }
     /// <summary>
@@ -24,17 +26,19 @@ public sealed class SunsetSettings
     /// <summary>
     /// The type of sound device used for the sunset sound.
     /// </summary>
-    public SoundDeviceType? Device { get; }
+    public SoundDeviceType? SoundDevice { get; }
     /// <summary>
-    /// The preset that is selected if <see cref="Device"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
+    /// The preset that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
+    /// Can be between 1 and 5.
     /// </summary>
     public int? FMRadioPreset { get; }
     /// <summary>
-    /// The sunset sound that is selected if <see cref="Device"/> is set to <see cref="SoundDeviceType.Sunset"/>.
+    /// The sunset sound that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.Sunset"/>.
     /// </summary>
     public SunsetSound? SunsetSound { get; }
     /// <summary>
     /// The sunset sound's volume level.
+    /// Can be between 1 and 25.
     /// </summary>
     public int? Volume { get; }
 
@@ -52,7 +56,7 @@ public sealed class SunsetSettings
         SunsetIntensity = sunsetIntensity;
         SunsetDuration = sunsetDuration;
         SunsetColors = sunsetColors;
-        Device = device;
+        SoundDevice = device;
         FMRadioPreset = fMRadioPreset;
         SunsetSound = sunsetSound;
         Volume = volume;

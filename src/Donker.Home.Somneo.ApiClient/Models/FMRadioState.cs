@@ -6,7 +6,8 @@
 public sealed class FMRadioState
 {
     /// <summary>
-    /// The current preset the frequency is set for. Can be between 1 and 5.
+    /// The current preset the frequency is set for.
+    /// Can be between 1 and 5.
     /// </summary>
     public int Preset { get; }
     /// <summary>

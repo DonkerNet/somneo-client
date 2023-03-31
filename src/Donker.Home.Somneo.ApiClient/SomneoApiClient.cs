@@ -340,21 +340,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prstn = position
         };
 
-        var result = ExecutePutRequest<Dictionary<string, JsonElement>>("di/v1/products/1/wufmr", data);
+        var dto = ExecutePutRequest<FMRadioStateDto>("di/v1/products/1/wufmr", data);
 
-        if (result.TryGetValue("fmfrq", out var frequencyElement)
-            && frequencyElement.ValueKind == JsonValueKind.String
-            && float.TryParse(frequencyElement.GetString(), NumberStyles.Any, NumberFormatInfo.InvariantInfo, out float frequency))
-            return frequency;
-
-        return default;
+        return dto.Frequency;
     }
 
     public FMRadioState GetFMRadioState()
     {
         var dto = ExecuteGetRequest<FMRadioStateDto>("di/v1/products/1/wufmr");
 
-        return new FMRadioState(dto.Preset, dto.Frequency);
+        return new FMRadioState(
+            dto.Preset,
+            dto.Frequency);
     }
 
     public void EnableFMRadio()

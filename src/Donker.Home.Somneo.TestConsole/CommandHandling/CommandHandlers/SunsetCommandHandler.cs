@@ -21,10 +21,10 @@ public class SunsetCommandHandler : CommandHandlerBase
     {
         SunsetSettings sunsetSettings = SomneoApiClient.GetSunsetSettings();
 
-        string soundDevice = sunsetSettings.Device.HasValue ? EnumHelper.GetDescription(sunsetSettings.Device.Value)! : "None";
+        string soundDevice = sunsetSettings.SoundDevice.HasValue ? EnumHelper.GetDescription(sunsetSettings.SoundDevice.Value)! : "None";
 
         string? channelOrPresetState = null;
-        switch (sunsetSettings.Device)
+        switch (sunsetSettings.SoundDevice)
         {
             case SoundDeviceType.FMRadio:
                 if (sunsetSettings.FMRadioPreset.HasValue)
@@ -37,7 +37,7 @@ public class SunsetCommandHandler : CommandHandlerBase
         }
 
         string? soundVolumeState = null;
-        if (sunsetSettings.Device.HasValue)
+        if (sunsetSettings.SoundDevice.HasValue)
             soundVolumeState = $" (volume: {sunsetSettings.Volume}/25)";
 
         Console.WriteLine(
