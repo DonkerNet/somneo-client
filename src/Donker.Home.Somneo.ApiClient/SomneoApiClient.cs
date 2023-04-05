@@ -25,9 +25,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     #region Public properties
-    
+
+    /// <inheritdoc/>
     public Uri? BaseAddress => HttpClient.BaseAddress;
 
+    /// <inheritdoc/>
     public TimeSpan Timeout
     {
         get => HttpClient.Timeout;
@@ -42,7 +44,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// Initializes a new instance of the <see cref="SomneoApiClient"/> using a custom HTTP client.
     /// </summary>
     /// <param name="httpClient">The HTTP client to use for making requests to the Somneo device.</param>
-    /// <param name="disposeHttpClient">Whether the HTTP client that is used should also be disposed when <see cref="SomneoApiClient.Dispose"/> is called.</param>
+    /// <param name="disposeHttpClient">Whether the HTTP client that is used should also be disposed when <see cref="Dispose()"/> is called.</param>
     /// <exception cref="ArgumentNullException">The HTTP client is null.</exception>
     public SomneoApiClient(HttpClient httpClient, bool disposeHttpClient)
     {
@@ -56,7 +58,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="SomneoApiClient"/> using the specified hostname.
     /// </summary>
-    /// <param name="host">The hostname that resolves to the Somneo device to connect with.</param>
+    /// <param name="hostname">The hostname that resolves to the Somneo device to connect with.</param>
     /// <exception cref="ArgumentNullException">The hostname is null.</exception>
     /// <exception cref="ArgumentException">The hostname is empty.</exception>
     /// <exception cref="UriFormatException">The hostname cannot be converted to a valid URI.</exception>
@@ -116,30 +118,35 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: General
 
+    /// <inheritdoc/>
     public DeviceDetails GetDeviceDetails()
     {
         var dto = ExecuteGetRequest<DeviceDetailsDto>("di/v1/products/1/device");
         return DeviceDetailsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public WifiDetails GetWifiDetails()
     {
         var dto = ExecuteGetRequest<WifiDetailsDto>("di/v1/products/0/wifi");
         return WifiDetailsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public FirmwareDetails GetFirmwareDetails()
     {
         var dto = ExecuteGetRequest<FirmwareDetailsDto>("di/v1/products/0/firmware");
         return FirmwareDetailsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public Locale GetLocale()
     {
         var dto = ExecuteGetRequest<LocaleDto>("di/v1/products/0/locale");
         return LocaleMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public Time GetTime()
     {
         var dto = ExecuteGetRequest<TimeDto>("di/v1/products/0/time");
@@ -150,6 +157,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Sensors
 
+    /// <inheritdoc/>
     public SensorData GetSensorData()
     {
         var dto = ExecuteGetRequest<SensorDataDto>("di/v1/products/1/wusrd");
@@ -160,12 +168,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Light
 
+    /// <inheritdoc/>
     public LightState GetLightState()
     {
         var dto = ExecuteGetRequest<LightStateDto>("di/v1/products/1/wulgt");
         return LightStateMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public void ToggleLight(bool enabled)
     {
         object data = new
@@ -178,6 +188,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wulgt", data);
     }
 
+    /// <inheritdoc/>
     public void SetLightLevel(int lightLevel)
     {
         if (lightLevel < 1 || lightLevel > 25)
@@ -194,6 +205,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wulgt", data);
     }
 
+    /// <inheritdoc/>
     public void ToggleNightLight(bool enabled)
     {
         object data = new
@@ -210,12 +222,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Display
 
+    /// <inheritdoc/>
     public DisplayState GetDisplayState()
     {
         var dto = ExecuteGetRequest<DisplayStateDto>("di/v1/products/1/wusts");
         return DisplayStateMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public void TogglePermanentDisplay(bool enabled)
     {
         object data = new
@@ -226,6 +240,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wusts", data);
     }
 
+    /// <inheritdoc/>
     public void SetDisplayLevel(int brightnessLevel)
     {
         if (brightnessLevel < 1 || brightnessLevel > 6)
@@ -243,6 +258,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Wake-up sounds
 
+    /// <inheritdoc/>
     public void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume)
     {
         if (!Enum.IsDefined(wakeUpSound))
@@ -263,6 +279,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
+    /// <inheritdoc/>
     public void DisableWakeUpSoundPreview()
     {
         object data = new
@@ -278,12 +295,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: FM radio
 
+    /// <inheritdoc/>
     public FMRadioPresets GetFMRadioPresets()
     {
         var dto = ExecuteGetRequest<FMRadioPresetsDto>("di/v1/products/1/wufmp/00");
         return FMRadioPresetsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public float GetFMRadioPreset(int position)
     {
         if (position < 1 || position > 5)
@@ -300,12 +319,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return dto.Frequency;
     }
 
+    /// <inheritdoc/>
     public FMRadioState GetFMRadioState()
     {
         var dto = ExecuteGetRequest<FMRadioStateDto>("di/v1/products/1/wufmr");
         return FMRadioStateMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public void EnableFMRadio()
     {
         object data = new
@@ -319,6 +340,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
+    /// <inheritdoc/>
     public void EnableFMRadioPreset(int preset)
     {
         if (preset < 1 || preset > 5)
@@ -336,6 +358,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
+    /// <inheritdoc/>
     public void SeekFMRadioStation(RadioSeekDirection direction)
     {
         if (!Enum.IsDefined(direction))
@@ -353,6 +376,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: AUX
 
+    /// <inheritdoc/>
     public void EnableAUX()
     {
         DisablePlayer(); // Disable the player first, because AUX does not enable right away for some reason
@@ -372,12 +396,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Audio player
 
+    /// <inheritdoc/>
     public PlayerState GetPlayerState()
     {
         var dto = ExecuteGetRequest<PlayerStateDto>("di/v1/products/1/wuply");
         return PlayerStateMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public void SetPlayerVolume(int volume)
     {
         if (volume < 1 || volume > 25)
@@ -391,6 +417,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wuply", data);
     }
 
+    /// <inheritdoc/>
     public void DisablePlayer()
     {
         object data = new
@@ -405,6 +432,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Alarms
 
+    /// <inheritdoc/>
     public IReadOnlyList<Alarm> GetAlarms()
     {
         AlarmStatesDto alarmStatesDto = ExecuteGetRequest<AlarmStatesDto>("di/v1/products/1/wualm/aenvs");
@@ -412,6 +440,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return AlarmMapper.ToModels(alarmStatesDto, alarmSchedulesDto);
     }
 
+    /// <inheritdoc/>
     public void ToggleAlarm(int position, bool enabled)
     {
         if (position < 1 || position > 16)
@@ -426,6 +455,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
+    /// <inheritdoc/>
     public void SetAlarmWithWakeUpSound(
         int position,
         int hour, int minute,
@@ -443,6 +473,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             volume, SoundDeviceType.WakeUpSound, wakeUpSound, null);
     }
 
+    /// <inheritdoc/>
     public void SetAlarmWithFMRadio(
         int position,
         int hour, int minute,
@@ -460,6 +491,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
     }
 
+    /// <inheritdoc/>
     public void SetAlarmWithoutSound(
         int position,
         int hour, int minute,
@@ -570,6 +602,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
+    /// <inheritdoc/>
     public void RemoveAlarm(int position)
     {
         if (position < 1 || position > 16)
@@ -597,6 +630,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
     }
 
+    /// <inheritdoc/>
     public AlarmSettings? GetAlarmSettings(int position)
     {
         if (position < 1 || position > 16)
@@ -612,6 +646,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return dto.IsSet ? AlarmSettingsMapper.ToModel(dto) : null;
     }
 
+    /// <inheritdoc/>
     public void SetSnoozeTime(int minutes)
     {
         if (minutes < 1 || minutes > 20)
@@ -629,6 +664,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Timer
 
+    /// <inheritdoc/>
     public TimerState GetTimerState()
     {
         var dto = ExecuteGetRequest<TimerStateDto>("di/v1/products/1/wutmr");
@@ -639,6 +675,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Sunrise
 
+    /// <inheritdoc/>
     public void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity)
     {
         if (!Enum.IsDefined(sunriseColors))
@@ -658,6 +695,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wulgt", data);
     }
 
+    /// <inheritdoc/>
     public void DisableSunrisePreview()
     {
         object data = new
@@ -673,12 +711,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Somneo: Sunset
 
+    /// <inheritdoc/>
     public SunsetSettings GetSunsetSettings()
     {
         var dto = ExecuteGetRequest<SunsetSettingsDto>("di/v1/products/1/wudsk");
         return SunsetSettingsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
     public void ToggleSunset(bool enabled)
     {
         object data = new
@@ -758,15 +798,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #region Disposing
 
-    /// <summary>
-    /// Disposes this <see cref="SomneoApiClient"/> instance and it's inner <see cref="System.Net.Http.HttpClient"/> if allowed.
-    /// </summary>
+    /// <inheritdoc/>
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
 
+    /// <inheritdoc cref="Dispose()"/>
     ~SomneoApiClient()
     {
         Dispose(false);
