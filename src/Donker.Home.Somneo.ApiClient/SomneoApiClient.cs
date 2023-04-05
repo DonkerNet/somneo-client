@@ -1,9 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Net;
-using System.Text.Json;
+﻿using System.Net;
 using Donker.Home.Somneo.ApiClient.Dto;
-using Donker.Home.Somneo.ApiClient.Mapping;
+using Donker.Home.Somneo.ApiClient.Mappers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
 
@@ -122,57 +119,31 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public DeviceDetails GetDeviceDetails()
     {
         var dto = ExecuteGetRequest<DeviceDetailsDto>("di/v1/products/1/device");
-
-        return new DeviceDetails(
-            dto.AssignedName,
-            dto.TypeNumber,
-            dto.Serial,
-            dto.ProductId,
-            dto.ProductName,
-            dto.ModelId);
+        return DeviceDetailsMapper.ToModel(dto);
     }
 
     public WifiDetails GetWifiDetails()
     {
         var dto = ExecuteGetRequest<WifiDetailsDto>("di/v1/products/0/wifi");
-
-        return new WifiDetails(
-            dto.SSID,
-            dto.Protection,
-            IPAddress.Parse(dto.IPAddress),
-            IPAddress.Parse(dto.Netmask),
-            IPAddress.Parse(dto.Gateway),
-            dto.MACAddress);
+        return WifiDetailsMapper.ToModel(dto);
     }
 
     public FirmwareDetails GetFirmwareDetails()
     {
         var dto = ExecuteGetRequest<FirmwareDetailsDto>("di/v1/products/0/firmware");
-
-        return new FirmwareDetails(
-            dto.Name,
-            dto.Version,
-            dto.State,
-            dto.Upgrade,
-            dto.Progress,
-            dto.StatusMessage,
-            dto.CanDownload,
-            dto.CanDownload,
-            dto.Mandatory);
+        return FirmwareDetailsMapper.ToModel(dto);
     }
 
     public Locale GetLocale()
     {
         var dto = ExecuteGetRequest<LocaleDto>("di/v1/products/0/locale");
-
-        return new Locale(dto.Country, dto.Timezone);
+        return LocaleMapper.ToModel(dto);
     }
 
     public Time GetTime()
     {
         var dto = ExecuteGetRequest<TimeDto>("di/v1/products/0/time");
-
-        return new Time(dto.DateTime, dto.TimezoneOffset, dto.CurrentDSTOffset, dto.DSTChangeOver);
+        return TimeMapper.ToModel(dto);
     }
 
     #endregion
@@ -182,16 +153,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public SensorData GetSensorData()
     {
         var dto = ExecuteGetRequest<SensorDataDto>("di/v1/products/1/wusrd");
-
-        return new SensorData(
-            dto.CurrentTemperature,
-            dto.AverageTemperature,
-            dto.CurrentLight,
-            dto.AverageLight,
-            dto.CurrentSound,
-            dto.AverageSound,
-            dto.CurrentHumidity,
-            dto.AverageHumidity);
+        return SensorDataMapper.ToModel(dto);
     }
 
     #endregion
@@ -201,12 +163,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public LightState GetLightState()
     {
         var dto = ExecuteGetRequest<LightStateDto>("di/v1/products/1/wulgt");
-
-        return new LightState(
-            dto.Enabled && !dto.SunriseOrSunsetEnabled,
-            dto.LightLevel,
-            dto.NightLightEnabled,
-            dto.SunriseOrSunsetEnabled);
+        return LightStateMapper.ToModel(dto);
     }
 
     public void ToggleLight(bool enabled)
@@ -256,8 +213,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public DisplayState GetDisplayState()
     {
         var dto = ExecuteGetRequest<DisplayStateDto>("di/v1/products/1/wusts");
-
-        return new DisplayState(dto.Permanent, dto.Brightness);
+        return DisplayStateMapper.ToModel(dto);
     }
 
     public void TogglePermanentDisplay(bool enabled)
@@ -325,8 +281,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public FMRadioPresets GetFMRadioPresets()
     {
         var dto = ExecuteGetRequest<FMRadioPresetsDto>("di/v1/products/1/wufmp/00");
-
-        return new FMRadioPresets(dto.Preset1, dto.Preset2, dto.Preset3, dto.Preset4, dto.Preset5);
+        return FMRadioPresetsMapper.ToModel(dto);
     }
 
     public float GetFMRadioPreset(int position)
@@ -348,10 +303,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public FMRadioState GetFMRadioState()
     {
         var dto = ExecuteGetRequest<FMRadioStateDto>("di/v1/products/1/wufmr");
-
-        return new FMRadioState(
-            dto.Preset,
-            dto.Frequency);
+        return FMRadioStateMapper.ToModel(dto);
     }
 
     public void EnableFMRadio()
@@ -391,7 +343,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         object data = new
         {
-            fmcmd = direction == RadioSeekDirection.Up ? "seekup" : "seekdown"
+            fmcmd = EnumMapper.GetRadioSeekDirectionValue(direction)
         };
 
         ExecutePutRequest("di/v1/products/1/wufmr", data);
@@ -423,17 +375,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public PlayerState GetPlayerState()
     {
         var dto = ExecuteGetRequest<PlayerStateDto>("di/v1/products/1/wuply");
-
-        var device = EnumMapper.GetSoundDeviceType(dto.Device);
-        int channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : 0;
-
-        return new PlayerState(
-            dto.Enabled,
-            device.HasValue ? dto.Volume : null,
-            device,
-            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
-            device == SoundDeviceType.WakeUpSound ? EnumMapper.GetWakeUpSound(channelOrPreset) : null,
-            device == SoundDeviceType.Sunset ? EnumMapper.GetSunsetSound(channelOrPreset) : null);
+        return PlayerStateMapper.ToModel(dto);
     }
 
     public void SetPlayerVolume(int volume)
@@ -465,43 +407,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     public IReadOnlyList<Alarm> GetAlarms()
     {
-        AlarmStatesDto alarmStates = ExecuteGetRequest<AlarmStatesDto>("di/v1/products/1/wualm/aenvs");
-        AlarmSchedulesDto alarmSchedules = ExecuteGetRequest<AlarmSchedulesDto>("di/v1/products/1/wualm/aalms");
-
-        int alarmCount = alarmStates.Set.Length;
-        var alarms = new List<Alarm>(alarmCount);
-
-        for (int i = 0; i < alarmCount; ++i)
-        {
-            if (!alarmStates.Set[i])
-                continue;
-
-            int powerWakeIndex = i * 3;
-
-            bool enabled = alarmStates.Enabled[i];
-            bool powerWakeEnabled = alarmStates.PowerWake[powerWakeIndex] == 255;
-            int? powerWakeHour = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 1] : null;
-            int? powerWakeMinute = powerWakeEnabled ? alarmStates.PowerWake[powerWakeIndex + 2] : null;
-
-            var repeatDays = EnumMapper.GetDaysOfWeek(alarmSchedules.RepeatDayFlags[i]).ToList();
-
-            int hour = alarmSchedules.Hours[i];
-            int minute = alarmSchedules.Minutes[i];
-
-            var alarm = new Alarm(
-                repeatDays,
-                i + 1,
-                enabled,
-                hour,
-                minute,
-                powerWakeEnabled,
-                powerWakeHour,
-                powerWakeMinute);
-
-            alarms.Add(alarm);
-        }
-
-        return new ReadOnlyCollection<Alarm>(alarms);
+        AlarmStatesDto alarmStatesDto = ExecuteGetRequest<AlarmStatesDto>("di/v1/products/1/wualm/aenvs");
+        AlarmSchedulesDto alarmSchedulesDto = ExecuteGetRequest<AlarmSchedulesDto>("di/v1/products/1/wualm/aalms");
+        return AlarmMapper.ToModels(alarmStatesDto, alarmSchedulesDto);
     }
 
     public void ToggleAlarm(int position, bool enabled)
@@ -701,30 +609,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         var dto = ExecutePutRequest<AlarmSettingsDto>("di/v1/products/1/wualm", data);
 
-        if (!dto.IsSet)
-            return null;
-
-        bool powerWakeEnabled = dto.PowerWakeSize == 255;
-        bool hasSunrise = dto.SunriseIntensity > 0;
-        SoundDeviceType? device = EnumMapper.GetSoundDeviceType(dto.Device);
-        int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
-
-        return new AlarmSettings(
-            EnumMapper.GetDaysOfWeek(dto.RepeatDayFlags),
-            dto.Position,
-            dto.Enabled,
-            dto.Hour,
-            dto.Minute,
-            powerWakeEnabled,
-            powerWakeEnabled ? dto.PowerWakeHour : null,
-            powerWakeEnabled ? dto.PowerWakeMinute : null,
-            hasSunrise ? EnumMapper.GetColorScheme(dto.ColorSchemeNumber) : null,
-            hasSunrise ? dto.SunriseDuration : null,
-            hasSunrise ? dto.SunriseIntensity : null,
-            device,
-            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
-            device == SoundDeviceType.WakeUpSound ? EnumMapper.GetWakeUpSound(channelOrPreset) : null,
-            device.HasValue ? dto.Volume : null);
+        return dto.IsSet ? AlarmSettingsMapper.ToModel(dto) : null;
     }
 
     public void SetSnoozeTime(int minutes)
@@ -747,19 +632,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public TimerState GetTimerState()
     {
         var dto = ExecuteGetRequest<TimerStateDto>("di/v1/products/1/wutmr");
-
-        var relaxBreatheTime = TimeSpan.FromSeconds((dto.RelaxBreatheMinutes * 60) + dto.RelaxBreatheSeconds);
-        bool relaxBreatheEnabled = relaxBreatheTime > TimeSpan.Zero;
-        var sunsetTime = TimeSpan.FromSeconds((dto.SunsetMinutes * 60) + dto.SunsetSeconds);
-        bool sunsetTimeEnabled = sunsetTime > TimeSpan.Zero;
-
-        return new TimerState(
-            dto.StartTime,
-            relaxBreatheEnabled,
-            sunsetTimeEnabled,
-            relaxBreatheEnabled || sunsetTimeEnabled,
-            relaxBreatheEnabled ? relaxBreatheTime : null,
-            sunsetTimeEnabled ? sunsetTime : null);
+        return TimerStateMapper.ToModel(dto);
     }
 
     #endregion
@@ -803,19 +676,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     public SunsetSettings GetSunsetSettings()
     {
         var dto = ExecuteGetRequest<SunsetSettingsDto>("di/v1/products/1/wudsk");
-
-        SoundDeviceType? device = EnumMapper.GetSoundDeviceType(dto.Device);
-        int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
-
-        return new SunsetSettings(
-            dto.Enabled,
-            dto.SunsetIntensity,
-            dto.SunsetDuration,
-            EnumMapper.GetColorScheme(dto.SunsetColors)!.Value,
-            device,
-            device == SoundDeviceType.FMRadio ? channelOrPreset : null,
-            device == SoundDeviceType.Sunset ? EnumMapper.GetSunsetSound(channelOrPreset) : null,
-            device.HasValue ? dto.Volume : null);
+        return SunsetSettingsMapper.ToModel(dto);
     }
 
     public void ToggleSunset(bool enabled)

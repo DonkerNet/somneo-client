@@ -1,6 +1,6 @@
 ﻿using Donker.Home.Somneo.ApiClient.Models;
 
-namespace Donker.Home.Somneo.ApiClient.Mapping;
+namespace Donker.Home.Somneo.ApiClient.Mappers;
 
 internal static class EnumMapper
 {
@@ -96,7 +96,7 @@ internal static class EnumMapper
         };
     }
 
-    public static int? GetSunsetSound(SunsetSound? sunsetSound)
+    public static int? GetSunsetSoundValue(SunsetSound? sunsetSound)
     {
         return sunsetSound switch
         {
@@ -104,6 +104,26 @@ internal static class EnumMapper
             SunsetSound.OceanWaves => 2,
             SunsetSound.UnderWater => 3,
             SunsetSound.SummerLake => 4,
+            _ => null
+        };
+    }
+
+    public static RadioSeekDirection? GetRadioSeekDirection(string? value)
+    {
+        return value?.ToLowerInvariant() switch
+        {
+            "seekup" => RadioSeekDirection.Up,
+            "seekdown" => RadioSeekDirection.Down,
+            _ => null
+        };
+    }
+
+    public static string? GetRadioSeekDirectionValue(RadioSeekDirection? sunsetSound)
+    {
+        return sunsetSound switch
+        {
+            RadioSeekDirection.Up => "seekup",
+            RadioSeekDirection.Down => "seekdown",
             _ => null
         };
     }
