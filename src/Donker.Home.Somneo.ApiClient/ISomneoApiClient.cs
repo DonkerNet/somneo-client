@@ -1,4 +1,6 @@
-﻿using Donker.Home.Somneo.ApiClient.Models;
+﻿using Donker.Home.Somneo.ApiClient.Dto;
+using Donker.Home.Somneo.ApiClient.Mappers;
+using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.ApiClient;
 
@@ -413,6 +415,28 @@ public interface ISomneoApiClient
     /// <param name="enabled">Whether to enable or disable the sunset.</param>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void ToggleSunset(bool enabled);
+
+    #endregion
+
+    #region Somneo: Bedtime
+
+    /// <summary>
+    /// Starts a new bedtime session.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void StartBedtime();
+
+    /// <summary>
+    /// Ends a running bedtime session.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    BedtimeInfo EndBedtime();
+
+    /// <summary>
+    /// Returns information about the most recent bedtime session.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    BedtimeInfo? GetLastBedtimeInfo();
 
     #endregion
 

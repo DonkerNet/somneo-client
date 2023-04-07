@@ -731,6 +731,40 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #endregion
 
+    #region Somneo: Bedtime
+
+    /// <inheritdoc/>
+    public void StartBedtime()
+    {
+        object data = new
+        {
+            night = true
+        };
+
+        ExecutePutRequest("di/v1/products/1/wungt", data);
+    }
+
+    /// <inheritdoc/>
+    public BedtimeInfo EndBedtime()
+    {
+        object data = new
+        {
+            night = false
+        };
+
+        var dto = ExecutePutRequest<BedtimeInfoDto>("di/v1/products/1/wungt", data);
+        return BedtimeInfoMapper.ToModel(dto);
+    }
+
+    /// <inheritdoc/>
+    public BedtimeInfo? GetLastBedtimeInfo()
+    {
+        var dto = ExecuteGetRequest<BedtimeInfoDto>("di/v1/products/1/wungt");
+        return dto.Started.HasValue ? BedtimeInfoMapper.ToModel(dto) : null;
+    }
+
+    #endregion
+
     #region HTTP requests
 
     private T ExecuteGetRequest<T>(string resource) => ExecuteRequest<T>(resource, HttpMethod.Get, null);
