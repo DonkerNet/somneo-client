@@ -505,16 +505,24 @@ public interface ISomneoApiClient
 
     #endregion
 
+    #region Somneo: RelaxBreathe
+
+    /// <summary>
+    /// Retrieves the settings of RelaxBreathe, used for breathing exercises to make you fall asleep.
+    /// </summary>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    RelaxBreatheSettings GetRelaxBreatheSettings();
+
+    #endregion
+
     /*
     Methods left to add:   
-    - Get relax breathe settings
-        GET /di/v1/products/1/wurlx
-        {"durat":15,"onoff":false,"maxpr":7,"progr":3,"rtype":1,"intny":13,"sndlv":13,"sndss":0,"rlbpm":[4,5,6,7,8,9,10],"pause":[2000,2000,2000,2000,1000,1000,1000]}
     - Save relax breathe settings (sound)
         PUT /di/v1/products/1/wurlx
         {"rtype":1,"durat":10,"progr":4,"sndlv":17}
     - Save relax breathe settings (light)
         PUT /di/v1/products/1/wurlx
         {"rtype":0,"durat":10,"progr":4,"intny":13}
+    - Toggle relax breathe
     */
 }

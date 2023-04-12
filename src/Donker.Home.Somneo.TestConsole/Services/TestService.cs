@@ -29,7 +29,8 @@ public class TestService
             new TimerCommandHandler(somneoApiClient),
             new SunriseCommandHandler(somneoApiClient),
             new SunsetCommandHandler(somneoApiClient),
-            new BedtimeCommandHandler(somneoApiClient)
+            new BedtimeCommandHandler(somneoApiClient),
+            new RelaxBreatheCommandHandler(somneoApiClient)
         };
 
         _commandRegistry.RegisterCommand("help", "Show available commands.", ShowHelp);

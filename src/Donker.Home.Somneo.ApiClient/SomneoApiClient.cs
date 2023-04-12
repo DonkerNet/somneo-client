@@ -840,6 +840,17 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     #endregion
 
+    #region Somneo: RelaxBreathe
+
+    /// <inheritdoc/>
+    public RelaxBreatheSettings GetRelaxBreatheSettings()
+    {
+        var dto = ExecuteGetRequest<RelaxBreatheSettingsDto>("di/v1/products/1/wurlx");
+        return RelaxBreatheSettingsMapper.ToModel(dto);
+    }
+
+    #endregion
+
     #region HTTP requests
 
     private T ExecuteGetRequest<T>(string resource) => ExecuteRequest<T>(resource, HttpMethod.Get, null);
