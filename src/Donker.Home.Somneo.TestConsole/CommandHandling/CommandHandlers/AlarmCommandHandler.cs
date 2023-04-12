@@ -19,17 +19,17 @@ public class AlarmCommandHandler : CommandHandlerBase
         commandRegistry.RegisterCommand("toggle-alarm", "[1-16] [on/off]", "Toggle an alarm.", ToggleAlarm);
         commandRegistry.RegisterCommand(
             "set-fm-radio-alarm",
-            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-2,_] [1-25,_] [5-40,_] [1-5] [1-25]",
+            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3,_] [1-25,_] [5-40,_] [1-5] [1-25]",
             "Sets an alarm for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity, sunrise duration, FM radio preset and volume.",
             args => SetAlarm(args, SoundDeviceType.FMRadio));
         commandRegistry.RegisterCommand(
             "set-wake-up-sound-alarm",
-            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-2,_] [1-25,_] [5-40,_] [1-8] [1-25]",
+            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3,_] [1-25,_] [5-40,_] [1-8] [1-25]",
             "Sets an alarm for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity, sunrise duration, wake-up sound and volume.",
             args => SetAlarm(args, SoundDeviceType.WakeUpSound));
         commandRegistry.RegisterCommand(
             "set-silent-alarm",
-            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [0-2] [1-25] [5-40]",
+            "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3] [1-25] [5-40]",
             "Sets an alarm with only a sunrise and no sound for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity and sunrise duration.",
             args => SetAlarm(args, null));
         commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarm);
@@ -182,9 +182,9 @@ $@"Alarm #{alarmSettings.Position} settings:
         ColorScheme? definitiveSunriseColors = null;
         if (argsArray[5] != "_")
         {
-            if (!Enum.TryParse(argsArray[5], out ColorScheme sunriseColors) || !Enum.IsDefined(sunriseColors))
+            if (!int.TryParse(argsArray[5], out int sunriseColorsNumber) || !EnumHelper.TryCast(sunriseColorsNumber - 1, out ColorScheme sunriseColors))
             {
-                Console.WriteLine("Specify a valid sunrise color scheme between 0 and 2.");
+                Console.WriteLine("Specify a valid sunrise color scheme between 1 and 3.");
                 return;
             }
 
@@ -234,12 +234,12 @@ $@"Alarm #{alarmSettings.Position} settings:
         }
 
         int fmRadioPreset = 0;
-        int wakeUpSound = 0;
+        WakeUpSound wakeUpSound = default;
 
         switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
-                if (!int.TryParse(argsArray[8], out fmRadioPreset) || fmRadioPreset < 1 || fmRadioPreset > 5)
+                if (string.IsNullOrEmpty(argsArray[8]) || !int.TryParse(argsArray[8], out fmRadioPreset) || fmRadioPreset < 1 || fmRadioPreset > 5)
                 {
                     Console.WriteLine("Specify an FM radio present between 1 and 5.");
                     return;
@@ -247,7 +247,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                 break;
 
             case SoundDeviceType.WakeUpSound:
-                if (!int.TryParse(argsArray[8], out wakeUpSound) || wakeUpSound < 1 || wakeUpSound > 8)
+                if (string.IsNullOrEmpty(argsArray[8]) || !int.TryParse(argsArray[8], out int wakeUpSoundNumber) || !EnumHelper.TryCast(wakeUpSoundNumber - 1, out wakeUpSound))
                 {
                     Console.WriteLine("Specify a wake-up sound between 1 and 8.");
                     return;
@@ -256,7 +256,7 @@ $@"Alarm #{alarmSettings.Position} settings:
         }
 
         int volume = 0;
-        if (soundDevice.HasValue && (!int.TryParse(argsArray[9], out volume) || volume < 1 || volume > 25))
+        if (soundDevice.HasValue && (string.IsNullOrEmpty(argsArray[9]) || !int.TryParse(argsArray[9], out volume) || volume < 1 || volume > 25))
         {
             Console.WriteLine("Specify a volume between 1 and 25.");
             return;

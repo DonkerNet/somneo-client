@@ -14,7 +14,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     private readonly bool _disposeHttpClient;
 
     private bool _disposed;
-    
+
     private HttpClient HttpClient
     {
         get
@@ -729,6 +729,81 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ExecutePutRequest("di/v1/products/1/wudsk", data);
     }
 
+    /// <inheritdoc/>
+    public void SetSunsetSettingsWithSunsetSound(
+        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        SunsetSound sunsetSound, int volume)
+    {
+        SetSunsetSettings(
+            sunsetColors, sunsetIntensity, sunsetDuration,
+            volume, SoundDeviceType.Sunset, sunsetSound, null);
+    }
+
+    /// <inheritdoc/>
+    public void SetSunsetSettingsWithFMRadio(
+        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        int fmRadioPreset, int volume)
+    {
+        SetSunsetSettings(
+            sunsetColors, sunsetIntensity, sunsetDuration,
+            volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
+    }
+
+    /// <inheritdoc/>
+    public void SetSunsetSettingsWithoutSound(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration)
+    {
+        SetSunsetSettings(
+            sunsetColors, sunsetIntensity, sunsetDuration,
+            null, null, null, null);
+    }
+
+    private void SetSunsetSettings(
+        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        int? volume, SoundDeviceType? soundDevice, SunsetSound? sunsetSound, int? fmRadioPreset)
+    {
+        if (!Enum.IsDefined(sunsetColors))
+            throw new ArgumentException("The sunset color scheme is invalid.", nameof(sunsetColors));
+        if (sunsetIntensity < 1 || sunsetIntensity > 25)
+            throw new ArgumentException("The sunset intensity must be between 1 and 25.", nameof(sunsetIntensity));
+        if (sunsetDuration < 5 || sunsetDuration > 60 || sunsetDuration % 5 != 0)
+            throw new ArgumentException("The sunset duration must be between 5 and 60 minutes, with 5 minute steps in between.", nameof(sunsetDuration));
+        if (volume.HasValue && (volume < 1 || volume > 25))
+            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+        if (fmRadioPreset.HasValue && (fmRadioPreset < 1 || fmRadioPreset > 5))
+            throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
+        if (sunsetSound.HasValue && !Enum.IsDefined(sunsetSound.Value))
+            throw new ArgumentException("The sunset sound is invalid.", nameof(sunsetSound));
+
+        int sunsetColorSchemeNumber = EnumMapper.GetColorSchemeValue(sunsetColors)!.Value;
+
+        int soundChannel = -1;
+
+        switch (soundDevice)
+        {
+            case SoundDeviceType.Sunset:
+                soundChannel = EnumMapper.GetSunsetSoundValue(sunsetSound)!.Value;
+                break;
+
+            case SoundDeviceType.FMRadio:
+                soundChannel = fmRadioPreset!.Value;
+                break;
+        }
+
+        string soundDeviceName = EnumMapper.GetSoundDeviceTypeValue(soundDevice);
+
+        object data = new
+        {
+            ctype = sunsetColorSchemeNumber,    // The sunset colors
+            curve = sunsetIntensity,            // The light level
+            durat = sunsetDuration,             // The sunrise duration
+            snddv = soundDeviceName,            // The sound device to play
+            sndch = soundChannel.ToString(),    // The sunset sound or FM radio preset to play
+            sndlv = volume ?? 12                // The volume level of the sound device to play
+        };
+
+        ExecutePutRequest("di/v1/products/1/wudsk", data);
+    }
+
     #endregion
 
     #region Somneo: Bedtime
@@ -822,7 +897,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         using var contentStream = response.Content.ReadAsStream();
         using var streamReader = new StreamReader(contentStream);
-        
+
         string content = streamReader.ReadToEnd();
 
         throw new SomneoApiException($"The Somneo returned a response with status code {(int)response.StatusCode}.", response.StatusCode, content);

@@ -416,6 +416,71 @@ public interface ISomneoApiClient
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void ToggleSunset(bool enabled);
 
+    /// <summary>
+    /// Sets the Sunset settings with the specified sunset sound.
+    /// </summary>
+    /// <param name="sunsetColors">The type of sunset colors to show.</param>
+    /// <param name="sunsetIntensity">
+    /// The maximum intensity of the sunset.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <param name="sunsetDuration">
+    /// The duration of the sunset.
+    /// Value must be between 5 and 60, with 5 minute steps in between.
+    /// </param>
+    /// <param name="sunsetSound">The sunset sound to play.</param>
+    /// <param name="volume">
+    /// The volume of the sunset sound that is played.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetSunsetSettingsWithSunsetSound(
+        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        SunsetSound sunsetSound, int volume);
+
+    /// <summary>
+    /// Sets the Sunset settings with the specified FM radio preset.
+    /// </summary>
+    /// <param name="sunsetColors">The type of sunset colors to show.</param>
+    /// <param name="sunsetIntensity">
+    /// The maximum intensity of the sunset.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <param name="sunsetDuration">
+    /// The duration of the sunset.
+    /// Value must be between 5 and 60, with 5 minute steps in between.
+    /// </param>
+    /// <param name="fmRadioPreset">
+    /// The preset with the FM frequency of the channel to play.
+    /// Value must be between 1 and 5.
+    /// </param>
+    /// <param name="volume">
+    /// The volume of the FM radio that is played.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetSunsetSettingsWithFMRadio(
+        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        int fmRadioPreset, int volume);
+
+    /// <summary>
+    /// Sets the Sunset settings without any sound.
+    /// </summary>
+    /// <param name="sunsetColors">The type of sunset colors to show.</param>
+    /// <param name="sunsetIntensity">
+    /// The maximum intensity of the sunset.
+    /// Value must be between 1 and 25.
+    /// </param>
+    /// <param name="sunsetDuration">
+    /// The duration of the sunset.
+    /// Value must be between 5 and 60, with 5 minute steps in between.
+    /// </param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetSunsetSettingsWithoutSound(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration);
+
     #endregion
 
     #region Somneo: Bedtime
@@ -441,10 +506,7 @@ public interface ISomneoApiClient
     #endregion
 
     /*
-    Methods left to add:
-    - Save sunset settings
-        PUT /di/v1/products/1/wudsk
-        {"snddv":"fmr","curve":10,"sndlv":8,"ctype":1,"durat":10,"sndch":"3"}        
+    Methods left to add:   
     - Get relax breathe settings
         GET /di/v1/products/1/wurlx
         {"durat":15,"onoff":false,"maxpr":7,"progr":3,"rtype":1,"intny":13,"sndlv":13,"sndss":0,"rlbpm":[4,5,6,7,8,9,10],"pause":[2000,2000,2000,2000,1000,1000,1000]}
@@ -454,6 +516,5 @@ public interface ISomneoApiClient
     - Save relax breathe settings (light)
         PUT /di/v1/products/1/wurlx
         {"rtype":0,"durat":10,"progr":4,"intny":13}
-    - Bedtime?
     */
 }

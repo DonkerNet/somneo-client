@@ -24,8 +24,8 @@ public class WakeUpSoundCommandHandler : CommandHandlerBase
             string[] argsArray = args.Split(new[] { ' ' }, 2);
 
             if (argsArray.Length == 2
-                && Enum.TryParse(argsArray[0], out WakeUpSound wakeUpSound)
-                && Enum.IsDefined(wakeUpSound)
+                && int.TryParse(argsArray[0], out int wakeUpSoundNumber)
+                && EnumHelper.TryCast(wakeUpSoundNumber - 1, out WakeUpSound wakeUpSound)
                 && int.TryParse(argsArray[1], out int volume)
                 && volume >= 1 && volume <= 25)
             {

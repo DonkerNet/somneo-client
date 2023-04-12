@@ -13,7 +13,7 @@ public class SunriseCommandHandler : CommandHandlerBase
 
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("enable-sunrise-preview", "[0-2] [1-25]", "Previews a sunrise with the specified intensity.", EnableSunrisePreview);
+        commandRegistry.RegisterCommand("enable-sunrise-preview", "[1-3] [1-25]", "Previews a sunrise with the specified intensity.", EnableSunrisePreview);
         commandRegistry.RegisterCommand("disable-sunrise-preview", null, "Disables the sunrise preview.", DisableSunrisePreview);
     }
 
@@ -24,8 +24,8 @@ public class SunriseCommandHandler : CommandHandlerBase
             string[] argsArray = args.Split(new[] { ' ' }, 2);
 
             if (argsArray.Length == 2
-                && Enum.TryParse(argsArray[0], out ColorScheme colorScheme)
-                && Enum.IsDefined(colorScheme)
+                && int.TryParse(argsArray[0], out int colorSchemeNumber)
+                && EnumHelper.TryCast(colorSchemeNumber - 1, out ColorScheme colorScheme)
                 && int.TryParse(argsArray[1], out int intensity)
                 && intensity >= 1 && intensity <= 25)
             {
@@ -35,7 +35,7 @@ public class SunriseCommandHandler : CommandHandlerBase
             }
         }
 
-        Console.WriteLine("The sunrise number should be between 0 and 2 with an intensity between 1 and 25.");
+        Console.WriteLine("The sunrise number should be between 1 and 3 with an intensity between 1 and 25.");
     }
 
     private void DisableSunrisePreview(string? args)
