@@ -508,21 +508,43 @@ public interface ISomneoApiClient
     #region Somneo: RelaxBreathe
 
     /// <summary>
-    /// Retrieves the settings of RelaxBreathe, used for breathing exercises to make you fall asleep.
+    /// Retrieves the settings of RelaxBreathe, used for breathing exercises to make you fall asleep faster.
     /// </summary>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     RelaxBreatheSettings GetRelaxBreatheSettings();
 
-    #endregion
+    /// <summary>
+    /// Toggles RelaxBreathe on or off.
+    /// </summary>
+    /// <param name="enabled">Whether to enable or disable RelaxBreathe.</param>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void ToggleRelaxBreathe(bool enabled);
 
-    /*
-    Methods left to add:   
-    - Save relax breathe settings (sound)
-        PUT /di/v1/products/1/wurlx
-        {"rtype":1,"durat":10,"progr":4,"sndlv":17}
-    - Save relax breathe settings (light)
-        PUT /di/v1/products/1/wurlx
-        {"rtype":0,"durat":10,"progr":4,"intny":13}
-    - Toggle relax breathe
-    */
+    /// <summary>
+    /// Sets the RelaxBreathe settings, using sound for the breathing exercises.
+    /// </summary>
+    /// <param name="duration">How long the breathing exercises should run. Must be 5, 10 or 15 minutes.</param>
+    /// <param name="breathsPerMinuteOption">
+    /// The option (index) that specifies the amount of breaths per minute for the exercise.
+    /// Available options can be retrieved using the <see cref="GetRelaxBreatheSettings"/> method.
+    /// </param>
+    /// <param name="volume">The volume used for the sound of the breathing exercises. Must be between 1 and 25.</param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetRelaxBreatheSettingsWithSound(int duration, int breathsPerMinuteOption, int volume);
+
+    /// <summary>
+    /// Sets the RelaxBreathe settings, using light for the breathing exercises.
+    /// </summary>
+    /// <param name="duration">How long the breathing exercises should run. Must be 5, 10 or 15 minutes.</param>
+    /// <param name="breathsPerMinuteOption">
+    /// The option (index) that specifies the amount of breaths per minute for the exercise.
+    /// Available options can be retrieved using the <see cref="GetRelaxBreatheSettings"/> method.
+    /// </param>
+    /// <param name="intensity">The intensity used for the light of the breathing exercises. Must be between 1 and 25.</param>
+    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
+    void SetRelaxBreatheSettingsWithLight(int duration, int breathsPerMinuteOption, int intensity);
+
+    #endregion
 }

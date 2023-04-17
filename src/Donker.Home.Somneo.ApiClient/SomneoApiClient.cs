@@ -849,6 +849,55 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return RelaxBreatheSettingsMapper.ToModel(dto);
     }
 
+    /// <inheritdoc/>
+    public void ToggleRelaxBreathe(bool enabled)
+    {
+        object data = new
+        {
+            onoff = enabled
+        };
+
+        ExecutePutRequest("di/v1/products/1/wurlx", data);
+    }
+
+    /// <inheritdoc/>
+    public void SetRelaxBreatheSettingsWithSound(int duration, int breathsPerMinuteOption, int volume)
+    {
+        if (duration < 5 || duration > 15 || duration % 5 != 0)
+            throw new ArgumentException("The sunset duration must be between 5 and 15 minutes, with 5 minute steps in between.", nameof(duration));
+        if (volume < 1 || volume > 25)
+            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+
+        object data = new
+        {
+            rtype = 1,                          // Sets the type to sound
+            durat = duration,                   // The duration of RelaxBreathe
+            progr = breathsPerMinuteOption + 1, // The option (1-based index) defining the amount of breaths per second
+            sndlv = volume                      // The volume level of the sounds that are played
+        };
+
+        ExecutePutRequest("di/v1/products/1/wurlx", data);
+    }
+
+    /// <inheritdoc/>
+    public void SetRelaxBreatheSettingsWithLight(int duration, int breathsPerMinuteOption, int intensity)
+    {
+        if (duration < 5 || duration > 15 || duration % 5 != 0)
+            throw new ArgumentException("The sunset duration must be between 5 and 15 minutes, with 5 minute steps in between.", nameof(duration));
+        if (intensity < 1 || intensity > 25)
+            throw new ArgumentException("The intensity must be between 1 and 25.", nameof(intensity));
+
+        object data = new
+        {
+            rtype = 1,                          // Sets the type to sound
+            durat = duration,                   // The duration of RelaxBreathe
+            progr = breathsPerMinuteOption + 1, // The option (1-based index) defining the amount of breaths per second
+            intny = intensity                   // The intensity of the light used for the exercises
+        };
+
+        ExecutePutRequest("di/v1/products/1/wurlx", data);
+    }
+
     #endregion
 
     #region HTTP requests

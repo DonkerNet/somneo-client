@@ -7,7 +7,7 @@ internal class RelaxBreatheSettingsMapper
 {
     public static RelaxBreatheSettings ToModel(RelaxBreatheSettingsDto dto)
     {
-        int breathsPerMinute = dto.AvailableBpms[dto.Program];
+        int breathsPerMinute = dto.AvailableBreathsPerMinute[dto.Program - 1];
 
         bool isLight = dto.Type == 0;
         bool isSound = dto.Type == 1;
@@ -22,6 +22,7 @@ internal class RelaxBreatheSettingsMapper
             soundVolume,
             breathsPerMinute,
             isLight,
-            isSound);
+            isSound,
+            dto.AvailableBreathsPerMinute);
     }
 }

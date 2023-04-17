@@ -1,4 +1,6 @@
-﻿namespace Donker.Home.Somneo.ApiClient.Models;
+﻿using System.Collections.ObjectModel;
+
+namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the settings of the RelaxBreathe function of the Somneo device.
@@ -36,6 +38,10 @@ public sealed class RelaxBreatheSettings
     /// Whether sound is used to guide breathing.
     /// </summary>
     public bool IsSound { get; }
+    /// <summary>
+    /// The available options for the amount of breaths per minute to set.
+    /// </summary>
+    public IReadOnlyCollection<int> AvailableBreathsPerMinute { get; }
 
     internal RelaxBreatheSettings(
         bool enabled,
@@ -44,7 +50,8 @@ public sealed class RelaxBreatheSettings
         int? soundVolume,
         int breathsPerMinute,
         bool isLight,
-        bool isSound)
+        bool isSound,
+        IEnumerable<int> availableBreathsPerMinute)
     {
         Enabled = enabled;
         Duration = duration;
@@ -53,5 +60,6 @@ public sealed class RelaxBreatheSettings
         BreathsPerMinute = breathsPerMinute;
         IsLight = isLight;
         IsSound = isSound;
+        AvailableBreathsPerMinute = new ReadOnlyCollection<int>(availableBreathsPerMinute.ToList());
     }
 }
