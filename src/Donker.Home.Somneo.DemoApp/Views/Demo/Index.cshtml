@@ -1,0 +1,9 @@
+﻿@model Donker.Home.Somneo.DemoApp.Models.Demo.DemoIndexViewModel
+
+<div id="demo-client" data-config="@Model.GetConfigJson()">
+    Loading demo client...
+</div>
+
+@section scripts_bottom {
+    <script src="~/js/build/demo-client.js" asp-append-version="true"></script>
+}
