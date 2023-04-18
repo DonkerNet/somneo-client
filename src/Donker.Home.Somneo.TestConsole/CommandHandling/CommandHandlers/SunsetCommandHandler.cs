@@ -163,7 +163,7 @@ $@"Sunset settings:
                     sunsetColors,
                     sunsetIntensity,
                     sunsetDuration,
-                    (SunsetSound)sunsetSound,
+                    sunsetSound,
                     volume);
                 break;
 

@@ -16,12 +16,12 @@ public class RelaxBreatheCommandHandler : CommandHandlerBase
         commandRegistry.RegisterCommand("toggle-relax-breathe", "[on/off]", "Toggle RelaxBreathe on or off.", ToggleRelaxBreathe);
         commandRegistry.RegisterCommand(
             "set-relax-breathe-with-sound",
-            "[5,10,15] [option] [1-25]",
+            "[5,10,15] <option> [1-25]",
             "Configures RelaxBreathe with sound to use the specified duration, breaths per minute option and volume.",
             SetRelaxBreatheWithSound);
         commandRegistry.RegisterCommand(
             "set-relax-breathe-with-light",
-            "[5,10,15] [option] [1-25]",
+            "[5,10,15] <option> [1-25]",
             "Configures RelaxBreathe with light to use the specified duration, breaths per minute option and intensity.",
             SetRelaxBreatheWithLight);
     }
