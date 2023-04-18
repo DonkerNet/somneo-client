@@ -24,55 +24,33 @@ public class DeviceCommandHandler : CommandHandlerBase
     {
         DeviceDetails deviceDetails = SomneoApiClient.GetDeviceDetails();
 
-        if (deviceDetails == null)
-        {
-            Console.WriteLine("Unable to retrieve the device details.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Device details:
-  Name: {deviceDetails.Name}
-  Model: {deviceDetails.Model}
-  Series: {deviceDetails.Series}
-  Product range: {deviceDetails.ProductRange}
+  Assigned name: {deviceDetails.AssignedName}
+  Type number: {deviceDetails.TypeNumber}
   Serial number: {deviceDetails.Serial}
-  Product ID: {deviceDetails.ProductId}");
+  Product ID: {deviceDetails.ProductId}
+  Product name: {deviceDetails.ProductName}
+  Model ID: {deviceDetails.ModelId}");
     }
 
     public void ShowFirmwareDetails(string? args)
     {
         FirmwareDetails firmwareDetails = SomneoApiClient.GetFirmwareDetails();
 
-        if (firmwareDetails == null)
-        {
-            Console.WriteLine("Unable to retrieve the firmware details.");
-            return;
-        }
-
-        StringBuilder consoleMessageBuilder = new StringBuilder();
+        var consoleMessageBuilder = new StringBuilder();
 
         consoleMessageBuilder.Append(
 $@"Firmware details:
   Name: {firmwareDetails.Name}
   Version: {firmwareDetails.Version}
-  State: {firmwareDetails.State}");
-
-        if (!firmwareDetails.IsIdle)
-        {
-            consoleMessageBuilder.Append(
-$@"
+  Can download: {(firmwareDetails.CanDownload ? "Yes" : "No")}
+  Can upgrade: {(firmwareDetails.CanUpgrade ? "Yes" : "No")}
+  Upgrade: {firmwareDetails.Upgrade}
+  Mandatory: {(firmwareDetails.Mandatory ? "Yes" : "No")}
+  State: {firmwareDetails.State}
   Update progress: {firmwareDetails.Progress}
   Status message: {firmwareDetails.StatusMessage}");
-        }
-
-        if (firmwareDetails.CanUpgrade)
-        {
-            consoleMessageBuilder.Append(
-$@"
-  Available upgrade: {firmwareDetails.Upgrade}
-  Mandatory: {(firmwareDetails.Mandatory ? "Yes" : "No")}");
-        }
 
         Console.WriteLine(consoleMessageBuilder);
     }
@@ -80,12 +58,6 @@ $@"
     public void ShowWifiDetails(string? args)
     {
         WifiDetails wifiDetails = SomneoApiClient.GetWifiDetails();
-
-        if (wifiDetails == null)
-        {
-            Console.WriteLine("Unable to retrieve the wifi details.");
-            return;
-        }
 
         Console.WriteLine(
 $@"Wifi details:
@@ -101,12 +73,6 @@ $@"Wifi details:
     {
         Locale locale = SomneoApiClient.GetLocale();
 
-        if (locale == null)
-        {
-            Console.WriteLine("Unable to retrieve the locale.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Locale:
   Country: {locale.Country}
@@ -117,35 +83,11 @@ $@"Locale:
     {
         Time time = SomneoApiClient.GetTime();
 
-        if (time == null)
-        {
-            Console.WriteLine("Unable to retrieve the time.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Time:
   Date/time: {time.DateTime}
-  Timezone offset: {time.TimezoneOffset}
-  DST: {(time.IsDSTApplied ? "Yes" : "No")} (offset = {time.DSTOffset})
+  Timezone offset: {time.TimezoneOffset:\+hh\:mm}
+  DST: {(time.IsDSTApplied ? "Yes" : "No")} (current offset = {time.CurrentDSTOffset:\+hh\:mm})
   Next DST change: {time.DSTChangeOver}");
-    }
-
-    public void ShowSensorData(string? args)
-    {
-        SensorData sensorData = SomneoApiClient.GetSensorData();
-
-        if (sensorData == null)
-        {
-            Console.WriteLine("Unable to retrieve the sensor data.");
-            return;
-        }
-
-        Console.WriteLine(
-$@"Sensor data:
-  Temperature: {sensorData.CurrentTemperature} °C (avg: {sensorData.AverageTemperature} °C)
-  Light: {sensorData.CurrentLight} lux (avg: {sensorData.AverageLight} lux)
-  Sound: {sensorData.CurrentSound} dB (avg: {sensorData.AverageSound} dB)
-  Humidity: {sensorData.CurrentHumidity} % (avg: {sensorData.AverageHumidity} %)");
     }
 }

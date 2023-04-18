@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the state of the Somneo's audio player.
@@ -10,46 +8,43 @@ public sealed class PlayerState
     /// <summary>
     /// Whether the audio player is enabled or not.
     /// </summary>
-    [JsonPropertyName("onoff")]
-    public bool Enabled { get; init; }
+    public bool Enabled { get; }
     /// <summary>
-    /// The volume level currently set. Can be between 1 and 25.
+    /// The volume level currently set.
+    /// Can be between 1 and 25.
     /// </summary>
-    [JsonPropertyName("sdvol")]
-    public int Volume { get; init; }
+    public int? Volume { get; }
     /// <summary>
     /// The type of sounds device in use by the Somneo's audio player.
     /// </summary>
-    [JsonPropertyName("snddv")]
-    public SoundDeviceType Device { get; init; }
+    public SoundDeviceType? SoundDevice { get; }
     /// <summary>
-    /// The current channel or preset that is selected.
+    /// The preset that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
+    /// Can be between 1 and 5.
     /// </summary>
-    [JsonPropertyName("sndch")]
-    public string? ChannelOrPreset { get; init; }
+    public int? FMRadioPreset { get; }
+    /// <summary>
+    /// The wake-up sound that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.WakeUpSound"/>.
+    /// </summary>
+    public WakeUpSound? WakeUpSound { get; }
+    /// <summary>
+    /// The sunset sound that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.Sunset"/>.
+    /// </summary>
+    public SunsetSound? SunsetSound { get; }
 
-    /// <summary>
-    /// Gets the FM-radio preset if the <see cref="Device"/> property is set to <see cref="SoundDeviceType.FMRadio"/>.
-    /// </summary>
-    public int? GetFMRadioPreset()
+    internal PlayerState(
+        bool enabled,
+        int? volume,
+        SoundDeviceType? device,
+        int? fMRadioPreset,
+        WakeUpSound? wakeUpSound,
+        SunsetSound? sunsetSound)
     {
-        if (Device == SoundDeviceType.FMRadio
-            && !string.IsNullOrEmpty(ChannelOrPreset)
-            && int.TryParse(ChannelOrPreset, out int fmRadioPreset))
-            return fmRadioPreset;
-
-        return null;
-    }
-    /// <summary>
-    /// Gets the wake-up sound if the <see cref="Device"/> property is set to <see cref="SoundDeviceType.WakeUpSound"/>.
-    /// </summary>
-    public WakeUpSound? GetWakeUpSound()
-    {
-        if (Device == SoundDeviceType.WakeUpSound
-            && !string.IsNullOrEmpty(ChannelOrPreset)
-            && Enum.TryParse(ChannelOrPreset, out WakeUpSound wakeUpSound))
-            return wakeUpSound;
-
-        return null;
+        Enabled = enabled;
+        Volume = volume;
+        SoundDevice = device;
+        FMRadioPreset = fMRadioPreset;
+        WakeUpSound = wakeUpSound;
+        SunsetSound = sunsetSound;
     }
 }

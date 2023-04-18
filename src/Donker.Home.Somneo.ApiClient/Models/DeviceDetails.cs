@@ -1,39 +1,48 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the details of a Somneo device.
 /// </summary>
 public sealed class DeviceDetails
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     /// <summary>
     /// The name of the device.
     /// </summary>
-    public string Name { get; init; }
+    public string AssignedName { get; }
     /// <summary>
-    /// The series of products the device is a part of.
+    /// The type number of the device.
     /// </summary>
-    [JsonPropertyName("type")] // For some reason, the series is described by the 'type' property (i.e.: HF367x)
-    public string Series { get; init; }
-    /// <summary>
-    /// The model of the device.
-    /// </summary>
-    [JsonPropertyName("ctn")] // For some reason, the 'ctn' property seems to describe the model instead of the 'modelid' property (i.e.: HF3671/01)
-    public string Model { get; init; }
+    public string TypeNumber { get; }
     /// <summary>
     /// The serial number of the device.
     /// </summary>
-    public string Serial { get; init; }
+    public string Serial { get; }
     /// <summary>
     /// The product ID of the device.
     /// </summary>
-    public string ProductId { get; init; }
+    public string ProductId { get; }
     /// <summary>
-    /// The product range the device is a part of.
+    /// The product name of the device.
     /// </summary>
-    [JsonPropertyName("modelid")] // For some reason, the product range is described by the 'modelid' property (i.e.: Healthy Sleep)
-    public string ProductRange { get; init; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public string ProductName { get; }
+    /// <summary>
+    /// The model ID of the device.
+    /// </summary>
+    public string ModelId { get; }
+
+    internal DeviceDetails(
+        string assignedName,
+        string typeNumber,
+        string serial,
+        string productId,
+        string productName,
+        string modelId)
+    {
+        AssignedName = assignedName;
+        TypeNumber = typeNumber;
+        Serial = serial;
+        ProductId = productId;
+        ProductName = productName;
+        ModelId = modelId;
+    }
 }

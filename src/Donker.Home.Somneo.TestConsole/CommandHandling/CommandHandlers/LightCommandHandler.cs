@@ -16,25 +16,18 @@ public class LightCommandHandler : CommandHandlerBase
         commandRegistry.RegisterCommand("toggle-light", "[on/off]", "Toggle the light.", ToggleLight);
         commandRegistry.RegisterCommand("set-light-level", "[1-25]", "Set the light level.", SetLightLevel);
         commandRegistry.RegisterCommand("toggle-night-light", "[on/off]", "Toggle the night light.", ToggleNightLight);
-        commandRegistry.RegisterCommand("toggle-sunrise-preview", "[on/off]", "Toggle the Sunrise Preview mode.", ToggleSunrisePreview);
     }
 
     private void ShowLightState(string? args)
     {
         LightState lightState = SomneoApiClient.GetLightState();
 
-        if (lightState == null)
-        {
-            Console.WriteLine("Unable to retrieve the light state.");
-            return;
-        }
-
         Console.WriteLine(
 $@"Light state:
   Normal light enabled: {(lightState.LightEnabled ? "Yes" : "No")}
   Light level: {lightState.LightLevel}/25
-  Night light enabled: {(lightState.NightLightEnabled ? "Yes" : "No")}
-  Sunrise preview enabled: {(lightState.SunrisePreviewEnabled ? "Yes" : "No")}");
+  Sunrise/sunset enabled: {(lightState.SunriseOrSunsetEnabled ? "Yes" : "No")}
+  Night light enabled: {(lightState.NightLightEnabled ? "Yes" : "No")}");
     }
 
     private void ToggleLight(string? args)
@@ -81,26 +74,6 @@ $@"Light state:
             case "off":
                 SomneoApiClient.ToggleNightLight(false);
                 Console.WriteLine("Night light disabled.");
-                break;
-
-            default:
-                Console.WriteLine("Specify \"on\" or \"off\".");
-                break;
-        }
-    }
-
-    private void ToggleSunrisePreview(string? args)
-    {
-        switch (args?.ToLower())
-        {
-            case "on":
-                SomneoApiClient.ToggleSunrisePreview(true);
-                Console.WriteLine("Sunrise preview enabled.");
-                break;
-
-            case "off":
-                SomneoApiClient.ToggleSunrisePreview(true);
-                Console.WriteLine("Sunrise preview disabled.");
                 break;
 
             default:

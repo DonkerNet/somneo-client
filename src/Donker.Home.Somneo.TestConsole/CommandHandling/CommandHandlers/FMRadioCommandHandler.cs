@@ -13,7 +13,6 @@ public class FMRadioCommandHandler : CommandHandlerBase
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresets);
-        commandRegistry.RegisterCommand("set-fm-radio-preset", $"[1-5] [{87.50F:0.00}-{107.99F:0.00}]", "Set an FM-radio preset to a frequency.", SetFMRadioPreset);
         commandRegistry.RegisterCommand("get-fm-radio-preset", "[1-5]", "Gets the frequency of an FM-radio preset.", GetFMRadioPreset);
         commandRegistry.RegisterCommand("fm-radio", "Show the FM-radio state.", ShowFMRadioState);
         commandRegistry.RegisterCommand("enable-fm-radio", "Enable the FM-radion.", EnableFMRadio);
@@ -25,12 +24,6 @@ public class FMRadioCommandHandler : CommandHandlerBase
     {
         FMRadioPresets fmRadioPresets = SomneoApiClient.GetFMRadioPresets();
 
-        if (fmRadioPresets == null)
-        {
-            Console.WriteLine("Unable to retrieve the FM radio presets.");
-            return;
-        }
-
         Console.WriteLine(
 $@"FM radio presets:
   1: {fmRadioPresets.Preset1:0.00} FM
@@ -38,27 +31,6 @@ $@"FM radio presets:
   3: {fmRadioPresets.Preset3:0.00} FM
   4: {fmRadioPresets.Preset4:0.00} FM
   5: {fmRadioPresets.Preset5:0.00} FM");
-    }
-
-    private void SetFMRadioPreset(string? args)
-    {
-        if (!string.IsNullOrEmpty(args))
-        {
-            string[] argsArray = args.Split(new[] { ' ' }, 2);
-
-            if (argsArray.Length == 2
-                && int.TryParse(argsArray[0], out int position)
-                && position >= 1 && position <= 5
-                && float.TryParse(argsArray[1], out float frequency)
-                && frequency >= 87.50 && frequency <= 177.99)
-            {
-                SomneoApiClient.SetFMRadioPreset(position, frequency);
-                Console.WriteLine($"Preset {position} set to {frequency:0.00} FM.");
-                return;
-            }
-        }
-
-        Console.WriteLine("Specify a position between 1 and 5, followed by a frequency between 87.50 and 107.99.");
     }
 
     private void GetFMRadioPreset(string? args)
@@ -76,12 +48,6 @@ $@"FM radio presets:
     private void ShowFMRadioState(string? args)
     {
         FMRadioState fmRadioState = SomneoApiClient.GetFMRadioState();
-
-        if (fmRadioState == null)
-        {
-            Console.WriteLine("Unable to retrieve the FM radio state.");
-            return;
-        }
 
         Console.WriteLine(
 $@"FM radio state:

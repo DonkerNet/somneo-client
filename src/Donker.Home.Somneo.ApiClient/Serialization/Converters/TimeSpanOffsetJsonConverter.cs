@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Serialization.Converters;
 
-public class TimeSpanOffsetJsonConverter : JsonConverter<TimeSpan>
+internal class TimeSpanOffsetJsonConverter : JsonConverter<TimeSpan>
 {
     public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

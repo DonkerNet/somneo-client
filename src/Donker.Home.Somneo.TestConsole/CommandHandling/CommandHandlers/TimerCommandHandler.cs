@@ -19,12 +19,6 @@ public class TimerCommandHandler : CommandHandlerBase
     {
         TimerState timerState = SomneoApiClient.GetTimerState();
 
-        if (timerState == null)
-        {
-            Console.WriteLine("Unable to retrieve the timer state.");
-            return;
-        }
-
         if (!timerState.Enabled)
         {
             Console.WriteLine("Timer state: Disabled");

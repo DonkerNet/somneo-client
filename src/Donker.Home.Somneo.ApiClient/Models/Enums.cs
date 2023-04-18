@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Runtime.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Models;
 
@@ -9,29 +8,30 @@ namespace Donker.Home.Somneo.ApiClient.Models;
 public enum SoundDeviceType
 {
     /// <summary>
-    /// No sound device.
-    /// </summary>
-    [EnumMember(Value = "off")]
-    [Description("None")]
-    None,
-    /// <summary>
     /// Wake-up sounds.
     /// </summary>
-    [EnumMember(Value = "wus")]
     [Description("Wake-up sound")]
     WakeUpSound,
     /// <summary>
     /// FM radio.
     /// </summary>
-    [EnumMember(Value = "fmr")]
     [Description("FM radio")]
     FMRadio,
     /// <summary>
     /// Auxiliary input.
     /// </summary>
-    [EnumMember(Value = "aux")]
     [Description("AUX")]
-    AUX
+    AUX,
+    /// <summary>
+    /// RelaxBreathe.
+    /// </summary>
+    [Description("RelaxBreathe")]
+    RelaxBreathe,
+    /// <summary>
+    /// Sunset.
+    /// </summary>
+    [Description("Sunset")]
+    Sunset
 }
 
 /// <summary>
@@ -57,11 +57,6 @@ public enum RadioSeekDirection
 public enum ColorScheme
 {
     /// <summary>
-    /// No light.
-    /// </summary>
-    [Description("No light")]
-    NoLight,
-    /// <summary>
     /// Sunny day.
     /// </summary>
     [Description("Sunny day")]
@@ -75,12 +70,7 @@ public enum ColorScheme
     /// Nordic white.
     /// </summary>
     [Description("Nordic white")]
-    NordicWhite,
-    /// <summary>
-    /// Carribean red.
-    /// </summary>
-    [Description("Carribean red")]
-    CarribeanRed
+    NordicWhite
 }
 
 /// <summary>
@@ -92,53 +82,67 @@ public enum WakeUpSound
     /// Forest birds wake-up sound.
     /// </summary>
     [Description("Forest birds")]
-    ForestBirds = 1,
+    ForestBirds,
     /// <summary>
     /// Summer birds wake-up sound.
     /// </summary>
     [Description("Summer birds")]
-    SummerBirds = 2,
+    SummerBirds,
     /// <summary>
     /// Buddha wake-up sound.
     /// </summary>
     [Description("Buddha wake-up")]
-    BuddhaWakeUp = 3,
+    BuddhaWakeUp,
     /// <summary>
     /// Morning alps wake-up sound.
     /// </summary>
     [Description("Morning alps")]
-    MorningAlps = 4,
+    MorningAlps,
     /// <summary>
     /// Yoga harmony wake-up sound.
     /// </summary>
     [Description("Yoga harmony")]
-    YogaHarmony = 5,
+    YogaHarmony,
     /// <summary>
     /// Nepal bowls wake-up sound.
     /// </summary>
     [Description("Nepal bowls")]
-    NepalBowls = 6,
+    NepalBowls,
     /// <summary>
     /// Summer lake wake-up sound.
     /// </summary>
     [Description("Summer lake")]
-    SummerLake = 7,
+    SummerLake,
     /// <summary>
     /// Ocean waves wake-up sound.
     /// </summary>
     [Description("Ocean waves")]
-    OceanWaves = 8
+    OceanWaves
 }
 
-[Flags]
-internal enum DayFlags : byte
+/// <summary>
+/// The sound used for the sunset.
+/// </summary>
+public enum SunsetSound
 {
-    None = 0,
-    Monday = 2,
-    Tuesday = 4,
-    Wednesday = 8,
-    Thursday = 16,
-    Friday = 32,
-    Saturday = 64,
-    Sunday = 128
+    /// <summary>
+    /// Soft rain sunset sound.
+    /// </summary>
+    [Description("Soft rain")]
+    SoftRain,
+    /// <summary>
+    /// Ocean waves sunset sound.
+    /// </summary>
+    [Description("Ocean waves")]
+    OceanWaves,
+    /// <summary>
+    /// Under water sunset sound.
+    /// </summary>
+    [Description("Under water")]
+    UnderWater,
+    /// <summary>
+    /// Summer lake sunset sound.
+    /// </summary>
+    [Description("Summer lake")]
+    SummerLake
 }

@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// A collection of FM radio frequency presents.
@@ -10,26 +8,35 @@ public sealed class FMRadioPresets
     /// <summary>
     /// The frequency of the first preset.
     /// </summary>
-    [JsonPropertyName("1")]
-    public float Preset1 { get; init; }
+    public float Preset1 { get; }
     /// <summary>
     /// The frequency of the second preset.
     /// </summary>
-    [JsonPropertyName("2")]
-    public float Preset2 { get; init; }
+    public float Preset2 { get; }
     /// <summary>
     /// The frequency of the third preset.
     /// </summary>
-    [JsonPropertyName("3")]
-    public float Preset3 { get; init; }
+    public float Preset3 { get; }
     /// <summary>
     /// The frequency of the fourth preset.
     /// </summary>
-    [JsonPropertyName("4")]
-    public float Preset4 { get; init; }
+    public float Preset4 { get; }
     /// <summary>
     /// The frequency of the fifth preset.
     /// </summary>
-    [JsonPropertyName("5")]
-    public float Preset5 { get; init; }
+    public float Preset5 { get; }
+
+    internal FMRadioPresets(
+        float preset1,
+        float preset2,
+        float preset3,
+        float preset4,
+        float preset5)
+    {
+        Preset1 = preset1;
+        Preset2 = preset2;
+        Preset3 = preset3;
+        Preset4 = preset4;
+        Preset5 = preset5;
+    }
 }

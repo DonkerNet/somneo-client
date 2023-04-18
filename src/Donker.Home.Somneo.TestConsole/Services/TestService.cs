@@ -27,10 +27,14 @@ public class TestService
             new AUXCommandHandler(somneoApiClient),
             new AlarmCommandHandler(somneoApiClient),
             new TimerCommandHandler(somneoApiClient),
-            new SunsetCommandHandler(somneoApiClient)
+            new SunriseCommandHandler(somneoApiClient),
+            new SunsetCommandHandler(somneoApiClient),
+            new BedtimeCommandHandler(somneoApiClient),
+            new RelaxBreatheCommandHandler(somneoApiClient)
         };
 
         _commandRegistry.RegisterCommand("help", "Show available commands.", ShowHelp);
+        _commandRegistry.RegisterCommand("clear", "Clears the console.", args => Console.Clear());
 
         foreach (var commandHandler in commandHandlers)
             commandHandler.RegisterCommands(_commandRegistry);

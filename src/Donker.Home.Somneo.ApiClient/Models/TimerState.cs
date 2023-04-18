@@ -1,44 +1,48 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the current timer state for the Somneo device, used for the RelaxBreathe and sunset functions.
 /// </summary>
 public sealed class TimerState
 {
-    [JsonPropertyName("rlxmn")]
-    internal int RelaxBreatheMinutes { get; init; }
-    [JsonPropertyName("rlxsc")]
-    internal int RelaxBreatheSeconds { get; init; }
-    [JsonPropertyName("dskmn")]
-    internal int SunsetMinutes { get; init; }
-    [JsonPropertyName("dsksc")]
-    internal int SunsetSeconds { get; init; }
-
     /// <summary>
     /// The initial start time of the timer.
     /// </summary>
-    [JsonPropertyName("stime")]
-    public DateTimeOffset? StartTime { get; init; }
+    public DateTimeOffset? StartTime { get; }
     /// <summary>
     /// Whether the timer is enabled for the RelaxBreathe function or not.
     /// </summary>
-    public bool RelaxBreatheEnabled => RelaxBreatheMinutes > 0 || RelaxBreatheSeconds > 0;
+    public bool RelaxBreatheEnabled { get; }
     /// <summary>
     /// Whether the timer is enabled for the Sunset function or not.
     /// </summary>
-    public bool SunsetEnabled => SunsetMinutes > 0 || SunsetSeconds > 0;
+    public bool SunsetEnabled { get; }
     /// <summary>
     /// Whether the timer is enabled or not.
     /// </summary>
-    public bool Enabled => RelaxBreatheEnabled || SunsetEnabled;
+    public bool Enabled { get; }
     /// <summary>
     /// The time that was set for this timer, when enabled for the RelaxBreathe function.
     /// </summary>
-    public TimeSpan? RelaxBreatheTime => RelaxBreatheEnabled ? TimeSpan.FromSeconds((RelaxBreatheMinutes * 60) + RelaxBreatheSeconds) : null;
+    public TimeSpan? RelaxBreatheTime { get; }
     /// <summary>
     /// The time that was set for this timer, when enabled for the Sunset function.
     /// </summary>
-    public TimeSpan? SunsetTime => SunsetEnabled ? TimeSpan.FromSeconds((SunsetMinutes * 60) + SunsetSeconds) : null;
+    public TimeSpan? SunsetTime { get; }
+
+    internal TimerState(
+        DateTimeOffset? startTime,
+        bool relaxBreatheEnabled,
+        bool sunsetEnabled,
+        bool enabled,
+        TimeSpan? relaxBreatheTime,
+        TimeSpan? sunsetTime)
+    {
+        StartTime = startTime;
+        RelaxBreatheEnabled = relaxBreatheEnabled;
+        SunsetEnabled = sunsetEnabled;
+        Enabled = enabled;
+        RelaxBreatheTime = relaxBreatheTime;
+        SunsetTime = sunsetTime;
+    }
 }
