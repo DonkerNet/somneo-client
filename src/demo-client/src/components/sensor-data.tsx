@@ -16,14 +16,14 @@ export default function SensorData() {
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(interval);
   }, []);
 
   // Update refresh progress whenever the timer updates
   useEffect(() => {
-    setRefreshProgress(refreshProgress === 100 ? 0 : refreshProgress + 10);
+    setRefreshProgress(refreshProgress === 100 ? -11 : refreshProgress + 1);
   }, [time]);
 
   // Refresh sensor data when progress resets
