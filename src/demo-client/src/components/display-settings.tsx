@@ -60,6 +60,7 @@ export default function DisplaySettings() {
                 <Switch
                   checked={permanent}
                   onChange={(_, checked) => onPermanentChanged(checked)}
+                  sx={{ ml: "-12px" }}
                 />
               )) || '-'
             }

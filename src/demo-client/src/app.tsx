@@ -46,7 +46,7 @@ export default class App extends Component<AppProps, AppState> {
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
           <Container maxWidth="sm">
-            <Box mt={2}>
+            <Box mt={2} mb={2}>
               {view}
             </Box>
           </Container>

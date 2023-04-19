@@ -68,4 +68,28 @@ public class DemoApiController : ControllerBase
         await _commandRunner.Execute(somneo => somneo.SetDisplayLevel(model.Brightness));
         return Ok();
     }
+
+    [HttpGet]
+    [Route("light")]
+    public async Task<IActionResult> Light()
+    {
+        var lightState = await _commandRunner.Execute(somneo => somneo.GetLightState());
+        return Ok(lightState);
+    }
+
+    [HttpPut]
+    [Route("light/enabled")]
+    public async Task<IActionResult> LightEnabled(PutLightEnabledModel model)
+    {
+        await _commandRunner.Execute(somneo => somneo.ToggleLight(model.Enabled));
+        return Ok();
+    }
+
+    [HttpPut]
+    [Route("light/intensity")]
+    public async Task<IActionResult> LightIntensity(PutLightIntensityModel model)
+    {
+        await _commandRunner.Execute(somneo => somneo.SetLightLevel(model.Intensity));
+        return Ok();
+    }
 }

@@ -94,46 +94,46 @@ export default class DetailsView extends BaseView<BaseViewProps, DetailsViewStat
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={5}>
+          <Grid item xs={12}>
             <Card variant="outlined">
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   Firmware
                 </Typography>
                 <Grid container spacing={1}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Name
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     : {this.state.details?.firmware.name ?? '-'}
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Version
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     : {this.state.details?.firmware.version ?? '-'}
                   </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={7}>
+          <Grid item xs={12}>
             <Card variant="outlined">
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
                   Locale
                 </Typography>
                 <Grid container spacing={1}>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Country
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     : {this.state.details?.locale.country ?? '-'}
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     Timezone
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={9}>
                     : {this.state.details?.locale.timezone ?? '-'}
                   </Grid>
                 </Grid>
