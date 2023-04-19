@@ -1,5 +1,7 @@
-﻿using Donker.Home.Somneo.DemoApp.CommandRunner;
+﻿using Donker.Home.Somneo.DemoApp.ApiModels.Demo;
+using Donker.Home.Somneo.DemoApp.CommandRunner;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Donker.Home.Somneo.DemoApp.ApiControllers;
 
@@ -41,5 +43,29 @@ public class DemoApiController : ControllerBase
     {
         var sensorData = await _commandRunner.Execute(somneo => somneo.GetSensorData());
         return Ok(sensorData);
+    }
+
+    [HttpGet]
+    [Route("display")]
+    public async Task<IActionResult> Display()
+    {
+        var displayState = await _commandRunner.Execute(somneo => somneo.GetDisplayState());
+        return Ok(displayState);
+    }
+
+    [HttpPut]
+    [Route("display/permanent")]
+    public async Task<IActionResult> DisplayPermanent(PutDisplayPermanentModel model)
+    {
+        await _commandRunner.Execute(somneo => somneo.TogglePermanentDisplay(model.Permanent));
+        return Ok();
+    }
+
+    [HttpPut]
+    [Route("display/brightness")]
+    public async Task<IActionResult> DisplayBrightness(PutDisplayBrightnessModel model)
+    {
+        await _commandRunner.Execute(somneo => somneo.SetDisplayLevel(model.Brightness));
+        return Ok();
     }
 }

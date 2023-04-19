@@ -43,8 +43,8 @@ export default function SensorData() {
             </Tooltip>
           </ListItemIcon>
           <ListItemText
-            primary={`${sensorData?.currentTemperature || '-'} °C`}
-            secondary={`Average: ${sensorData?.averageTemperature || '-'} °C`} />
+            primary={`${sensorData?.currentTemperature ?? '-'} °C`}
+            secondary={`Average: ${sensorData?.averageTemperature ?? '-'} °C`} />
         </ListItem>
         <ListItem>
           <ListItemIcon>
@@ -53,8 +53,8 @@ export default function SensorData() {
             </Tooltip>
           </ListItemIcon>
           <ListItemText
-            primary={`${sensorData?.currentLight || '-'} lux`}
-            secondary={`Average: ${sensorData?.averageLight || '-'} lux`} />
+            primary={`${sensorData?.currentLight ?? '-'} lux`}
+            secondary={`Average: ${sensorData?.averageLight ?? '-'} lux`} />
         </ListItem>
         <ListItem>
           <ListItemIcon>
@@ -63,8 +63,8 @@ export default function SensorData() {
             </Tooltip>
           </ListItemIcon>
           <ListItemText
-            primary={`${sensorData?.currentSound || '-'} dB`}
-            secondary={`Average: ${sensorData?.averageSound || '-'} dB`} />
+            primary={`${sensorData?.currentSound ?? '-'} dB`}
+            secondary={`Average: ${sensorData?.averageSound ?? '-'} dB`} />
         </ListItem>
         <ListItem>
           <ListItemIcon>
@@ -73,8 +73,8 @@ export default function SensorData() {
             </Tooltip>
           </ListItemIcon>
           <ListItemText
-            primary={`${sensorData?.currentHumidity || '-'} %`}
-            secondary={`Average: ${sensorData?.averageHumidity || '-'} %`} />
+            primary={`${sensorData?.currentHumidity ?? '-'} %`}
+            secondary={`Average: ${sensorData?.averageHumidity ?? '-'} %`} />
         </ListItem>
       </List>
       <LinearProgress variant="determinate" value={refreshProgress} />

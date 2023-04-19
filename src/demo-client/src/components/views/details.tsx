@@ -41,19 +41,19 @@ export default class DetailsView extends BaseView<BaseViewProps, DetailsViewStat
                     Assigned name
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.device.assignedName || '-'}
+                    : {this.state.details?.device.assignedName ?? '-'}
                   </Grid>
                   <Grid item xs={3}>
                     Type number
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.device.typeNumber || '-'}
+                    : {this.state.details?.device.typeNumber ?? '-'}
                   </Grid>
                   <Grid item xs={3}>
                     Serial number
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.device.serial || '-'}
+                    : {this.state.details?.device.serial ?? '-'}
                   </Grid>
                 </Grid>
               </CardContent>
@@ -63,32 +63,32 @@ export default class DetailsView extends BaseView<BaseViewProps, DetailsViewStat
             <Card variant="outlined">
               <CardContent>
                 <Typography gutterBottom variant="h5" component="div">
-                  Network
+                  Wifi
                 </Typography>
                 <Grid container spacing={1}>
                   <Grid item xs={3}>
                     SSID
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.wifi.ssid || '-'}
+                    : {this.state.details?.wifi.ssid ?? '-'}
                   </Grid>
                   <Grid item xs={3}>
                     Protection
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.wifi.protection || '-'}
+                    : {this.state.details?.wifi.protection ?? '-'}
                   </Grid>
                   <Grid item xs={3}>
                     IP address
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.wifi.ipAddress || '-'}
+                    : {this.state.details?.wifi.ipAddress ?? '-'}
                   </Grid>
                   <Grid item xs={3}>
                     MAC address
                   </Grid>
                   <Grid item xs={9}>
-                    : {this.state.details?.wifi.macAddress || '-'}
+                    : {this.state.details?.wifi.macAddress ?? '-'}
                   </Grid>
                 </Grid>
               </CardContent>
@@ -105,13 +105,13 @@ export default class DetailsView extends BaseView<BaseViewProps, DetailsViewStat
                     Name
                   </Grid>
                   <Grid item xs={8}>
-                    : {this.state.details?.firmware.name || '-'}
+                    : {this.state.details?.firmware.name ?? '-'}
                   </Grid>
                   <Grid item xs={4}>
                     Version
                   </Grid>
                   <Grid item xs={8}>
-                    : {this.state.details?.firmware.version || '-'}
+                    : {this.state.details?.firmware.version ?? '-'}
                   </Grid>
                 </Grid>
               </CardContent>
@@ -128,13 +128,13 @@ export default class DetailsView extends BaseView<BaseViewProps, DetailsViewStat
                     Country
                   </Grid>
                   <Grid item xs={8}>
-                    : {this.state.details?.locale.country || '-'}
+                    : {this.state.details?.locale.country ?? '-'}
                   </Grid>
                   <Grid item xs={4}>
                     Timezone
                   </Grid>
                   <Grid item xs={8}>
-                    : {this.state.details?.locale.timezone || '-'}
+                    : {this.state.details?.locale.timezone ?? '-'}
                   </Grid>
                 </Grid>
               </CardContent>
