@@ -34,4 +34,12 @@ public class DemoApiController : ControllerBase
 
         return Ok(model);
     }
+
+    [HttpGet]
+    [Route("sensors")]
+    public async Task<IActionResult> Sensors()
+    {
+        var sensorData = await _commandRunner.Execute(somneo => somneo.GetSensorData());
+        return Ok(sensorData);
+    }
 }
