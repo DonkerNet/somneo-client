@@ -1,5 +1,4 @@
-﻿using Donker.Home.Somneo.DemoApp.ApiModels.Demo;
-using Donker.Home.Somneo.DemoApp.CommandRunner;
+﻿using Donker.Home.Somneo.DemoApp.CommandRunner;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Donker.Home.Somneo.DemoApp.ApiControllers;
@@ -19,18 +18,19 @@ public class DemoApiController : ControllerBase
     [Route("details")]
     public async Task<IActionResult> Details()
     {
-        var deviceDetails = await _commandRunner.Execute(somneo => somneo.GetDeviceDetails());
-        var wifiDetails = await _commandRunner.Execute(somneo => somneo.GetWifiDetails());
-        var firmwareDetails = await _commandRunner.Execute(somneo => somneo.GetFirmwareDetails());
+        var device = await _commandRunner.Execute(somneo => somneo.GetDeviceDetails());
+        var wifi = await _commandRunner.Execute(somneo => somneo.GetWifiDetails());
+        var firmware = await _commandRunner.Execute(somneo => somneo.GetFirmwareDetails());
         var locale = await _commandRunner.Execute(somneo => somneo.GetLocale());
         var time = await _commandRunner.Execute(somneo => somneo.GetTime());
 
-        var model = new DetailsResponseModel(
-           deviceDetails,
-           wifiDetails,
-           firmwareDetails,
+        var model = new {
+           device,
+           wifi,
+           firmware,
            locale,
-           time);
+           time
+        };
 
         return Ok(model);
     }

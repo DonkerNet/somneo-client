@@ -1,4 +1,4 @@
-import { Card, LinearProgress, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Card, LinearProgress, List, ListItem, ListItemIcon, ListItemText, Tooltip } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import DemoContext from '../contexts/demo';
 import SensorDataModel from '../models/sensor-data';
@@ -35,44 +35,48 @@ export default function SensorData() {
 
   return (
     <Card variant="outlined">
-      {
-        sensorData && (
-          <List dense={true}>
-            <ListItem>
-              <ListItemIcon title="Temperature">
-                <Thermostat />
-              </ListItemIcon>
-              <ListItemText
-                primary={`${sensorData.currentTemperature} °C`}
-                secondary={`Average: ${sensorData.averageTemperature} °C`} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon title="Light">
-                <WbSunny />
-              </ListItemIcon>
-              <ListItemText
-                primary={`${sensorData.currentLight} lux`}
-                secondary={`Average: ${sensorData.averageLight} lux`} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon title="Sound">
-                <VolumeMute />
-              </ListItemIcon>
-              <ListItemText
-                primary={`${sensorData.currentSound} dB`}
-                secondary={`Average: ${sensorData.averageSound} dB`} />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon title="Humidity">
-                <WaterDrop />
-              </ListItemIcon>
-              <ListItemText
-                primary={`${sensorData.currentHumidity} %`}
-                secondary={`Average: ${sensorData.averageHumidity} %`} />
-            </ListItem>
-          </List>
-        )
-      }
+      <List dense={true}>
+        <ListItem>
+          <ListItemIcon>
+            <Tooltip title="Temperature">
+              <Thermostat />
+            </Tooltip>
+          </ListItemIcon>
+          <ListItemText
+            primary={`${sensorData?.currentTemperature || '-'} °C`}
+            secondary={`Average: ${sensorData?.averageTemperature || '-'} °C`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <Tooltip title="Light">
+              <WbSunny />
+            </Tooltip>
+          </ListItemIcon>
+          <ListItemText
+            primary={`${sensorData?.currentLight || '-'} lux`}
+            secondary={`Average: ${sensorData?.averageLight || '-'} lux`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <Tooltip title="Sound">
+              <VolumeMute />
+            </Tooltip>
+          </ListItemIcon>
+          <ListItemText
+            primary={`${sensorData?.currentSound || '-'} dB`}
+            secondary={`Average: ${sensorData?.averageSound || '-'} dB`} />
+        </ListItem>
+        <ListItem>
+          <ListItemIcon>
+            <Tooltip title="Humidity">
+              <WaterDrop />
+            </Tooltip>
+          </ListItemIcon>
+          <ListItemText
+            primary={`${sensorData?.currentHumidity || '-'} %`}
+            secondary={`Average: ${sensorData?.averageHumidity || '-'} %`} />
+        </ListItem>
+      </List>
       <LinearProgress variant="determinate" value={refreshProgress} />
     </Card>
   );
