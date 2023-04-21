@@ -832,7 +832,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     /// <inheritdoc/>
-    public BedtimeInfo? GetLastBedtimeInfo()
+    public BedtimeInfo? GetBedtimeInfo()
     {
         var dto = ExecuteGetRequest<BedtimeInfoDto>("di/v1/products/1/wungt");
         return dto.Started.HasValue ? BedtimeInfoMapper.ToModel(dto) : null;

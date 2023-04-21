@@ -28,19 +28,25 @@ export default class OverviewView extends BaseView<BaseViewProps, never> {
           <SensorData />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" fullWidth sx={{ display: "block" }}>
+          <Button variant="contained" fullWidth sx={{ display: "block" }}
+            onClick={e => this.props.changeView(ViewNames.ALARMS)}
+          >
             <Notifications />
             <Typography>Alarms</Typography>
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button variant="contained" fullWidth sx={{ display: "block" }}>
+          <Button variant="contained" fullWidth sx={{ display: "block" }}
+            onClick={e => this.props.changeView(ViewNames.RELAX_BREATHE)}
+          >
             <Air />
             <Typography>RelaxBreathe</Typography>
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button variant="contained" fullWidth sx={{ display: "block" }}>
+          <Button variant="contained" fullWidth sx={{ display: "block" }}
+            onClick={e => this.props.changeView(ViewNames.SUNSET)}
+          >
             <WbTwilight />
             <Typography>Sunset</Typography>
           </Button>
@@ -52,7 +58,9 @@ export default class OverviewView extends BaseView<BaseViewProps, never> {
           <LightControls />
         </Grid>
         <Grid item xs={12}>
-          <Button variant="contained" fullWidth sx={{ display: "block" }}>
+          <Button variant="contained" fullWidth sx={{ display: "block" }}
+            onClick={e => this.props.changeView(ViewNames.FM_RADIO)}
+          >
             <Radio />
             <Typography>FM-radio</Typography>
           </Button>

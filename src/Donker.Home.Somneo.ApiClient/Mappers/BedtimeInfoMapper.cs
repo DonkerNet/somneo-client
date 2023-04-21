@@ -8,7 +8,8 @@ internal class BedtimeInfoMapper
     public static BedtimeInfo ToModel(BedtimeInfoDto dto)
     {
         return new BedtimeInfo(
+            dto.Enabled,
             dto.Started.GetValueOrDefault(),
-            dto.Ended.GetValueOrDefault());
+            !dto.Enabled ? dto.Ended : null);
     }
 }

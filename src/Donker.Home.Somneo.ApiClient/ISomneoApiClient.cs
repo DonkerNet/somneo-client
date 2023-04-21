@@ -498,10 +498,10 @@ public interface ISomneoApiClient
     BedtimeInfo EndBedtime();
 
     /// <summary>
-    /// Returns information about the most recent bedtime session.
+    /// Returns information about the current or most recent bedtime session.
     /// </summary>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    BedtimeInfo? GetLastBedtimeInfo();
+    BedtimeInfo? GetBedtimeInfo();
 
     #endregion
 

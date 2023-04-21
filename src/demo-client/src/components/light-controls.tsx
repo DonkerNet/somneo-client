@@ -18,7 +18,7 @@ export default function LightControls() {
           setEnabled(newLightState.lightEnabled);
           setIntensity(newLightState.lightLevel);
         }
-      })
+      });
     }
   };
 

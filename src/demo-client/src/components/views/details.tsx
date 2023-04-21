@@ -1,10 +1,5 @@
-import { Button, Card, CardContent, Grid, Typography } from '@mui/material';
+import { Card, CardContent, Grid, Typography } from '@mui/material';
 import BaseView, { BaseViewProps } from './base';
-import { Air, Notifications, Radio, WbTwilight } from '@mui/icons-material';
-import SensorData from '../sensor-data';
-import BedtimeSession from '../bedtime-session';
-import LightControls from '../light-controls';
-import DisplaySettings from '../display-settings';
 import DetailsModel from 'src/models/details';
 import TitleBar from '../title-bar';
 import { ViewNames } from './factory';

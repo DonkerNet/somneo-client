@@ -92,4 +92,24 @@ public class DemoApiController : ControllerBase
         await _commandRunner.Execute(somneo => somneo.SetLightLevel(model.Intensity));
         return Ok();
     }
+
+    [HttpGet]
+    [Route("bedtime")]
+    public async Task<IActionResult> Bedtime()
+    {
+        var bedtime = await _commandRunner.Execute(somneo => somneo.GetBedtimeInfo());
+        return Ok(bedtime);
+    }
+
+    [HttpPut]
+    [Route("bedtime/enabled")]
+    public async Task<IActionResult> BedtimeEnabled(PutBedtimeEnabledModel model)
+    {
+        if (model.Enabled)
+            await _commandRunner.Execute(somneo => somneo.StartBedtime());
+        else
+            await _commandRunner.Execute(somneo => somneo.EndBedtime());
+
+        return Ok();
+    }
 }

@@ -4,6 +4,9 @@ namespace Donker.Home.Somneo.ApiClient.Dto;
 
 internal class BedtimeInfoDto
 {
+    [JsonPropertyName("night")]
+    public bool Enabled { get; set; }
+
     [JsonPropertyName("tg2bd")]
     public DateTimeOffset? Started { get; set; }
 

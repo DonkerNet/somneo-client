@@ -2,7 +2,7 @@ import { Card, CardContent, Grid, Slider, Stack, Switch, Typography } from '@mui
 import { useContext, useEffect, useState } from 'react';
 import DemoContext from '../contexts/demo';
 import { Brightness6 } from '@mui/icons-material';
-import DisplayStateModel from 'src/models/display-state';
+import DisplayStateModel from '../models/display-state';
 
 export default function DisplaySettings() {
   const { api } = useContext(DemoContext);
