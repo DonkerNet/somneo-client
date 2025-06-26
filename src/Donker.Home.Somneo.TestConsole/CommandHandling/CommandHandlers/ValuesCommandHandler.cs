@@ -4,13 +4,8 @@ using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class ValuesCommandHandler : CommandHandlerBase
+public class ValuesCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public ValuesCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("wake-up-sounds", "Shows a list of available wake-up sounds used as parameters for other commands.", WakeUpSounds);

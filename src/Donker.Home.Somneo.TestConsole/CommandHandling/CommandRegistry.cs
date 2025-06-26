@@ -4,14 +4,9 @@ namespace Donker.Home.Somneo.TestConsole.CommandHandling;
 
 public class CommandRegistry
 {
-    private readonly OrderedDictionary _commands;
+    private readonly OrderedDictionary _commands = new(StringComparer.OrdinalIgnoreCase);
 
     public int CommandCount => _commands.Count;
-    
-    public CommandRegistry()
-    {
-        _commands = new OrderedDictionary(StringComparer.OrdinalIgnoreCase);
-    }
 
     public void RegisterCommand(string commandName, string? argumentsDescription, string description, Action<string?> commandHandler)
     {

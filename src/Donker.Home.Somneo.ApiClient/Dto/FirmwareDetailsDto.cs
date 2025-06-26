@@ -4,13 +4,11 @@ namespace Donker.Home.Somneo.ApiClient.Dto;
 
 internal class FirmwareDetailsDto
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Version { get; set; }
+    public required string Version { get; set; }
 
-    public string State { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public required string State { get; set; }
 
     public string? Upgrade { get; set; }
 

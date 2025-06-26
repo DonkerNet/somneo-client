@@ -146,7 +146,6 @@ internal static class EnumMapper
         foreach (DayOfWeek dayOfWeek in daysOfWeek.Distinct())
             dayFlags |= Enum.Parse<DayFlags>(dayOfWeek.ToString());
 
-
         return (byte)dayFlags;
     }
 

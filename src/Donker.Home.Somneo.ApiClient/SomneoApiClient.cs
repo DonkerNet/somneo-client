@@ -1,8 +1,8 @@
-﻿using System.Net;
-using Donker.Home.Somneo.ApiClient.Dto;
+﻿using Donker.Home.Somneo.ApiClient.Dto;
 using Donker.Home.Somneo.ApiClient.Mappers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
+using System.Net;
 
 namespace Donker.Home.Somneo.ApiClient;
 
@@ -48,8 +48,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <exception cref="ArgumentNullException">The HTTP client is null.</exception>
     public SomneoApiClient(HttpClient httpClient, bool disposeHttpClient)
     {
-        if (httpClient == null)
-            ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
+        ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
 
         _httpClient = httpClient;
         _disposeHttpClient = disposeHttpClient;
@@ -178,7 +177,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void ToggleLight(bool enabled)
     {
-        object data = new
+        var data = new
         {
             onoff = enabled,    // Toggle the light
             tempy = false,      // Specifies NOT to be in preview/temporary mode?
@@ -194,7 +193,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (lightLevel < 1 || lightLevel > 25)
             throw new ArgumentException("The level must be between 1 and 25.", nameof(lightLevel));
 
-        object data = new
+        var data = new
         {
             ltlvl = lightLevel, // Set the level
             onoff = true,       // Enable the light
@@ -208,7 +207,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void ToggleNightLight(bool enabled)
     {
-        object data = new
+        var data = new
         {
             onoff = false,  // Disable the regular light
             tempy = false,  // Specifies NOT to be in preview/temporary mode?
@@ -232,7 +231,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void TogglePermanentDisplay(bool enabled)
     {
-        object data = new
+        var data = new
         {
             dspon = enabled
         };
@@ -246,7 +245,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (brightnessLevel < 1 || brightnessLevel > 6)
             throw new ArgumentException("The level must be between 1 and 6.", nameof(brightnessLevel));
 
-        object data = new
+        var data = new
         {
             brght = brightnessLevel
         };
@@ -266,7 +265,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (volume < 1 || volume > 25)
             throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
 
-        object data = new
+        var data = new
         {
             sndss = 1000,   // What is this?
             onoff = true,   // Enable the player
@@ -282,7 +281,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void DisableWakeUpSoundPreview()
     {
-        object data = new
+        var data = new
         {
             onoff = false,  // Disable the player
             tempy = true,   // Specifies to be in preview/temporary mode?
@@ -308,7 +307,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (position < 1 || position > 5)
             throw new ArgumentException("The position must be between 1 and 5.", nameof(position));
 
-        object data = new
+        var data = new
         {
             fmcmd = "recall",
             prstn = position
@@ -329,7 +328,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void EnableFMRadio()
     {
-        object data = new
+        var data = new
         {
             sndss = 0,      // What is this?
             onoff = true,   // Enable the player
@@ -346,7 +345,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (preset < 1 || preset > 5)
             throw new ArgumentException("The preset must be between 1 and 5.", nameof(preset));
 
-        object data = new
+        var data = new
         {
             sndss = 0,                  // What is this?
             onoff = true,               // Enable the player
@@ -364,7 +363,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (!Enum.IsDefined(direction))
             throw new ArgumentException("The direction is invalid.", nameof(direction));
 
-        object data = new
+        var data = new
         {
             fmcmd = EnumMapper.GetRadioSeekDirectionValue(direction)
         };
@@ -381,7 +380,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     {
         DisablePlayer(); // Disable the player first, because AUX does not enable right away for some reason
 
-        object data = new
+        var data = new
         {
             sndss = 0,      // What is this?
             onoff = true,   // Enable the player
@@ -409,7 +408,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (volume < 1 || volume > 25)
             throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
 
-        object data = new
+        var data = new
         {
             sdvol = volume
         };
@@ -420,7 +419,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void DisablePlayer()
     {
-        object data = new
+        var data = new
         {
             onoff = false
         };
@@ -446,7 +445,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
 
-        object data = new
+        var data = new
         {
             prfnr = position,
             prfen = enabled
@@ -539,7 +538,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             if (powerWakeMinutes.Value < 0 || powerWakeMinutes.Value > 59)
                 throw new ArgumentException("The PowerWake minutes must be between 0 and 59.", nameof(powerWakeMinutes));
 
-            TimeSpan powerWakeTime = new TimeSpan(hour, minute, 0)
+            var powerWakeTime = new TimeSpan(hour, minute, 0)
                 .Add(TimeSpan.FromMinutes(powerWakeMinutes.Value));
 
             powerWakeSize = 255;
@@ -580,7 +579,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         byte repeatDaysNumber = EnumMapper.GetDaysOfWeekValue(repeatDays);
         string soundDeviceName = EnumMapper.GetSoundDeviceTypeValue(soundDevice);
 
-        object data = new
+        var data = new
         {
             prfnr = position,                   // Position of the alarm to set
             prfen = true,                       // Enable the alarm
@@ -608,7 +607,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
 
-        object data = new
+        var data = new
         {
             prfnr = position,   // Position of the alarm to remove
             prfen = false,      // Disable the alarm
@@ -636,7 +635,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (position < 1 || position > 16)
             throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
 
-        object data = new
+        var data = new
         {
             prfnr = position
         };
@@ -652,7 +651,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (minutes < 1 || minutes > 20)
             throw new ArgumentException("The minutes must be between 1 and 20.", nameof(minutes));
 
-        object data = new
+        var data = new
         {
             snztm = minutes
         };
@@ -683,7 +682,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (sunriseIntensity < 1 || sunriseIntensity > 25)
             throw new ArgumentException("The sunrise intensity must be between 1 and 25.", nameof(sunriseIntensity));
 
-        object data = new
+        var data = new
         {
             onoff = true,   // Enable the light
             tempy = true,   // Specifies to be in preview/temporary mode?
@@ -698,7 +697,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void DisableSunrisePreview()
     {
-        object data = new
+        var data = new
         {
             onoff = false,  // Disable the light
             tempy = true,   // Specifies to be in preview/temporary mode?
@@ -721,7 +720,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void ToggleSunset(bool enabled)
     {
-        object data = new
+        var data = new
         {
             onoff = enabled
         };
@@ -791,7 +790,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         string soundDeviceName = EnumMapper.GetSoundDeviceTypeValue(soundDevice);
 
-        object data = new
+        var data = new
         {
             ctype = sunsetColorSchemeNumber,    // The sunset colors
             curve = sunsetIntensity,            // The light level
@@ -811,7 +810,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void StartBedtime()
     {
-        object data = new
+        var data = new
         {
             night = true
         };
@@ -822,7 +821,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public BedtimeInfo EndBedtime()
     {
-        object data = new
+        var data = new
         {
             night = false
         };
@@ -852,7 +851,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void ToggleRelaxBreathe(bool enabled)
     {
-        object data = new
+        var data = new
         {
             onoff = enabled
         };
@@ -868,7 +867,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (volume < 1 || volume > 25)
             throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
 
-        object data = new
+        var data = new
         {
             rtype = 1,                          // Sets the type to sound
             durat = duration,                   // The duration of RelaxBreathe
@@ -887,7 +886,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (intensity < 1 || intensity > 25)
             throw new ArgumentException("The intensity must be between 1 and 25.", nameof(intensity));
 
-        object data = new
+        var data = new
         {
             rtype = 1,                          // Sets the type to sound
             durat = duration,                   // The duration of RelaxBreathe

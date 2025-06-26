@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
-using Donker.Home.Somneo.ApiClient.Serialization.Converters;
+﻿using Donker.Home.Somneo.ApiClient.Serialization.Converters;
+using System.Text.Json.Serialization;
 
 namespace Donker.Home.Somneo.ApiClient.Dto;
 

@@ -4,21 +4,19 @@ namespace Donker.Home.Somneo.ApiClient.Dto;
 
 internal class DeviceDetailsDto
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     [JsonPropertyName("name")]
-    public string AssignedName { get; set; }
+    public required string AssignedName { get; set; }
 
     [JsonPropertyName("ctn")]
-    public string TypeNumber { get; set; }
+    public required string TypeNumber { get; set; }
 
-    public string Serial { get; set; }
+    public required string Serial { get; set; }
 
-    public string ProductId { get; set; }
+    public required string ProductId { get; set; }
 
-    public string ProductName { get; set; }
+    public required string ProductName { get; set; }
 
-    public string ModelId { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public required string ModelId { get; set; }
 
     /* Example JSON:
 {

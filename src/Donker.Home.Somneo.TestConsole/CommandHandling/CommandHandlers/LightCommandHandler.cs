@@ -1,15 +1,9 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class LightCommandHandler : CommandHandlerBase
+public class LightCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public LightCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("light", "Show the light state.", ShowLightState);
@@ -20,7 +14,7 @@ public class LightCommandHandler : CommandHandlerBase
 
     private void ShowLightState(string? args)
     {
-        LightState lightState = SomneoApiClient.GetLightState();
+        var lightState = SomneoApiClient.GetLightState();
 
         Console.WriteLine(
 $@"Light state:

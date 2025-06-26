@@ -2,19 +2,17 @@
 
 internal class WifiDetailsDto
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    public string SSID { get; set; }
+    public required string SSID { get; set; }
 
-    public string Protection { get; set; }
+    public required string Protection { get; set; }
 
-    public string IPAddress { get; set; }
+    public required string IPAddress { get; set; }
 
-    public string Netmask { get; set; }
+    public required string Netmask { get; set; }
 
-    public string Gateway { get; set; }
+    public required string Gateway { get; set; }
 
-    public string MACAddress { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public required string MACAddress { get; set; }
 
     /* Example JSON:
 {

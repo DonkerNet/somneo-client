@@ -1,15 +1,9 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class BedtimeCommandHandler : CommandHandlerBase
+public class BedtimeCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public BedtimeCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("start-bedtime", "Starts a new bedtime session.", StartBedtime);
@@ -25,7 +19,7 @@ public class BedtimeCommandHandler : CommandHandlerBase
 
     private void EndBedtime(string? args)
     {
-        BedtimeInfo bedtimeInfo = SomneoApiClient.EndBedtime();
+        var bedtimeInfo = SomneoApiClient.EndBedtime();
 
         Console.WriteLine(
 $@"Bedtime session ended:
@@ -36,7 +30,7 @@ $@"Bedtime session ended:
 
     private void LastBedtime(string? args)
     {
-        BedtimeInfo? bedtimeInfo = SomneoApiClient.GetLastBedtimeInfo();
+        var bedtimeInfo = SomneoApiClient.GetLastBedtimeInfo();
 
         if (bedtimeInfo == null)
         {

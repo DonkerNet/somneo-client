@@ -2,13 +2,8 @@
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class AUXCommandHandler : CommandHandlerBase
+public class AUXCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public AUXCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("enable-aux", "Enables the auxiliary input device.", EnableAUX);

@@ -1,15 +1,9 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class RelaxBreatheCommandHandler : CommandHandlerBase
+public class RelaxBreatheCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public RelaxBreatheCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("relax-breathe-settings", "Show the RelaxBreathe settings.", ShowRelaxBreatheSettings);
@@ -28,7 +22,7 @@ public class RelaxBreatheCommandHandler : CommandHandlerBase
 
     private void ShowRelaxBreatheSettings(string? args)
     {
-        RelaxBreatheSettings relaxBreatheSettings = SomneoApiClient.GetRelaxBreatheSettings();
+        var relaxBreatheSettings = SomneoApiClient.GetRelaxBreatheSettings();
 
         string intensityOrVolume = relaxBreatheSettings.IsLight
             ? $"Intensity: {relaxBreatheSettings.LightIntensity}/25"
@@ -76,7 +70,7 @@ Breaths per minute options:
             return;
         }
 
-        string[] argsArray = args.Split(new[] { ' ' }, 11);
+        string[] argsArray = args.Split(' ', 11);
 
         if (argsArray.Length < 3)
         {
@@ -122,7 +116,7 @@ $@"Updated RelaxBreathe to use sound with the settings:
             return;
         }
 
-        string[] argsArray = args.Split(new[] { ' ' }, 11);
+        string[] argsArray = args.Split(' ', 11);
 
         if (argsArray.Length < 3)
         {

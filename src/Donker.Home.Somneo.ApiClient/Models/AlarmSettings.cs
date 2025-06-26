@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the settings of a specific alarm of the Somneo device.
@@ -90,7 +88,7 @@ public sealed class AlarmSettings
         WakeUpSound? wakeUpSound,
         int? volume)
     {
-        RepeatDays = new ReadOnlyCollection<DayOfWeek>(repeatDays.ToList());
+        RepeatDays = repeatDays.ToList().AsReadOnly();
         Position = position;
         Enabled = enabled;
         Hour = hour;

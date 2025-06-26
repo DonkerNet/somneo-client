@@ -1,15 +1,9 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class TimerCommandHandler : CommandHandlerBase
+public class TimerCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public TimerCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("timer-state", "Get the state of the timer, used for RelaxBreathe or sunset.", GetTimerState);
@@ -17,7 +11,7 @@ public class TimerCommandHandler : CommandHandlerBase
 
     private void GetTimerState(string? args)
     {
-        TimerState timerState = SomneoApiClient.GetTimerState();
+        var timerState = SomneoApiClient.GetTimerState();
 
         if (!timerState.Enabled)
         {
@@ -26,9 +20,9 @@ public class TimerCommandHandler : CommandHandlerBase
         }
 
         string enabledFor = timerState.RelaxBreatheEnabled ? "RelaxBreathe" : "sunset";
-        TimeSpan duration = timerState.RelaxBreatheTime ?? timerState.SunsetTime!.Value;
-        DateTimeOffset startTime = timerState.StartTime!.Value;
-        DateTimeOffset currentTime = DateTimeOffset.UtcNow.ToOffset(startTime.Offset);
+        var duration = timerState.RelaxBreatheTime ?? timerState.SunsetTime!.Value;
+        var startTime = timerState.StartTime!.Value;
+        var currentTime = DateTimeOffset.UtcNow.ToOffset(startTime.Offset);
 
         Console.WriteLine(
 $@"Timer state: Enabled for {enabledFor}

@@ -3,13 +3,8 @@ using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class FMRadioCommandHandler : CommandHandlerBase
+public class FMRadioCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public FMRadioCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresets);
@@ -22,7 +17,7 @@ public class FMRadioCommandHandler : CommandHandlerBase
 
     private void ShowFMRadioPresets(string? args)
     {
-        FMRadioPresets fmRadioPresets = SomneoApiClient.GetFMRadioPresets();
+        var fmRadioPresets = SomneoApiClient.GetFMRadioPresets();
 
         Console.WriteLine(
 $@"FM radio presets:
@@ -47,7 +42,7 @@ $@"FM radio presets:
 
     private void ShowFMRadioState(string? args)
     {
-        FMRadioState fmRadioState = SomneoApiClient.GetFMRadioState();
+        var fmRadioState = SomneoApiClient.GetFMRadioState();
 
         Console.WriteLine(
 $@"FM radio state:

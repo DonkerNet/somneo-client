@@ -4,13 +4,8 @@ using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class SunsetCommandHandler : CommandHandlerBase
+public class SunsetCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public SunsetCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("sunset-settings", "Show the sunset settings.", ShowSunsetSettings);
@@ -34,7 +29,7 @@ public class SunsetCommandHandler : CommandHandlerBase
 
     private void ShowSunsetSettings(string? args)
     {
-        SunsetSettings sunsetSettings = SomneoApiClient.GetSunsetSettings();
+        var sunsetSettings = SomneoApiClient.GetSunsetSettings();
 
         string soundDevice = sunsetSettings.SoundDevice.HasValue ? EnumHelper.GetDescription(sunsetSettings.SoundDevice.Value)! : "None";
 
@@ -92,7 +87,7 @@ $@"Sunset settings:
             return;
         }
 
-        string[] argsArray = args.Split(new[] { ' ' }, 11);
+        string[] argsArray = args.Split(' ', 11);
 
         if (argsArray.Length < 3)
         {

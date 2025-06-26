@@ -4,13 +4,8 @@ using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class PlayerCommandHandler : CommandHandlerBase
+public class PlayerCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public PlayerCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("player", "Show the player state.", ShowPlayerState);
@@ -20,7 +15,7 @@ public class PlayerCommandHandler : CommandHandlerBase
 
     private void ShowPlayerState(string? args)
     {
-        PlayerState playerState = SomneoApiClient.GetPlayerState();
+        var playerState = SomneoApiClient.GetPlayerState();
 
         string soundDevice = playerState.SoundDevice.HasValue ? EnumHelper.GetDescription(playerState.SoundDevice.Value)! : "None";
 

@@ -4,16 +4,14 @@ namespace Donker.Home.Somneo.ApiClient.Dto;
 
 internal class AlarmSchedulesDto
 {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     [JsonPropertyName("daynm")]
-    public byte[] RepeatDayFlags { get; set; }
+    public required byte[] RepeatDayFlags { get; set; }
 
     [JsonPropertyName("almhr")]
-    public int[] Hours { get; set; }
+    public required int[] Hours { get; set; }
 
     [JsonPropertyName("almmn")]
-    public int[] Minutes { get; set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    public required int[] Minutes { get; set; }
 
     /*Example JSON:
 {

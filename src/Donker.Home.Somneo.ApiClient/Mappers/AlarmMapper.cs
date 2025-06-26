@@ -1,6 +1,5 @@
 ﻿using Donker.Home.Somneo.ApiClient.Dto;
 using Donker.Home.Somneo.ApiClient.Models;
-using System.Collections.ObjectModel;
 
 namespace Donker.Home.Somneo.ApiClient.Mappers;
 
@@ -23,7 +22,7 @@ internal class AlarmMapper
             int? powerWakeHour = powerWakeEnabled ? alarmStatesDto.PowerWake[powerWakeIndex + 1] : null;
             int? powerWakeMinute = powerWakeEnabled ? alarmStatesDto.PowerWake[powerWakeIndex + 2] : null;
 
-            var repeatDays = EnumMapper.GetDaysOfWeek(alarmSchedulesDto.RepeatDayFlags[i]).ToList();
+            var repeatDays = EnumMapper.GetDaysOfWeek(alarmSchedulesDto.RepeatDayFlags[i]);
 
             int hour = alarmSchedulesDto.Hours[i];
             int minute = alarmSchedulesDto.Minutes[i];
@@ -41,6 +40,6 @@ internal class AlarmMapper
             alarms.Add(alarm);
         }
 
-        return new ReadOnlyCollection<Alarm>(alarms);
+        return alarms.AsReadOnly();
     }
 }

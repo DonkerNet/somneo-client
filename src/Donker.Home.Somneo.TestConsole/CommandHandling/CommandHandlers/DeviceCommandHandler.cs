@@ -1,16 +1,10 @@
-﻿using System.Text;
-using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
+﻿using Donker.Home.Somneo.ApiClient;
+using System.Text;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class DeviceCommandHandler : CommandHandlerBase
+public class DeviceCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public DeviceCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("device", "Show the device information.", ShowDeviceDetails);
@@ -22,7 +16,7 @@ public class DeviceCommandHandler : CommandHandlerBase
 
     public void ShowDeviceDetails(string? args)
     {
-        DeviceDetails deviceDetails = SomneoApiClient.GetDeviceDetails();
+        var deviceDetails = SomneoApiClient.GetDeviceDetails();
 
         Console.WriteLine(
 $@"Device details:
@@ -36,7 +30,7 @@ $@"Device details:
 
     public void ShowFirmwareDetails(string? args)
     {
-        FirmwareDetails firmwareDetails = SomneoApiClient.GetFirmwareDetails();
+        var firmwareDetails = SomneoApiClient.GetFirmwareDetails();
 
         var consoleMessageBuilder = new StringBuilder();
 
@@ -57,7 +51,7 @@ $@"Firmware details:
 
     public void ShowWifiDetails(string? args)
     {
-        WifiDetails wifiDetails = SomneoApiClient.GetWifiDetails();
+        var wifiDetails = SomneoApiClient.GetWifiDetails();
 
         Console.WriteLine(
 $@"Wifi details:
@@ -71,7 +65,7 @@ $@"Wifi details:
 
     public void ShowLocale(string? args)
     {
-        Locale locale = SomneoApiClient.GetLocale();
+        var locale = SomneoApiClient.GetLocale();
 
         Console.WriteLine(
 $@"Locale:
@@ -81,7 +75,7 @@ $@"Locale:
 
     public void ShowTime(string? args)
     {
-        Time time = SomneoApiClient.GetTime();
+        var time = SomneoApiClient.GetTime();
 
         Console.WriteLine(
 $@"Time:

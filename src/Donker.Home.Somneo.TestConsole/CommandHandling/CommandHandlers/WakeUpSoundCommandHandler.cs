@@ -4,13 +4,8 @@ using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class WakeUpSoundCommandHandler : CommandHandlerBase
+public class WakeUpSoundCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public WakeUpSoundCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("enable-wake-up-sound-preview", "[1-8] [1-25]", "Previews a wake-up sound with the specified volume.", EnableWakeUpSoundPreview);
@@ -21,7 +16,7 @@ public class WakeUpSoundCommandHandler : CommandHandlerBase
     {
         if (!string.IsNullOrEmpty(args))
         {
-            string[] argsArray = args.Split(new[] { ' ' }, 2);
+            string[] argsArray = args.Split(' ', 2);
 
             if (argsArray.Length == 2
                 && int.TryParse(argsArray[0], out int wakeUpSoundNumber)

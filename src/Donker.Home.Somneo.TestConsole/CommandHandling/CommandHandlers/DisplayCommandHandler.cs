@@ -1,15 +1,9 @@
 ﻿using Donker.Home.Somneo.ApiClient;
-using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class DisplayCommandHandler : CommandHandlerBase
+public class DisplayCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public DisplayCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("display", "Show the display state.", ShowDisplayState);
@@ -19,7 +13,7 @@ public class DisplayCommandHandler : CommandHandlerBase
 
     private void ShowDisplayState(string? args)
     {
-        DisplayState displayState = SomneoApiClient.GetDisplayState();
+        var displayState = SomneoApiClient.GetDisplayState();
 
         Console.WriteLine(
 $@"Display state:

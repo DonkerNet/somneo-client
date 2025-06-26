@@ -1,17 +1,12 @@
-﻿using System.Text;
-using Donker.Home.Somneo.ApiClient;
+﻿using Donker.Home.Somneo.ApiClient;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.TestConsole.Helpers;
+using System.Text;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class AlarmCommandHandler : CommandHandlerBase
+public class AlarmCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public AlarmCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("alarms", "Show the alarms.", ShowAlarms);
@@ -38,7 +33,7 @@ public class AlarmCommandHandler : CommandHandlerBase
 
     private void ShowAlarms(string? args)
     {
-        IReadOnlyList<Alarm> alarms = SomneoApiClient.GetAlarms();
+        var alarms = SomneoApiClient.GetAlarms();
 
         if (alarms.Count == 0)
         {
@@ -69,7 +64,7 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int position) && position >= 1 && position <= 16)
         {
-            AlarmSettings? alarmSettings = SomneoApiClient.GetAlarmSettings(position);
+            var alarmSettings = SomneoApiClient.GetAlarmSettings(position);
 
             if (alarmSettings == null)
             {
@@ -288,7 +283,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                     definitiveSunriseColors,
                     definitiveSunriseIntensity,
                     definitiveSunriseDuration,
-                    (WakeUpSound)wakeUpSound,
+                    wakeUpSound,
                     volume);
                 break;
 
@@ -340,7 +335,7 @@ $@"Set alarm #{position} with the settings:
     {
         if (!string.IsNullOrEmpty(args))
         {
-            string[] argsArray = args.Split(new[] { ' ' }, 2);
+            string[] argsArray = args.Split(' ', 2);
 
             if (argsArray.Length == 2
                 && int.TryParse(argsArray[0], out int position)

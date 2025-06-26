@@ -1,6 +1,4 @@
-﻿using Donker.Home.Somneo.ApiClient.Dto;
-using Donker.Home.Somneo.ApiClient.Mappers;
-using Donker.Home.Somneo.ApiClient.Models;
+﻿using Donker.Home.Somneo.ApiClient.Models;
 
 namespace Donker.Home.Somneo.ApiClient;
 

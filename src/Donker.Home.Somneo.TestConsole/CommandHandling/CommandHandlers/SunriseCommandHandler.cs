@@ -4,13 +4,8 @@ using Donker.Home.Somneo.TestConsole.Helpers;
 
 namespace Donker.Home.Somneo.TestConsole.CommandHandling.CommandHandlers;
 
-public class SunriseCommandHandler : CommandHandlerBase
+public class SunriseCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandlerBase(somneoApiClient)
 {
-    public SunriseCommandHandler(ISomneoApiClient somneoApiClient)
-        : base(somneoApiClient)
-    {
-    }
-
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
         commandRegistry.RegisterCommand("enable-sunrise-preview", "[1-3] [1-25]", "Previews a sunrise with the specified intensity.", EnableSunrisePreview);
@@ -21,7 +16,7 @@ public class SunriseCommandHandler : CommandHandlerBase
     {
         if (!string.IsNullOrEmpty(args))
         {
-            string[] argsArray = args.Split(new[] { ' ' }, 2);
+            string[] argsArray = args.Split(' ', 2);
 
             if (argsArray.Length == 2
                 && int.TryParse(argsArray[0], out int colorSchemeNumber)

@@ -69,7 +69,7 @@ Type ""help"" to get started.");
         if (string.IsNullOrEmpty(command))
             return;
 
-        string[] parts = command.Split(new[] { ' ' }, 2);
+        string[] parts = command.Split(' ', 2);
 
         var commandInfo = _commandRegistry.GetCommandInfo(parts[0]);
 

@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace Donker.Home.Somneo.ApiClient.Models;
+﻿namespace Donker.Home.Somneo.ApiClient.Models;
 
 /// <summary>
 /// Describes the schedule of an alarm that is set for the Somneo device.
@@ -51,7 +49,7 @@ public sealed class Alarm
         int? powerWakeHour,
         int? powerWakeMinute)
     {
-        RepeatDays = new ReadOnlyCollection<DayOfWeek>(repeatDays.ToList());
+        RepeatDays = repeatDays.ToList().AsReadOnly();
         Position = position;
         Enabled = enabled;
         Hour = hour;

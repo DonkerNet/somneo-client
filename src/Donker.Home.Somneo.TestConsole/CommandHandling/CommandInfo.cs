@@ -1,17 +1,9 @@
 ﻿namespace Donker.Home.Somneo.TestConsole.CommandHandling;
 
-public class CommandInfo
+public class CommandInfo(string name, string? argumentsDescription, string description, Action<string?> handler)
 {
-    public string Name { get; }
-    public string? ArgumentsDescription { get; }
-    public string Description { get; }
-    public Action<string?> Handler { get; }
-
-    public CommandInfo(string name, string? argumentsDescription, string description, Action<string?> handler)
-    {
-        Name = name;
-        ArgumentsDescription = argumentsDescription;
-        Description = description;
-        Handler = handler;
-    }
+    public string Name { get; } = name;
+    public string? ArgumentsDescription { get; } = argumentsDescription;
+    public string Description { get; } = description;
+    public Action<string?> Handler { get; } = handler;
 }
