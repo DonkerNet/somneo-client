@@ -2,6 +2,7 @@
 using Donker.Home.Somneo.ApiClient.Mappers;
 using Donker.Home.Somneo.ApiClient.Models;
 using Donker.Home.Somneo.ApiClient.Serialization;
+using Donker.Home.Somneo.ApiClient.Validation;
 using System.Net;
 
 namespace Donker.Home.Somneo.ApiClient;
@@ -190,8 +191,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SetLightLevel(int lightLevel)
     {
-        if (lightLevel < 1 || lightLevel > 25)
-            throw new ArgumentException("The level must be between 1 and 25.", nameof(lightLevel));
+        SomneoParameterValidators.LightLevel.ThrowIfOutOfRange(lightLevel, nameof(lightLevel));
 
         var data = new
         {
@@ -240,14 +240,13 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     /// <inheritdoc/>
-    public void SetDisplayLevel(int brightnessLevel)
+    public void SetDisplayLevel(int displayLevel)
     {
-        if (brightnessLevel < 1 || brightnessLevel > 6)
-            throw new ArgumentException("The level must be between 1 and 6.", nameof(brightnessLevel));
+        SomneoParameterValidators.DisplayLevel.ThrowIfOutOfRange(displayLevel, nameof(displayLevel));
 
         var data = new
         {
-            brght = brightnessLevel
+            brght = displayLevel
         };
 
         ExecutePutRequest("di/v1/products/1/wusts", data);
@@ -260,10 +259,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume)
     {
-        if (!Enum.IsDefined(wakeUpSound))
-            throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
-        if (volume < 1 || volume > 25)
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+        SomneoParameterValidators.WakeUpSound.ThrowIfOutOfRange(wakeUpSound, nameof(wakeUpSound));
+        SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume, nameof(volume));
 
         var data = new
         {
@@ -302,15 +299,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     /// <inheritdoc/>
-    public float GetFMRadioPreset(int position)
+    public float GetFMRadioPreset(int preset)
     {
-        if (position < 1 || position > 5)
-            throw new ArgumentException("The position must be between 1 and 5.", nameof(position));
+        SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(preset, nameof(preset));
 
         var data = new
         {
             fmcmd = "recall",
-            prstn = position
+            prstn = preset
         };
 
         var dto = ExecutePutRequest<FMRadioStateDto>("di/v1/products/1/wufmr", data);
@@ -342,8 +338,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void EnableFMRadioPreset(int preset)
     {
-        if (preset < 1 || preset > 5)
-            throw new ArgumentException("The preset must be between 1 and 5.", nameof(preset));
+        SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(preset, nameof(preset));
 
         var data = new
         {
@@ -360,8 +355,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SeekFMRadioStation(RadioSeekDirection direction)
     {
-        if (!Enum.IsDefined(direction))
-            throw new ArgumentException("The direction is invalid.", nameof(direction));
+        SomneoParameterValidators.RadioSeekDirection.ThrowIfOutOfRange(direction, nameof(direction));
 
         var data = new
         {
@@ -405,8 +399,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SetPlayerVolume(int volume)
     {
-        if (volume < 1 || volume > 25)
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+        SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume, nameof(volume));
 
         var data = new
         {
@@ -442,8 +435,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void ToggleAlarm(int position, bool enabled)
     {
-        if (position < 1 || position > 16)
-            throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+        SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
         var data = new
         {
@@ -514,20 +506,17 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
         int? volume, SoundDeviceType? soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
     {
-        if (position < 1 || position > 16)
-            throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
-        if (hour < 0 || hour > 23)
-            throw new ArgumentException("The hour must be between 0 and 23.", nameof(hour));
-        if (minute < 0 || minute > 59)
-            throw new ArgumentException("The minute must be between 0 and 23.", nameof(minute));
-        if (repeatDays != null && repeatDays.Any(rd => !Enum.IsDefined(rd)))
-            throw new ArgumentException("One or more repeat days are invalid.", nameof(repeatDays));
-        if (volume.HasValue && (volume < 1 || volume > 25))
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
-        if (fmRadioPreset.HasValue && (fmRadioPreset < 1 || fmRadioPreset > 5))
-            throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
-        if (wakeUpSound.HasValue && !Enum.IsDefined(wakeUpSound.Value))
-            throw new ArgumentException("The wake-up sound is invalid.", nameof(wakeUpSound));
+        SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
+        SomneoParameterValidators.AlarmHour.ThrowIfOutOfRange(hour, nameof(hour));
+        SomneoParameterValidators.AlarmMinute.ThrowIfOutOfRange(minute, nameof(minute));
+        if (repeatDays != null)
+            SomneoParameterValidators.AlarmRepeatDay.ThrowIfOutOfRange(repeatDays, nameof(repeatDays));
+        if (volume.HasValue)
+            SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume.Value, nameof(volume));
+        if (fmRadioPreset.HasValue)
+            SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(fmRadioPreset.Value, nameof(fmRadioPreset));
+        if (wakeUpSound.HasValue)
+            SomneoParameterValidators.WakeUpSound.ThrowIfOutOfRange(wakeUpSound.Value, nameof(wakeUpSound));
 
         int powerWakeSize = 0;
         int definitivePowerWakeHour = 0;
@@ -535,8 +524,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         if (powerWakeMinutes.HasValue)
         {
-            if (powerWakeMinutes.Value < 0 || powerWakeMinutes.Value > 59)
-                throw new ArgumentException("The PowerWake minutes must be between 0 and 59.", nameof(powerWakeMinutes));
+            SomneoParameterValidators.PowerWakeMinutes.ThrowIfOutOfRange(powerWakeMinutes.Value, nameof(powerWakeMinutes));
 
             var powerWakeTime = new TimeSpan(hour, minute, 0)
                 .Add(TimeSpan.FromMinutes(powerWakeMinutes.Value));
@@ -552,15 +540,13 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
         if (sunriseColors.HasValue)
         {
-            if (!Enum.IsDefined(sunriseColors.Value))
-                throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
-            if (!sunriseIntensity.HasValue || sunriseIntensity.Value < 1 || sunriseIntensity.Value > 25)
-                throw new ArgumentException("When the sunrise colors are set, the intensity must be between 1 and 25.", nameof(sunriseIntensity));
-            if (!sunriseDuration.HasValue || sunriseDuration.Value < 5 || sunriseDuration.Value > 40 || sunriseDuration.Value % 5 != 0)
-                throw new ArgumentException("When the sunrise colors are set, the duration must be between 5 and 40 minutes, with 5 minute steps in between.", nameof(sunriseDuration));
+            SomneoParameterValidators.SunriseColors.ThrowIfOutOfRange(sunriseColors.Value, nameof(sunriseColors));
+            SomneoParameterValidators.SunriseIntensity.ThrowIfOutOfRange(sunriseIntensity.GetValueOrDefault(), nameof(sunriseColors));
+            SomneoParameterValidators.SunriseDuration.ThrowIfOutOfRange(sunriseDuration.GetValueOrDefault(), nameof(sunriseDuration));
+
             sunriseColorSchemeNumber = EnumMapper.GetColorSchemeValue(sunriseColors)!.Value;
-            definitiveSunriseIntensity = sunriseIntensity.Value;
-            definitiveSunriseDuration = sunriseDuration.Value;
+            definitiveSunriseIntensity = sunriseIntensity!.Value;
+            definitiveSunriseDuration = sunriseDuration!.Value;
         }
 
         int soundChannel = -1;
@@ -604,8 +590,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void RemoveAlarm(int position)
     {
-        if (position < 1 || position > 16)
-            throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+        SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
         var data = new
         {
@@ -632,8 +617,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public AlarmSettings? GetAlarmSettings(int position)
     {
-        if (position < 1 || position > 16)
-            throw new ArgumentException("The position must be between 1 and 16.", nameof(position));
+        SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
         var data = new
         {
@@ -648,8 +632,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SetSnoozeTime(int minutes)
     {
-        if (minutes < 1 || minutes > 20)
-            throw new ArgumentException("The minutes must be between 1 and 20.", nameof(minutes));
+        SomneoParameterValidators.SnoozeMinutes.ThrowIfOutOfRange(minutes, nameof(minutes));
 
         var data = new
         {
@@ -677,10 +660,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity)
     {
-        if (!Enum.IsDefined(sunriseColors))
-            throw new ArgumentException("The sunrise color scheme is invalid.", nameof(sunriseColors));
-        if (sunriseIntensity < 1 || sunriseIntensity > 25)
-            throw new ArgumentException("The sunrise intensity must be between 1 and 25.", nameof(sunriseIntensity));
+        SomneoParameterValidators.SunriseColors.ThrowIfOutOfRange(sunriseColors, nameof(sunriseColors));
+        SomneoParameterValidators.SunriseIntensity.ThrowIfOutOfRange(sunriseIntensity, nameof(sunriseIntensity));
 
         var data = new
         {
@@ -760,18 +741,15 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
         int? volume, SoundDeviceType? soundDevice, SunsetSound? sunsetSound, int? fmRadioPreset)
     {
-        if (!Enum.IsDefined(sunsetColors))
-            throw new ArgumentException("The sunset color scheme is invalid.", nameof(sunsetColors));
-        if (sunsetIntensity < 1 || sunsetIntensity > 25)
-            throw new ArgumentException("The sunset intensity must be between 1 and 25.", nameof(sunsetIntensity));
-        if (sunsetDuration < 5 || sunsetDuration > 60 || sunsetDuration % 5 != 0)
-            throw new ArgumentException("The sunset duration must be between 5 and 60 minutes, with 5 minute steps in between.", nameof(sunsetDuration));
-        if (volume.HasValue && (volume < 1 || volume > 25))
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
-        if (fmRadioPreset.HasValue && (fmRadioPreset < 1 || fmRadioPreset > 5))
-            throw new ArgumentException("The FM radio preset must be between 1 and 5.", nameof(fmRadioPreset));
-        if (sunsetSound.HasValue && !Enum.IsDefined(sunsetSound.Value))
-            throw new ArgumentException("The sunset sound is invalid.", nameof(sunsetSound));
+        SomneoParameterValidators.SunsetColors.ThrowIfOutOfRange(sunsetColors, nameof(sunsetColors));
+        SomneoParameterValidators.SunsetIntensity.ThrowIfOutOfRange(sunsetIntensity, nameof(sunsetIntensity));
+        SomneoParameterValidators.SunsetDuration.ThrowIfOutOfRange(sunsetDuration, nameof(sunsetDuration));
+        if (volume.HasValue)
+            SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume.Value, nameof(volume));
+        if (fmRadioPreset.HasValue)
+            SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(fmRadioPreset.Value, nameof(fmRadioPreset));
+        if (sunsetSound.HasValue)
+            SomneoParameterValidators.SunsetSound.ThrowIfOutOfRange(sunsetSound.Value, nameof(sunsetSound));
 
         int sunsetColorSchemeNumber = EnumMapper.GetColorSchemeValue(sunsetColors)!.Value;
 
@@ -862,10 +840,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SetRelaxBreatheSettingsWithSound(int duration, int breathsPerMinuteOption, int volume)
     {
-        if (duration < 5 || duration > 15 || duration % 5 != 0)
-            throw new ArgumentException("The sunset duration must be between 5 and 15 minutes, with 5 minute steps in between.", nameof(duration));
-        if (volume < 1 || volume > 25)
-            throw new ArgumentException("The volume must be between 1 and 25.", nameof(volume));
+        SomneoParameterValidators.RelaxBreatheDuration.ThrowIfOutOfRange(duration, nameof(duration));
+        SomneoParameterValidators.RelaxBreatheBreathsPerMinute.ThrowIfOutOfRange(breathsPerMinuteOption, nameof(breathsPerMinuteOption));
+        SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume, nameof(volume));
 
         var data = new
         {
@@ -881,10 +858,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     /// <inheritdoc/>
     public void SetRelaxBreatheSettingsWithLight(int duration, int breathsPerMinuteOption, int intensity)
     {
-        if (duration < 5 || duration > 15 || duration % 5 != 0)
-            throw new ArgumentException("The sunset duration must be between 5 and 15 minutes, with 5 minute steps in between.", nameof(duration));
-        if (intensity < 1 || intensity > 25)
-            throw new ArgumentException("The intensity must be between 1 and 25.", nameof(intensity));
+        SomneoParameterValidators.RelaxBreatheDuration.ThrowIfOutOfRange(duration, nameof(duration));
+        SomneoParameterValidators.RelaxBreatheBreathsPerMinute.ThrowIfOutOfRange(breathsPerMinuteOption, nameof(breathsPerMinuteOption));
+        SomneoParameterValidators.RelaxBreatheLightIntensity.ThrowIfOutOfRange(intensity, nameof(intensity));
 
         var data = new
         {

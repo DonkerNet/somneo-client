@@ -91,7 +91,7 @@ public interface ISomneoApiClient
     /// Sets the level of the normal light and enables the light as well.
     /// </summary>
     /// <param name="lightLevel">The light level to set. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="lightLevel"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="lightLevel"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetLightLevel(int lightLevel);
 
@@ -123,10 +123,10 @@ public interface ISomneoApiClient
     /// <summary>
     /// Sets the brightness level of the display.
     /// </summary>
-    /// <param name="brightnessLevel">The brightness level to set. Value must be between 1 and 6.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="brightnessLevel"/> parameter is invalid.</exception>
+    /// <param name="displayLevel">The brightness level to set. Value must be between 1 and 6.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="displayLevel"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    void SetDisplayLevel(int brightnessLevel);
+    void SetDisplayLevel(int displayLevel);
 
     #endregion
 
@@ -137,7 +137,7 @@ public interface ISomneoApiClient
     /// </summary>
     /// <param name="wakeUpSound">The wake-up sound to play.</param>
     /// <param name="volume">The volume. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="wakeUpSound"/> or <paramref name="volume"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="wakeUpSound"/> or <paramref name="volume"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume);
 
@@ -161,10 +161,10 @@ public interface ISomneoApiClient
     /// <summary>
     /// Gets the FM frequency of a preset with the specified position.
     /// </summary>
-    /// <param name="position">The preset position. Value must be between 1 and 5.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
+    /// <param name="preset">The preset position. Value must be between 1 and 5.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="preset"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    float GetFMRadioPreset(int position);
+    float GetFMRadioPreset(int preset);
 
     /// <summary>
     /// Retrieves the state of the FM radio.
@@ -183,7 +183,7 @@ public interface ISomneoApiClient
     /// Enables the FM radio for the specified preset.
     /// </summary>
     /// <param name="preset">The preset. Value must be between 1 and 5.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="preset"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="preset"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void EnableFMRadioPreset(int preset);
 
@@ -191,7 +191,7 @@ public interface ISomneoApiClient
     /// Seeks a new FM radio station in the specified direction for the currently selected preset, if the FM radio is enabled.
     /// </summary>
     /// <param name="direction">The seek direction.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="direction"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="direction"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SeekFMRadioStation(RadioSeekDirection direction);
 
@@ -220,7 +220,7 @@ public interface ISomneoApiClient
     /// Sets the volume of the audio player.
     /// </summary>
     /// <param name="volume">The volume. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="volume"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="volume"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetPlayerVolume(int volume);
 
@@ -246,7 +246,7 @@ public interface ISomneoApiClient
     /// </summary>
     /// <param name="position">The position of the alarm to toggle. Value must be between 1 and 16.</param>
     /// <param name="enabled">Whether to enable or disable the alarm.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="position"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void ToggleAlarm(int position, bool enabled);
 
@@ -271,7 +271,7 @@ public interface ISomneoApiClient
     /// </param>
     /// <param name="wakeUpSound">The wake-up sound to play when the alarm is triggered.</param>
     /// <param name="volume">The volume of the wake-up sound that is played. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetAlarmWithWakeUpSound(
         int position,
@@ -302,7 +302,7 @@ public interface ISomneoApiClient
     /// </param>
     /// <param name="fmRadioPreset">The preset with the FM frequency of the channel to play when the alarm is triggered. Value must be between 1 and 5.</param>
     /// <param name="volume">The volume of the FM radio that is played. Value must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetAlarmWithFMRadio(
         int position,
@@ -329,7 +329,7 @@ public interface ISomneoApiClient
     /// The duration of the sunrise to show when the alarm is triggered.
     /// Value must be between 5 and 40, with 5 minute steps in between.
     /// </param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetAlarmWithoutSound(
         int position,
@@ -342,7 +342,7 @@ public interface ISomneoApiClient
     /// Removes an alarm by it's position in the alarm list and restores the default settings for that position. Removal will fail when only two alarms are left.
     /// </summary>
     /// <param name="position">The position of the alarm to remove. Value must be between 1 and 16.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="position"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void RemoveAlarm(int position);
 
@@ -351,7 +351,7 @@ public interface ISomneoApiClient
     /// </summary>
     /// <param name="position">The position of the alarm to retrieve the settings for. Value must be between 1 and 16.</param>
     /// <returns>The settings as an <see cref="AlarmSettings"/> object if the alarm is set; otherwise, <c>null</c>.</returns>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="position"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="position"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     AlarmSettings? GetAlarmSettings(int position);
 
@@ -359,7 +359,7 @@ public interface ISomneoApiClient
     /// Sets the snooze time in minutes for all alarms.
     /// </summary>
     /// <param name="minutes">The snooze time in minutes. Value must be between 1 and 20.</param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="minutes"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="minutes"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetSnoozeTime(int minutes);
 
@@ -386,7 +386,7 @@ public interface ISomneoApiClient
     /// The intensity of the sunrise to preview.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <exception cref="ArgumentException">Exception thrown when the <paramref name="sunriseColors"/> or <paramref name="sunriseIntensity"/> parameter is invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="sunriseColors"/> or <paramref name="sunriseIntensity"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity);
 
@@ -431,7 +431,7 @@ public interface ISomneoApiClient
     /// The volume of the sunset sound that is played.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetSunsetSettingsWithSunsetSound(
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
@@ -457,7 +457,7 @@ public interface ISomneoApiClient
     /// The volume of the FM radio that is played.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetSunsetSettingsWithFMRadio(
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
@@ -475,7 +475,7 @@ public interface ISomneoApiClient
     /// The duration of the sunset.
     /// Value must be between 5 and 60, with 5 minute steps in between.
     /// </param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetSunsetSettingsWithoutSound(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration);
 
@@ -527,7 +527,7 @@ public interface ISomneoApiClient
     /// Available options can be retrieved using the <see cref="GetRelaxBreatheSettings"/> method.
     /// </param>
     /// <param name="volume">The volume used for the sound of the breathing exercises. Must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetRelaxBreatheSettingsWithSound(int duration, int breathsPerMinuteOption, int volume);
 
@@ -540,7 +540,7 @@ public interface ISomneoApiClient
     /// Available options can be retrieved using the <see cref="GetRelaxBreatheSettings"/> method.
     /// </param>
     /// <param name="intensity">The intensity used for the light of the breathing exercises. Must be between 1 and 25.</param>
-    /// <exception cref="ArgumentException">Exception thrown when any of the supplied parameters are invalid.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     void SetRelaxBreatheSettingsWithLight(int duration, int breathsPerMinuteOption, int intensity);
 
