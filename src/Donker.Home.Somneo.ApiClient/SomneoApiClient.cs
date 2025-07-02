@@ -11,17 +11,30 @@ namespace Donker.Home.Somneo.ApiClient;
 public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 {
     private readonly SomneoApiSerializer _serializer = new();
-    private readonly HttpClient _httpClient;
     private readonly bool _disposeHttpClient;
 
+    // Somneo does not work well with multiple concurrent HTTP requests,
+    // so we use a semaphore to limit the amount of requests made by this client to 1 at a time
+    private SemaphoreSlim? _semaphore = new(1);
+
+    private HttpClient? _httpClient;
     private bool _disposed;
+
+    private SemaphoreSlim Semaphore
+    {
+        get
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            return _semaphore!;
+        }
+    }
 
     private HttpClient HttpClient
     {
         get
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
-            return _httpClient;
+            return _httpClient!;
         }
     }
 
@@ -119,37 +132,37 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: General
 
     /// <inheritdoc/>
-    public DeviceDetails GetDeviceDetails()
+    public async Task<DeviceDetails> GetDeviceDetailsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<DeviceDetailsDto>("di/v1/products/1/device");
+        var dto = await ExecuteGetRequestAsync<DeviceDetailsDto>("di/v1/products/1/device", cancellationToken);
         return DeviceDetailsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public WifiDetails GetWifiDetails()
+    public async Task<WifiDetails> GetWifiDetailsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<WifiDetailsDto>("di/v1/products/0/wifi");
+        var dto = await ExecuteGetRequestAsync<WifiDetailsDto>("di/v1/products/0/wifi", cancellationToken);
         return WifiDetailsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public FirmwareDetails GetFirmwareDetails()
+    public async Task<FirmwareDetails> GetFirmwareDetailsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<FirmwareDetailsDto>("di/v1/products/0/firmware");
+        var dto = await ExecuteGetRequestAsync<FirmwareDetailsDto>("di/v1/products/0/firmware", cancellationToken);
         return FirmwareDetailsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public Locale GetLocale()
+    public async Task<Locale> GetLocaleAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<LocaleDto>("di/v1/products/0/locale");
+        var dto = await ExecuteGetRequestAsync<LocaleDto>("di/v1/products/0/locale", cancellationToken);
         return LocaleMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public Time GetTime()
+    public async Task<Time> GetTimeAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<TimeDto>("di/v1/products/0/time");
+        var dto = await ExecuteGetRequestAsync<TimeDto>("di/v1/products/0/time", cancellationToken);
         return TimeMapper.ToModel(dto);
     }
 
@@ -158,9 +171,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Sensors
 
     /// <inheritdoc/>
-    public SensorData GetSensorData()
+    public async Task<SensorData> GetSensorDataAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<SensorDataDto>("di/v1/products/1/wusrd");
+        var dto = await ExecuteGetRequestAsync<SensorDataDto>("di/v1/products/1/wusrd", cancellationToken);
         return SensorDataMapper.ToModel(dto);
     }
 
@@ -169,14 +182,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Light
 
     /// <inheritdoc/>
-    public LightState GetLightState()
+    public async Task<LightState> GetLightStateAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<LightStateDto>("di/v1/products/1/wulgt");
+        var dto = await ExecuteGetRequestAsync<LightStateDto>("di/v1/products/1/wulgt", cancellationToken);
         return LightStateMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void ToggleLight(bool enabled)
+    public Task ToggleLightAsync(bool enabled, CancellationToken cancellationToken = default)
     {
         var data = new
         {
@@ -185,11 +198,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             ngtlt = false       // Disable the night light
         };
 
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetLightLevel(int lightLevel)
+    public Task SetLightLevelAsync(int lightLevel, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.LightLevel.ThrowIfOutOfRange(lightLevel, nameof(lightLevel));
 
@@ -201,11 +214,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             ngtlt = false       // Disable the night light
         };
 
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void ToggleNightLight(bool enabled)
+    public Task ToggleNightLightAsync(bool enabled, CancellationToken cancellationToken = default)
     {
         var data = new
         {
@@ -214,7 +227,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             ngtlt = enabled // Enable the night light
         };
 
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
     }
 
     #endregion
@@ -222,25 +235,25 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Display
 
     /// <inheritdoc/>
-    public DisplayState GetDisplayState()
+    public async Task<DisplayState> GetDisplayStateAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<DisplayStateDto>("di/v1/products/1/wusts");
+        var dto = await ExecuteGetRequestAsync<DisplayStateDto>("di/v1/products/1/wusts", cancellationToken);
         return DisplayStateMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void TogglePermanentDisplay(bool enabled)
+    public Task TogglePermanentDisplayAsync(bool enabled, CancellationToken cancellationToken = default)
     {
         var data = new
         {
             dspon = enabled
         };
 
-        ExecutePutRequest("di/v1/products/1/wusts", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wusts", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetDisplayLevel(int displayLevel)
+    public Task SetDisplayLevelAsync(int displayLevel, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.DisplayLevel.ThrowIfOutOfRange(displayLevel, nameof(displayLevel));
 
@@ -249,7 +262,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             brght = displayLevel
         };
 
-        ExecutePutRequest("di/v1/products/1/wusts", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wusts", data, cancellationToken);
     }
 
     #endregion
@@ -257,7 +270,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Wake-up sounds
 
     /// <inheritdoc/>
-    public void EnableWakeUpSoundPreview(WakeUpSound wakeUpSound, int volume)
+    public Task EnableWakeUpSoundPreviewAsync(WakeUpSound wakeUpSound, int volume, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.WakeUpSound.ThrowIfOutOfRange(wakeUpSound, nameof(wakeUpSound));
         SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume, nameof(volume));
@@ -272,11 +285,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sdvol = volume
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void DisableWakeUpSoundPreview()
+    public Task DisableWakeUpSoundPreviewAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
@@ -284,7 +297,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             tempy = true,   // Specifies to be in preview/temporary mode?
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     #endregion
@@ -292,14 +305,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: FM radio
 
     /// <inheritdoc/>
-    public FMRadioPresets GetFMRadioPresets()
+    public async Task<FMRadioPresets> GetFMRadioPresetsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<FMRadioPresetsDto>("di/v1/products/1/wufmp/00");
+        var dto = await ExecuteGetRequestAsync<FMRadioPresetsDto>("di/v1/products/1/wufmp/00", cancellationToken);
         return FMRadioPresetsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public float GetFMRadioPreset(int preset)
+    public async Task<float> GetFMRadioPresetAsync(int preset, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(preset, nameof(preset));
 
@@ -309,20 +322,20 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prstn = preset
         };
 
-        var dto = ExecutePutRequest<FMRadioStateDto>("di/v1/products/1/wufmr", data);
+        var dto = await ExecutePutRequestAsync<FMRadioStateDto>("di/v1/products/1/wufmr", data, cancellationToken);
 
         return dto.Frequency;
     }
 
     /// <inheritdoc/>
-    public FMRadioState GetFMRadioState()
+    public async Task<FMRadioState> GetFMRadioStateAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<FMRadioStateDto>("di/v1/products/1/wufmr");
+        var dto = await ExecuteGetRequestAsync<FMRadioStateDto>("di/v1/products/1/wufmr", cancellationToken);
         return FMRadioStateMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void EnableFMRadio()
+    public Task EnableFMRadioAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
@@ -332,11 +345,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             snddv = "fmr"   // Set the player to FM radio
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void EnableFMRadioPreset(int preset)
+    public Task EnableFMRadioPresetAsync(int preset, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.FMRadioPreset.ThrowIfOutOfRange(preset, nameof(preset));
 
@@ -349,11 +362,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sndch = preset.ToString()   // Set the "channel" to the preset number
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SeekFMRadioStation(RadioSeekDirection direction)
+    public Task SeekFMRadioStationAsync(RadioSeekDirection direction, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.RadioSeekDirection.ThrowIfOutOfRange(direction, nameof(direction));
 
@@ -362,7 +375,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             fmcmd = EnumMapper.GetRadioSeekDirectionValue(direction)
         };
 
-        ExecutePutRequest("di/v1/products/1/wufmr", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wufmr", data, cancellationToken);
     }
 
     #endregion
@@ -370,9 +383,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: AUX
 
     /// <inheritdoc/>
-    public void EnableAUX()
+    public async Task EnableAUXAsync(CancellationToken cancellationToken = default)
     {
-        DisablePlayer(); // Disable the player first, because AUX does not enable right away for some reason
+        await DisablePlayerAsync(cancellationToken); // Disable the player first, because AUX does not enable right away for some reason
 
         var data = new
         {
@@ -382,7 +395,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             snddv = "aux"   // Set the player to AUX
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        await ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     #endregion
@@ -390,14 +403,14 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Audio player
 
     /// <inheritdoc/>
-    public PlayerState GetPlayerState()
+    public async Task<PlayerState> GetPlayerStateAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<PlayerStateDto>("di/v1/products/1/wuply");
+        var dto = await ExecuteGetRequestAsync<PlayerStateDto>("di/v1/products/1/wuply", cancellationToken);
         return PlayerStateMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void SetPlayerVolume(int volume)
+    public Task SetPlayerVolumeAsync(int volume, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume, nameof(volume));
 
@@ -406,18 +419,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sdvol = volume
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void DisablePlayer()
+    public Task DisablePlayerAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
             onoff = false
         };
 
-        ExecutePutRequest("di/v1/products/1/wuply", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wuply", data, cancellationToken);
     }
 
     #endregion
@@ -425,15 +438,15 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Alarms
 
     /// <inheritdoc/>
-    public IReadOnlyList<Alarm> GetAlarms()
+    public async Task<IReadOnlyList<Alarm>> GetAlarmsAsync(CancellationToken cancellationToken = default)
     {
-        AlarmStatesDto alarmStatesDto = ExecuteGetRequest<AlarmStatesDto>("di/v1/products/1/wualm/aenvs");
-        AlarmSchedulesDto alarmSchedulesDto = ExecuteGetRequest<AlarmSchedulesDto>("di/v1/products/1/wualm/aalms");
+        AlarmStatesDto alarmStatesDto = await ExecuteGetRequestAsync<AlarmStatesDto>("di/v1/products/1/wualm/aenvs", cancellationToken);
+        AlarmSchedulesDto alarmSchedulesDto = await ExecuteGetRequestAsync<AlarmSchedulesDto>("di/v1/products/1/wualm/aalms", cancellationToken);
         return AlarmMapper.ToModels(alarmStatesDto, alarmSchedulesDto);
     }
 
     /// <inheritdoc/>
-    public void ToggleAlarm(int position, bool enabled)
+    public Task ToggleAlarmAsync(int position, bool enabled, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
@@ -443,68 +456,72 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prfen = enabled
         };
 
-        ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wualm/prfwu", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetAlarmWithWakeUpSound(
+    public Task SetAlarmWithWakeUpSoundAsync(
         int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
         ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
-        WakeUpSound wakeUpSound, int volume)
+        WakeUpSound wakeUpSound, int volume,
+        CancellationToken cancellationToken = default)
     {
-        SetAlarm(
+        return SetAlarmAsync(
             position,
             hour, minute,
             powerWakeMinutes,
             repeatDays,
             sunriseColors, sunriseIntensity, sunriseDuration,
-            volume, SoundDeviceType.WakeUpSound, wakeUpSound, null);
+            volume, SoundDeviceType.WakeUpSound, wakeUpSound, null, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetAlarmWithFMRadio(
+    public Task SetAlarmWithFMRadioAsync(
         int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
         ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
-        int fmRadioPreset, int volume)
+        int fmRadioPreset, int volume,
+        CancellationToken cancellationToken = default)
     {
-        SetAlarm(
+        return SetAlarmAsync(
             position,
             hour, minute,
             powerWakeMinutes,
             repeatDays,
             sunriseColors, sunriseIntensity, sunriseDuration,
-            volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
+            volume, SoundDeviceType.FMRadio, null, fmRadioPreset, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetAlarmWithoutSound(
+    public Task SetAlarmWithoutSoundAsync(
         int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek> repeatDays,
-        ColorScheme sunriseColors, int sunriseIntensity, int sunriseDuration)
+        ColorScheme sunriseColors, int sunriseIntensity, int sunriseDuration,
+        CancellationToken cancellationToken = default)
     {
-        SetAlarm(
+        return SetAlarmAsync(
             position,
             hour, minute,
             powerWakeMinutes,
             repeatDays,
             sunriseColors, sunriseIntensity, sunriseDuration,
-            null, null, null, null);
+            null, null, null, null, cancellationToken);
     }
 
-    private void SetAlarm(int position,
+    private Task SetAlarmAsync(int position,
         int hour, int minute,
         int? powerWakeMinutes,
         ICollection<DayOfWeek>? repeatDays,
         ColorScheme? sunriseColors, int? sunriseIntensity, int? sunriseDuration,
-        int? volume, SoundDeviceType? soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset)
+        int? volume, SoundDeviceType? soundDevice, WakeUpSound? wakeUpSound, int? fmRadioPreset,
+        CancellationToken cancellationToken)
     {
         SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
         SomneoParameterValidators.AlarmHour.ThrowIfOutOfRange(hour, nameof(hour));
@@ -584,11 +601,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sndlv = volume ?? 12                // The volume level of the sound device to play
         };
 
-        ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wualm/prfwu", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void RemoveAlarm(int position)
+    public Task RemoveAlarmAsync(int position, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
@@ -611,11 +628,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sndlv = 12          // Set the default volume
         };
 
-        ExecutePutRequest("di/v1/products/1/wualm/prfwu", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wualm/prfwu", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public AlarmSettings? GetAlarmSettings(int position)
+    public async Task<AlarmSettings?> GetAlarmSettingsAsync(int position, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.AlarmPosition.ThrowIfOutOfRange(position, nameof(position));
 
@@ -624,13 +641,13 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             prfnr = position
         };
 
-        var dto = ExecutePutRequest<AlarmSettingsDto>("di/v1/products/1/wualm", data);
+        var dto = await ExecutePutRequestAsync<AlarmSettingsDto>("di/v1/products/1/wualm", data, cancellationToken);
 
         return dto.IsSet ? AlarmSettingsMapper.ToModel(dto) : null;
     }
 
     /// <inheritdoc/>
-    public void SetSnoozeTime(int minutes)
+    public Task SetSnoozeTimeAsync(int minutes, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.SnoozeMinutes.ThrowIfOutOfRange(minutes, nameof(minutes));
 
@@ -639,7 +656,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             snztm = minutes
         };
 
-        ExecutePutRequest("di/v1/products/1/wualm", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wualm", data, cancellationToken);
     }
 
     #endregion
@@ -647,9 +664,9 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Timer
 
     /// <inheritdoc/>
-    public TimerState GetTimerState()
+    public async Task<TimerState> GetTimerStateAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<TimerStateDto>("di/v1/products/1/wutmr");
+        var dto = await ExecuteGetRequestAsync<TimerStateDto>("di/v1/products/1/wutmr", cancellationToken);
         return TimerStateMapper.ToModel(dto);
     }
 
@@ -658,7 +675,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Sunrise
 
     /// <inheritdoc/>
-    public void EnableSunrisePreview(ColorScheme sunriseColors, int sunriseIntensity)
+    public Task EnableSunrisePreviewAsync(ColorScheme sunriseColors, int sunriseIntensity, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.SunriseColors.ThrowIfOutOfRange(sunriseColors, nameof(sunriseColors));
         SomneoParameterValidators.SunriseIntensity.ThrowIfOutOfRange(sunriseIntensity, nameof(sunriseIntensity));
@@ -672,11 +689,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             ltlvl = sunriseIntensity
         };
 
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void DisableSunrisePreview()
+    public Task DisableSunrisePreviewAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
@@ -684,7 +701,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             tempy = true,   // Specifies to be in preview/temporary mode?
         };
 
-        ExecutePutRequest("di/v1/products/1/wulgt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
     }
 
     #endregion
@@ -692,54 +709,57 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Sunset
 
     /// <inheritdoc/>
-    public SunsetSettings GetSunsetSettings()
+    public async Task<SunsetSettings> GetSunsetSettingsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<SunsetSettingsDto>("di/v1/products/1/wudsk");
+        var dto = await ExecuteGetRequestAsync<SunsetSettingsDto>("di/v1/products/1/wudsk", cancellationToken);
         return SunsetSettingsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void ToggleSunset(bool enabled)
+    public Task ToggleSunsetAsync(bool enabled, CancellationToken cancellationToken = default)
     {
         var data = new
         {
             onoff = enabled
         };
 
-        ExecutePutRequest("di/v1/products/1/wudsk", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wudsk", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetSunsetSettingsWithSunsetSound(
+    public Task SetSunsetSettingsWithSunsetSoundAsync(
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
-        SunsetSound sunsetSound, int volume)
+        SunsetSound sunsetSound, int volume,
+        CancellationToken cancellationToken = default)
     {
-        SetSunsetSettings(
+        return SetSunsetSettingsAsync(
             sunsetColors, sunsetIntensity, sunsetDuration,
-            volume, SoundDeviceType.Sunset, sunsetSound, null);
+            volume, SoundDeviceType.Sunset, sunsetSound, null, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetSunsetSettingsWithFMRadio(
+    public Task SetSunsetSettingsWithFMRadioAsync(
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
-        int fmRadioPreset, int volume)
+        int fmRadioPreset, int volume,
+        CancellationToken cancellationToken = default)
     {
-        SetSunsetSettings(
+        return SetSunsetSettingsAsync(
             sunsetColors, sunsetIntensity, sunsetDuration,
-            volume, SoundDeviceType.FMRadio, null, fmRadioPreset);
+            volume, SoundDeviceType.FMRadio, null, fmRadioPreset, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetSunsetSettingsWithoutSound(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration)
+    public Task SetSunsetSettingsWithoutSoundAsync(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration, CancellationToken cancellationToken = default)
     {
-        SetSunsetSettings(
+        return SetSunsetSettingsAsync(
             sunsetColors, sunsetIntensity, sunsetDuration,
-            null, null, null, null);
+            null, null, null, null, cancellationToken);
     }
 
-    private void SetSunsetSettings(
+    private Task SetSunsetSettingsAsync(
         ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
-        int? volume, SoundDeviceType? soundDevice, SunsetSound? sunsetSound, int? fmRadioPreset)
+        int? volume, SoundDeviceType? soundDevice, SunsetSound? sunsetSound, int? fmRadioPreset,
+        CancellationToken cancellationToken)
     {
         SomneoParameterValidators.SunsetColors.ThrowIfOutOfRange(sunsetColors, nameof(sunsetColors));
         SomneoParameterValidators.SunsetIntensity.ThrowIfOutOfRange(sunsetIntensity, nameof(sunsetIntensity));
@@ -778,7 +798,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sndlv = volume ?? 12                // The volume level of the sound device to play
         };
 
-        ExecutePutRequest("di/v1/products/1/wudsk", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wudsk", data, cancellationToken);
     }
 
     #endregion
@@ -786,32 +806,32 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Bedtime
 
     /// <inheritdoc/>
-    public void StartBedtime()
+    public Task StartBedtimeAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
             night = true
         };
 
-        ExecutePutRequest("di/v1/products/1/wungt", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wungt", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public BedtimeInfo EndBedtime()
+    public async Task<BedtimeInfo> EndBedtimeAsync(CancellationToken cancellationToken = default)
     {
         var data = new
         {
             night = false
         };
 
-        var dto = ExecutePutRequest<BedtimeInfoDto>("di/v1/products/1/wungt", data);
+        var dto = await ExecutePutRequestAsync<BedtimeInfoDto>("di/v1/products/1/wungt", data, cancellationToken);
         return BedtimeInfoMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public BedtimeInfo? GetLastBedtimeInfo()
+    public async Task<BedtimeInfo?> GetLastBedtimeInfoAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<BedtimeInfoDto>("di/v1/products/1/wungt");
+        var dto = await ExecuteGetRequestAsync<BedtimeInfoDto>("di/v1/products/1/wungt", cancellationToken);
         return dto.Started.HasValue ? BedtimeInfoMapper.ToModel(dto) : null;
     }
 
@@ -820,25 +840,25 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: RelaxBreathe
 
     /// <inheritdoc/>
-    public RelaxBreatheSettings GetRelaxBreatheSettings()
+    public async Task<RelaxBreatheSettings> GetRelaxBreatheSettingsAsync(CancellationToken cancellationToken = default)
     {
-        var dto = ExecuteGetRequest<RelaxBreatheSettingsDto>("di/v1/products/1/wurlx");
+        var dto = await ExecuteGetRequestAsync<RelaxBreatheSettingsDto>("di/v1/products/1/wurlx", cancellationToken);
         return RelaxBreatheSettingsMapper.ToModel(dto);
     }
 
     /// <inheritdoc/>
-    public void ToggleRelaxBreathe(bool enabled)
+    public Task ToggleRelaxBreatheAsync(bool enabled, CancellationToken cancellationToken = default)
     {
         var data = new
         {
             onoff = enabled
         };
 
-        ExecutePutRequest("di/v1/products/1/wurlx", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wurlx", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetRelaxBreatheSettingsWithSound(int duration, int breathsPerMinuteOption, int volume)
+    public Task SetRelaxBreatheSettingsWithSoundAsync(int duration, int breathsPerMinuteOption, int volume, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.RelaxBreatheDuration.ThrowIfOutOfRange(duration, nameof(duration));
         SomneoParameterValidators.RelaxBreatheBreathsPerMinute.ThrowIfOutOfRange(breathsPerMinuteOption, nameof(breathsPerMinuteOption));
@@ -852,11 +872,11 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             sndlv = volume                      // The volume level of the sounds that are played
         };
 
-        ExecutePutRequest("di/v1/products/1/wurlx", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wurlx", data, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public void SetRelaxBreatheSettingsWithLight(int duration, int breathsPerMinuteOption, int intensity)
+    public Task SetRelaxBreatheSettingsWithLightAsync(int duration, int breathsPerMinuteOption, int intensity, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.RelaxBreatheDuration.ThrowIfOutOfRange(duration, nameof(duration));
         SomneoParameterValidators.RelaxBreatheBreathsPerMinute.ThrowIfOutOfRange(breathsPerMinuteOption, nameof(breathsPerMinuteOption));
@@ -870,34 +890,56 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
             intny = intensity                   // The intensity of the light used for the exercises
         };
 
-        ExecutePutRequest("di/v1/products/1/wurlx", data);
+        return ExecutePutRequestAsync("di/v1/products/1/wurlx", data, cancellationToken);
     }
 
     #endregion
 
     #region HTTP requests
 
-    private T ExecuteGetRequest<T>(string resource) => ExecuteRequest<T>(resource, HttpMethod.Get, null);
+    private Task<T> ExecuteGetRequestAsync<T>(string resource, CancellationToken cancellationToken) => ExecuteRequestAsync<T>(resource, HttpMethod.Get, null, cancellationToken);
 
-    private void ExecutePutRequest(string resource, object? data) => ExecuteRequest(resource, HttpMethod.Put, data);
+    private Task ExecutePutRequestAsync(string resource, object? data, CancellationToken cancellationToken) => ExecuteRequestAsync(resource, HttpMethod.Put, data, cancellationToken);
 
-    private T ExecutePutRequest<T>(string resource, object? data) => ExecuteRequest<T>(resource, HttpMethod.Put, data);
+    private Task<T> ExecutePutRequestAsync<T>(string resource, object? data, CancellationToken cancellationToken) => ExecuteRequestAsync<T>(resource, HttpMethod.Put, data, cancellationToken);
 
-    private void ExecuteRequest(string resource, HttpMethod method, object? data)
+    private async Task ExecuteRequestAsync(string resource, HttpMethod method, object? data, CancellationToken cancellationToken)
     {
-        using var request = CreateRequest(resource, method, data);
-        using var response = ExecuteRequest(request);
+        using var request = CreateHttpRequest(resource, method, data);
+
+        await Semaphore.WaitAsync(cancellationToken);
+
+        try
+        {
+            using var response = await GetHttpResponseAsync(request, cancellationToken);
+        }
+        finally
+        {
+            Semaphore.Release();
+        }
     }
 
-    private T ExecuteRequest<T>(string resource, HttpMethod method, object? data)
+    private async Task<T> ExecuteRequestAsync<T>(string resource, HttpMethod method, object? data, CancellationToken cancellationToken)
     {
-        using var request = CreateRequest(resource, method, data);
-        using var response = ExecuteRequest(request);
-        var responseData = _serializer.ReadHttpContent<T>(response.Content);
+        using var request = CreateHttpRequest(resource, method, data);
+        T? responseData;
+
+        await Semaphore.WaitAsync(cancellationToken);
+
+        try
+        {
+            using var response = await GetHttpResponseAsync(request, cancellationToken);
+            responseData = await _serializer.ReadHttpContentAsync<T>(response.Content, cancellationToken);
+        }
+        finally
+        {
+            Semaphore.Release();
+        }
+
         return responseData ?? throw new SomneoApiException("The Somneo returned an empty response.");
     }
 
-    private HttpRequestMessage CreateRequest(string resource, HttpMethod method, object? data)
+    private HttpRequestMessage CreateHttpRequest(string resource, HttpMethod method, object? data)
     {
         var request = new HttpRequestMessage(method, resource);
 
@@ -907,33 +949,33 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         return request;
     }
 
-    private HttpResponseMessage ExecuteRequest(HttpRequestMessage request)
+    private async Task<HttpResponseMessage> GetHttpResponseAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         HttpResponseMessage response;
 
         try
         {
-            response = HttpClient.Send(request);
+            response = await HttpClient.SendAsync(request, cancellationToken);
         }
         catch (Exception ex)
         {
             throw new SomneoApiException("Failed to execute the Somneo request.", ex);
         }
 
-        ValidateResponse(response);
+        await ValidateHttpResponseAsync(response, cancellationToken);
 
         return response;
     }
 
-    private static void ValidateResponse(HttpResponseMessage response)
+    private static async Task ValidateHttpResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         if (response.IsSuccessStatusCode)
             return;
 
-        using var contentStream = response.Content.ReadAsStream();
+        using var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken);
         using var streamReader = new StreamReader(contentStream);
 
-        string content = streamReader.ReadToEnd();
+        string content = await streamReader.ReadToEndAsync(cancellationToken);
 
         throw new SomneoApiException($"The Somneo returned a response with status code {(int)response.StatusCode}.", response.StatusCode, content);
     }
@@ -965,8 +1007,13 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (disposing)
         {
             if (_disposeHttpClient)
-                _httpClient.Dispose();
+                _httpClient?.Dispose();
+
+            _semaphore?.Dispose();
         }
+
+        _httpClient = null;
+        _semaphore = null;
     }
 
     #endregion

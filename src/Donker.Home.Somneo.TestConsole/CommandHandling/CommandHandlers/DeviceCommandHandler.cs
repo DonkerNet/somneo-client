@@ -7,16 +7,16 @@ public class DeviceCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("device", "Show the device information.", ShowDeviceDetails);
-        commandRegistry.RegisterCommand("firmware", "Show the firmware information.", ShowFirmwareDetails);
-        commandRegistry.RegisterCommand("wifi", "Show the wifi connection details.", ShowWifiDetails);
-        commandRegistry.RegisterCommand("locale", "Show the locale set for the device.", ShowLocale);
-        commandRegistry.RegisterCommand("time", "Show the time of the device.", ShowTime);
+        commandRegistry.RegisterCommand("device", "Show the device information.", ShowDeviceDetailsAsync);
+        commandRegistry.RegisterCommand("firmware", "Show the firmware information.", ShowFirmwareDetailsAsync);
+        commandRegistry.RegisterCommand("wifi", "Show the wifi connection details.", ShowWifiDetailsAsync);
+        commandRegistry.RegisterCommand("locale", "Show the locale set for the device.", ShowLocaleAsync);
+        commandRegistry.RegisterCommand("time", "Show the time of the device.", ShowTimeAsync);
     }
 
-    public void ShowDeviceDetails(string? args)
+    public async Task ShowDeviceDetailsAsync(string? args)
     {
-        var deviceDetails = SomneoApiClient.GetDeviceDetails();
+        var deviceDetails = await SomneoApiClient.GetDeviceDetailsAsync();
 
         Console.WriteLine(
 $@"Device details:
@@ -28,9 +28,9 @@ $@"Device details:
   Model ID: {deviceDetails.ModelId}");
     }
 
-    public void ShowFirmwareDetails(string? args)
+    public async Task ShowFirmwareDetailsAsync(string? args)
     {
-        var firmwareDetails = SomneoApiClient.GetFirmwareDetails();
+        var firmwareDetails = await SomneoApiClient.GetFirmwareDetailsAsync();
 
         var consoleMessageBuilder = new StringBuilder();
 
@@ -49,9 +49,9 @@ $@"Firmware details:
         Console.WriteLine(consoleMessageBuilder);
     }
 
-    public void ShowWifiDetails(string? args)
+    public async Task ShowWifiDetailsAsync(string? args)
     {
-        var wifiDetails = SomneoApiClient.GetWifiDetails();
+        var wifiDetails = await SomneoApiClient.GetWifiDetailsAsync();
 
         Console.WriteLine(
 $@"Wifi details:
@@ -63,9 +63,9 @@ $@"Wifi details:
   MAC address: {wifiDetails.MACAddress}");
     }
 
-    public void ShowLocale(string? args)
+    public async Task ShowLocaleAsync(string? args)
     {
-        var locale = SomneoApiClient.GetLocale();
+        var locale = await SomneoApiClient.GetLocaleAsync();
 
         Console.WriteLine(
 $@"Locale:
@@ -73,9 +73,9 @@ $@"Locale:
   Timezone: {locale.Timezone}");
     }
 
-    public void ShowTime(string? args)
+    public async Task ShowTimeAsync(string? args)
     {
-        var time = SomneoApiClient.GetTime();
+        var time = await SomneoApiClient.GetTimeAsync();
 
         Console.WriteLine(
 $@"Time:

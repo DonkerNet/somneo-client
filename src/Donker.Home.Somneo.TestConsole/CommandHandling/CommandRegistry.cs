@@ -8,20 +8,20 @@ public class CommandRegistry
 
     public int CommandCount => _commands.Count;
 
-    public void RegisterCommand(string commandName, string? argumentsDescription, string description, Action<string?> commandHandler)
+    public void RegisterCommand(string commandName, string? argumentsDescription, string description, Func<string?, Task> asyncHandler)
     {
         var command = new CommandInfo(
             commandName,
             argumentsDescription,
             description,
-            commandHandler);
+            asyncHandler);
 
         _commands.Add(commandName, command);
     }
 
-    public void RegisterCommand(string commandName, string description, Action<string?> commandHandler)
+    public void RegisterCommand(string commandName, string description, Func<string?, Task> asyncHandler)
     {
-        RegisterCommand(commandName, null, description, commandHandler);
+        RegisterCommand(commandName, null, description, asyncHandler);
     }
 
     public CommandInfo? GetCommandInfo(string commandName)

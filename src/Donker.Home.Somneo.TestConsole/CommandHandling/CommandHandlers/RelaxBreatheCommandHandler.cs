@@ -6,23 +6,23 @@ public class RelaxBreatheCommandHandler(ISomneoApiClient somneoApiClient) : Comm
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("relax-breathe-settings", "Show the RelaxBreathe settings.", ShowRelaxBreatheSettings);
-        commandRegistry.RegisterCommand("toggle-relax-breathe", "[on/off]", "Toggle RelaxBreathe on or off.", ToggleRelaxBreathe);
+        commandRegistry.RegisterCommand("relax-breathe-settings", "Show the RelaxBreathe settings.", ShowRelaxBreatheSettingsAsync);
+        commandRegistry.RegisterCommand("toggle-relax-breathe", "[on/off]", "Toggle RelaxBreathe on or off.", ToggleRelaxBreatheAsync);
         commandRegistry.RegisterCommand(
             "set-relax-breathe-with-sound",
             "[5,10,15] <option> [1-25]",
             "Configures RelaxBreathe with sound to use the specified duration, breaths per minute option and volume.",
-            SetRelaxBreatheWithSound);
+            SetRelaxBreatheWithSoundAsync);
         commandRegistry.RegisterCommand(
             "set-relax-breathe-with-light",
             "[5,10,15] <option> [1-25]",
             "Configures RelaxBreathe with light to use the specified duration, breaths per minute option and intensity.",
-            SetRelaxBreatheWithLight);
+            SetRelaxBreatheWithLightAsync);
     }
 
-    private void ShowRelaxBreatheSettings(string? args)
+    private async Task ShowRelaxBreatheSettingsAsync(string? args)
     {
-        var relaxBreatheSettings = SomneoApiClient.GetRelaxBreatheSettings();
+        var relaxBreatheSettings = await SomneoApiClient.GetRelaxBreatheSettingsAsync();
 
         string intensityOrVolume = relaxBreatheSettings.IsLight
             ? $"Intensity: {relaxBreatheSettings.LightIntensity}/25"
@@ -42,17 +42,17 @@ Breaths per minute options:
 {string.Join(Environment.NewLine, availableBpms)}");
     }
 
-    private void ToggleRelaxBreathe(string? args)
+    private async Task ToggleRelaxBreatheAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "on":
-                SomneoApiClient.ToggleRelaxBreathe(true);
+                await SomneoApiClient.ToggleRelaxBreatheAsync(true);
                 Console.WriteLine("RelaxBreathe enabled.");
                 break;
 
             case "off":
-                SomneoApiClient.ToggleRelaxBreathe(false);
+                await SomneoApiClient.ToggleRelaxBreatheAsync(false);
                 Console.WriteLine("RelaxBreathe disabled.");
                 break;
 
@@ -62,7 +62,7 @@ Breaths per minute options:
         }
     }
 
-    private void SetRelaxBreatheWithSound(string? args)
+    private async Task SetRelaxBreatheWithSoundAsync(string? args)
     {
         if (string.IsNullOrEmpty(args))
         {
@@ -96,7 +96,7 @@ Breaths per minute options:
             return;
         }
 
-        SomneoApiClient.SetRelaxBreatheSettingsWithSound(
+        await SomneoApiClient.SetRelaxBreatheSettingsWithSoundAsync(
             duration,
             bpmOption,
             volume);
@@ -108,7 +108,7 @@ $@"Updated RelaxBreathe to use sound with the settings:
   Volume: {volume}/25");
     }
 
-    private void SetRelaxBreatheWithLight(string? args)
+    private async Task SetRelaxBreatheWithLightAsync(string? args)
     {
         if (string.IsNullOrEmpty(args))
         {
@@ -142,7 +142,7 @@ $@"Updated RelaxBreathe to use sound with the settings:
             return;
         }
 
-        SomneoApiClient.SetRelaxBreatheSettingsWithLight(
+        await SomneoApiClient.SetRelaxBreatheSettingsWithLightAsync(
             duration,
             bpmOption,
             intensity);

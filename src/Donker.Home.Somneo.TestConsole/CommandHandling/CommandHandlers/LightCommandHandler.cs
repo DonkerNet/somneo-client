@@ -6,15 +6,15 @@ public class LightCommandHandler(ISomneoApiClient somneoApiClient) : CommandHand
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("light", "Show the light state.", ShowLightState);
-        commandRegistry.RegisterCommand("toggle-light", "[on/off]", "Toggle the light.", ToggleLight);
-        commandRegistry.RegisterCommand("set-light-level", "[1-25]", "Set the light level.", SetLightLevel);
-        commandRegistry.RegisterCommand("toggle-night-light", "[on/off]", "Toggle the night light.", ToggleNightLight);
+        commandRegistry.RegisterCommand("light", "Show the light state.", ShowLightStateAsync);
+        commandRegistry.RegisterCommand("toggle-light", "[on/off]", "Toggle the light.", ToggleLightAsync);
+        commandRegistry.RegisterCommand("set-light-level", "[1-25]", "Set the light level.", SetLightLevelAsync);
+        commandRegistry.RegisterCommand("toggle-night-light", "[on/off]", "Toggle the night light.", ToggleNightLightAsync);
     }
 
-    private void ShowLightState(string? args)
+    private async Task ShowLightStateAsync(string? args)
     {
-        var lightState = SomneoApiClient.GetLightState();
+        var lightState = await SomneoApiClient.GetLightStateAsync();
 
         Console.WriteLine(
 $@"Light state:
@@ -24,17 +24,17 @@ $@"Light state:
   Night light enabled: {(lightState.NightLightEnabled ? "Yes" : "No")}");
     }
 
-    private void ToggleLight(string? args)
+    private async Task ToggleLightAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "on":
-                SomneoApiClient.ToggleLight(true);
+                await SomneoApiClient.ToggleLightAsync(true);
                 Console.WriteLine("Light enabled.");
                 break;
 
             case "off":
-                SomneoApiClient.ToggleLight(false);
+                await SomneoApiClient.ToggleLightAsync(false);
                 Console.WriteLine("Light disabled.");
                 break;
 
@@ -44,11 +44,11 @@ $@"Light state:
         }
     }
 
-    private void SetLightLevel(string? args)
+    private async Task SetLightLevelAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int level) && level >= 1 && level <= 25)
         {
-            SomneoApiClient.SetLightLevel(level);
+            await SomneoApiClient.SetLightLevelAsync(level);
             Console.WriteLine($"Light level set to {level}/25.");
             return;
         }
@@ -56,17 +56,17 @@ $@"Light state:
         Console.WriteLine("Specify a light level between 1 and 25.");
     }
 
-    private void ToggleNightLight(string? args)
+    private async Task ToggleNightLightAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "on":
-                SomneoApiClient.ToggleNightLight(true);
+                await SomneoApiClient.ToggleNightLightAsync(true);
                 Console.WriteLine("Night light enabled.");
                 break;
 
             case "off":
-                SomneoApiClient.ToggleNightLight(false);
+                await SomneoApiClient.ToggleNightLightAsync(false);
                 Console.WriteLine("Night light disabled.");
                 break;
 

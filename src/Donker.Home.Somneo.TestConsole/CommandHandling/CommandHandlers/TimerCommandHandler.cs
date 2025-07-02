@@ -6,12 +6,12 @@ public class TimerCommandHandler(ISomneoApiClient somneoApiClient) : CommandHand
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("timer-state", "Get the state of the timer, used for RelaxBreathe or sunset.", GetTimerState);
+        commandRegistry.RegisterCommand("timer-state", "Get the state of the timer, used for RelaxBreathe or sunset.", GetTimerStateAsync);
     }
 
-    private void GetTimerState(string? args)
+    private async Task GetTimerStateAsync(string? args)
     {
-        var timerState = SomneoApiClient.GetTimerState();
+        var timerState = await SomneoApiClient.GetTimerStateAsync();
 
         if (!timerState.Enabled)
         {

@@ -7,17 +7,17 @@ public class FMRadioCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresets);
-        commandRegistry.RegisterCommand("get-fm-radio-preset", "[1-5]", "Gets the frequency of an FM-radio preset.", GetFMRadioPreset);
-        commandRegistry.RegisterCommand("fm-radio", "Show the FM-radio state.", ShowFMRadioState);
-        commandRegistry.RegisterCommand("enable-fm-radio", "Enable the FM-radion.", EnableFMRadio);
-        commandRegistry.RegisterCommand("enable-fm-radio-preset", "[1-5]", "Enable an FM-radio preset.", EnableFMRadioPreset);
-        commandRegistry.RegisterCommand("seek-fm-radio-station", "[up/down]", "Seek a next FM-radio station.", SeekFMRadioStation);
+        commandRegistry.RegisterCommand("fm-radio-presets", "Show the FM-radio presets.", ShowFMRadioPresetsAsync);
+        commandRegistry.RegisterCommand("get-fm-radio-preset", "[1-5]", "Gets the frequency of an FM-radio preset.", GetFMRadioPresetAsync);
+        commandRegistry.RegisterCommand("fm-radio", "Show the FM-radio state.", ShowFMRadioStateAsync);
+        commandRegistry.RegisterCommand("enable-fm-radio", "Enable the FM-radion.", EnableFMRadioAsync);
+        commandRegistry.RegisterCommand("enable-fm-radio-preset", "[1-5]", "Enable an FM-radio preset.", EnableFMRadioPresetAsync);
+        commandRegistry.RegisterCommand("seek-fm-radio-station", "[up/down]", "Seek a next FM-radio station.", SeekFMRadioStationAsync);
     }
 
-    private void ShowFMRadioPresets(string? args)
+    private async Task ShowFMRadioPresetsAsync(string? args)
     {
-        var fmRadioPresets = SomneoApiClient.GetFMRadioPresets();
+        var fmRadioPresets = await SomneoApiClient.GetFMRadioPresetsAsync();
 
         Console.WriteLine(
 $@"FM radio presets:
@@ -28,11 +28,11 @@ $@"FM radio presets:
   5: {fmRadioPresets.Preset5:0.00} FM");
     }
 
-    private void GetFMRadioPreset(string? args)
+    private async Task GetFMRadioPresetAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int preset) && preset >= 1 && preset <= 5)
         {
-            float frequency = SomneoApiClient.GetFMRadioPreset(preset);
+            float frequency = await SomneoApiClient.GetFMRadioPresetAsync(preset);
             Console.WriteLine($"Preset {preset} is currently set to {frequency:0.00} FM.");
             return;
         }
@@ -40,9 +40,9 @@ $@"FM radio presets:
         Console.WriteLine("Specify a position between 1 and 5.");
     }
 
-    private void ShowFMRadioState(string? args)
+    private async Task ShowFMRadioStateAsync(string? args)
     {
-        var fmRadioState = SomneoApiClient.GetFMRadioState();
+        var fmRadioState = await SomneoApiClient.GetFMRadioStateAsync();
 
         Console.WriteLine(
 $@"FM radio state:
@@ -50,17 +50,17 @@ $@"FM radio state:
   Preset: {fmRadioState.Preset}/5");
     }
 
-    private void EnableFMRadio(string? args)
+    private async Task EnableFMRadioAsync(string? args)
     {
-        SomneoApiClient.EnableFMRadio();
+        await SomneoApiClient.EnableFMRadioAsync();
         Console.WriteLine("FM radio enabled for the current preset.");
     }
 
-    private void EnableFMRadioPreset(string? args)
+    private async Task EnableFMRadioPresetAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int preset) && preset >= 1 && preset <= 5)
         {
-            SomneoApiClient.EnableFMRadioPreset(preset);
+            await SomneoApiClient.EnableFMRadioPresetAsync(preset);
             Console.WriteLine($"FM radio enabled for preset {preset}/5.");
             return;
         }
@@ -68,17 +68,17 @@ $@"FM radio state:
         Console.WriteLine("The preset should be between 1 and 5.");
     }
 
-    private void SeekFMRadioStation(string? args)
+    private async Task SeekFMRadioStationAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "up":
-                SomneoApiClient.SeekFMRadioStation(RadioSeekDirection.Up);
+                await SomneoApiClient.SeekFMRadioStationAsync(RadioSeekDirection.Up);
                 Console.WriteLine("Seeking for a new FM radio station in forward direction.");
                 break;
 
             case "down":
-                SomneoApiClient.SeekFMRadioStation(RadioSeekDirection.Down);
+                await SomneoApiClient.SeekFMRadioStationAsync(RadioSeekDirection.Down);
                 Console.WriteLine("Seeking for a new FM radio station in backward direction.");
                 break;
 

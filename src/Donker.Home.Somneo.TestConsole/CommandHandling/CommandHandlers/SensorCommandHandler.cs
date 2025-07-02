@@ -6,12 +6,12 @@ public class SensorCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("sensor", "Show sensor data.", ShowSensorData);
+        commandRegistry.RegisterCommand("sensor", "Show sensor data.", ShowSensorDataAsync);
     }
 
-    private void ShowSensorData(string? args)
+    private async Task ShowSensorDataAsync(string? args)
     {
-        var sensorData = SomneoApiClient.GetSensorData();
+        var sensorData = await SomneoApiClient.GetSensorDataAsync();
 
         Console.WriteLine(
 $@"Sensor data:

@@ -4,10 +4,15 @@
 /// Defines an enumerable that contains the values a parameter is allowed to have.
 /// </summary>
 /// <typeparam name="TEnum">The enumerable type of the parameter.</typeparam>
-/// <param name="ParamDescription">The short, human-readable description of this parameter.</param>
-public record EnumParameterValidator<TEnum>(string ParamDescription)
+/// <param name="paramDescription">The short, human-readable description of this parameter.</param>
+public class EnumParameterValidator<TEnum>(string paramDescription)
     where TEnum : struct, Enum
 {
+    /// <summary>
+    /// The short, human-readable description of this parameter.
+    /// </summary>
+    public string ParamDescription { get; } = paramDescription;
+
     /// <summary>
     /// Throws an <see cref="ArgumentOutOfRangeException"/> when the specified parameter value is outside of the range of enumerable values.
     /// </summary>

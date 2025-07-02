@@ -34,9 +34,9 @@ internal class SomneoApiSerializer
         return new StringContent(json, Encoding.UTF8, _mediaType);
     }
 
-    public T? ReadHttpContent<T>(HttpContent content)
+    public async Task<T?> ReadHttpContentAsync<T>(HttpContent content, CancellationToken cancellationToken)
     {
-        using var contentStream = content.ReadAsStream();
-        return JsonSerializer.Deserialize<T>(contentStream, _options);
+        using var contentStream = await content.ReadAsStreamAsync(cancellationToken);
+        return await JsonSerializer.DeserializeAsync<T>(contentStream, _options, cancellationToken);
     }
 }

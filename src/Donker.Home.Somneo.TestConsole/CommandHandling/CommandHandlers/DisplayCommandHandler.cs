@@ -6,14 +6,14 @@ public class DisplayCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("display", "Show the display state.", ShowDisplayState);
-        commandRegistry.RegisterCommand("toggle-permanent-display", "[on/off]", "Toggle the permanent display.", TogglePermanentDisplay);
-        commandRegistry.RegisterCommand("set-display-level", "[1-6]", "Set the display level.", SetDisplayLevel);
+        commandRegistry.RegisterCommand("display", "Show the display state.", ShowDisplayStateAsync);
+        commandRegistry.RegisterCommand("toggle-permanent-display", "[on/off]", "Toggle the permanent display.", TogglePermanentDisplayAsync);
+        commandRegistry.RegisterCommand("set-display-level", "[1-6]", "Set the display level.", SetDisplayLevelAsync);
     }
 
-    private void ShowDisplayState(string? args)
+    private async Task ShowDisplayStateAsync(string? args)
     {
-        var displayState = SomneoApiClient.GetDisplayState();
+        var displayState = await SomneoApiClient.GetDisplayStateAsync();
 
         Console.WriteLine(
 $@"Display state:
@@ -21,17 +21,17 @@ $@"Display state:
   Brightness level: {displayState.Brightness}/6");
     }
 
-    private void TogglePermanentDisplay(string? args)
+    private async Task TogglePermanentDisplayAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "on":
-                SomneoApiClient.TogglePermanentDisplay(true);
+                await SomneoApiClient.TogglePermanentDisplayAsync(true);
                 Console.WriteLine("Permanent display enabled.");
                 break;
 
             case "off":
-                SomneoApiClient.TogglePermanentDisplay(false);
+                await SomneoApiClient.TogglePermanentDisplayAsync(false);
                 Console.WriteLine("Permanent display disabled.");
                 break;
 
@@ -41,11 +41,11 @@ $@"Display state:
         }
     }
 
-    private void SetDisplayLevel(string? args)
+    private async Task SetDisplayLevelAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int level) && level >= 1 && level <= 6)
         {
-            SomneoApiClient.SetDisplayLevel(level);
+            await SomneoApiClient.SetDisplayLevelAsync(level);
             Console.WriteLine($"Display brightness level set to {level}/6.");
             return;
         }

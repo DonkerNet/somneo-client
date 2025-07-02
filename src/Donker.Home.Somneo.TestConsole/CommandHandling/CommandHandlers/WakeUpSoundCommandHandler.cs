@@ -8,11 +8,11 @@ public class WakeUpSoundCommandHandler(ISomneoApiClient somneoApiClient) : Comma
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("enable-wake-up-sound-preview", "[1-8] [1-25]", "Previews a wake-up sound with the specified volume.", EnableWakeUpSoundPreview);
-        commandRegistry.RegisterCommand("disable-wake-up-sound-preview", null, "Disables the wake-up sound preview.", DisableWakeUpSoundPreview);
+        commandRegistry.RegisterCommand("enable-wake-up-sound-preview", "[1-8] [1-25]", "Previews a wake-up sound with the specified volume.", EnableWakeUpSoundPreviewAsync);
+        commandRegistry.RegisterCommand("disable-wake-up-sound-preview", null, "Disables the wake-up sound preview.", DisableWakeUpSoundPreviewAsync);
     }
 
-    private void EnableWakeUpSoundPreview(string? args)
+    private async Task EnableWakeUpSoundPreviewAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args))
         {
@@ -24,7 +24,7 @@ public class WakeUpSoundCommandHandler(ISomneoApiClient somneoApiClient) : Comma
                 && int.TryParse(argsArray[1], out int volume)
                 && volume >= 1 && volume <= 25)
             {
-                SomneoApiClient.EnableWakeUpSoundPreview(wakeUpSound, volume);
+                await SomneoApiClient.EnableWakeUpSoundPreviewAsync(wakeUpSound, volume);
                 Console.WriteLine($"Previewing wake-up sound \"{EnumHelper.GetDescription(wakeUpSound)}\" with volume {volume}/25.");
                 return;
             }
@@ -33,9 +33,9 @@ public class WakeUpSoundCommandHandler(ISomneoApiClient somneoApiClient) : Comma
         Console.WriteLine("The wake-up sound number should be between 1 and 8 with a volume between 1 and 25.");
     }
 
-    private void DisableWakeUpSoundPreview(string? args)
+    private async Task DisableWakeUpSoundPreviewAsync(string? args)
     {
-        SomneoApiClient.DisableWakeUpSoundPreview();
+        await SomneoApiClient.DisableWakeUpSoundPreviewAsync();
         Console.WriteLine("Disabled wake-up sound preview.");
     }
 }

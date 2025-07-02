@@ -6,12 +6,12 @@ public class AUXCommandHandler(ISomneoApiClient somneoApiClient) : CommandHandle
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("enable-aux", "Enables the auxiliary input device.", EnableAUX);
+        commandRegistry.RegisterCommand("enable-aux", "Enables the auxiliary input device.", EnableAUXAsync);
     }
 
-    private void EnableAUX(string? args)
+    private async Task EnableAUXAsync(string? args)
     {
-        SomneoApiClient.EnableAUX();
+        await SomneoApiClient.EnableAUXAsync();
         Console.WriteLine("Enabled the auxiliary input device.");
     }
 }

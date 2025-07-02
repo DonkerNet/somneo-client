@@ -11,4 +11,4 @@ string somneoHost = config.GetValue<string>("SomneoHost")!;
 
 using var somneoApiClient = new SomneoApiClient(somneoHost);
 var testService = new TestService(somneoApiClient);
-testService.Run();
+await testService.RunAsync();

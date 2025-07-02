@@ -8,14 +8,14 @@ public class PlayerCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("player", "Show the player state.", ShowPlayerState);
-        commandRegistry.RegisterCommand("set-player-volume", "[1-25]", "Set the player volume.", SetPlayerVolume);
-        commandRegistry.RegisterCommand("disable-player", "Disable the player.", DisablePlayer);
+        commandRegistry.RegisterCommand("player", "Show the player state.", ShowPlayerStateAsync);
+        commandRegistry.RegisterCommand("set-player-volume", "[1-25]", "Set the player volume.", SetPlayerVolumeAsync);
+        commandRegistry.RegisterCommand("disable-player", "Disable the player.", DisablePlayerAsync);
     }
 
-    private void ShowPlayerState(string? args)
+    private async Task ShowPlayerStateAsync(string? args)
     {
-        var playerState = SomneoApiClient.GetPlayerState();
+        var playerState = await SomneoApiClient.GetPlayerStateAsync();
 
         string soundDevice = playerState.SoundDevice.HasValue ? EnumHelper.GetDescription(playerState.SoundDevice.Value)! : "None";
 
@@ -43,11 +43,11 @@ $@"Audio player state:
   Device: {soundDevice}{channelOrPresetState}");
     }
 
-    private void SetPlayerVolume(string? args)
+    private async Task SetPlayerVolumeAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int volume) && volume >= 1 && volume <= 25)
         {
-            SomneoApiClient.SetPlayerVolume(volume);
+            await SomneoApiClient.SetPlayerVolumeAsync(volume);
             Console.WriteLine($"Audio player volume set to {volume}/25.");
             return;
         }
@@ -55,9 +55,9 @@ $@"Audio player state:
         Console.WriteLine("Specify a volume between 1 and 25.");
     }
 
-    private void DisablePlayer(string? args)
+    private async Task DisablePlayerAsync(string? args)
     {
-        SomneoApiClient.DisablePlayer();
+        await SomneoApiClient.DisablePlayerAsync();
         Console.WriteLine("Audio player disabled.");
     }
 }

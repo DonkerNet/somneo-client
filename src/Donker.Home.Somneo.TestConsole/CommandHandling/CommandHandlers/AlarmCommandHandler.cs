@@ -9,31 +9,31 @@ public class AlarmCommandHandler(ISomneoApiClient somneoApiClient) : CommandHand
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("alarms", "Show the alarms.", ShowAlarms);
-        commandRegistry.RegisterCommand("alarm-settings", "[1-16]", "Show the settings of an alarm.", ShowAlarmSettings);
-        commandRegistry.RegisterCommand("toggle-alarm", "[1-16] [on/off]", "Toggle an alarm.", ToggleAlarm);
+        commandRegistry.RegisterCommand("alarms", "Show the alarms.", ShowAlarmsAsync);
+        commandRegistry.RegisterCommand("alarm-settings", "[1-16]", "Show the settings of an alarm.", ShowAlarmSettingsAsync);
+        commandRegistry.RegisterCommand("toggle-alarm", "[1-16] [on/off]", "Toggle an alarm.", ToggleAlarmAsync);
         commandRegistry.RegisterCommand(
             "set-fm-radio-alarm",
             "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3,_] [1-25,_] [5-40,_] [1-5] [1-25]",
             "Sets an alarm for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity, sunrise duration, FM radio preset and volume.",
-            args => SetAlarm(args, SoundDeviceType.FMRadio));
+            args => SetAlarmAsync(args, SoundDeviceType.FMRadio));
         commandRegistry.RegisterCommand(
             "set-wake-up-sound-alarm",
             "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3,_] [1-25,_] [5-40,_] [1-8] [1-25]",
             "Sets an alarm for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity, sunrise duration, wake-up sound and volume.",
-            args => SetAlarm(args, SoundDeviceType.WakeUpSound));
+            args => SetAlarmAsync(args, SoundDeviceType.WakeUpSound));
         commandRegistry.RegisterCommand(
             "set-silent-alarm",
             "[1-16] [0-23] [0-59] [0-59,_] [sunday-saturday|...,_] [1-3] [1-25] [5-40]",
             "Sets an alarm with only a sunrise and no sound for the specified position, hour, minute, PowerWake minutes, repeat days, sunrise colors, sunrise intensity and sunrise duration.",
-            args => SetAlarm(args, null));
-        commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarm);
-        commandRegistry.RegisterCommand("set-snooze-time", "[1-20]", "Sets the snooze time in minutes.", SetSnoozeTime);
+            args => SetAlarmAsync(args, null));
+        commandRegistry.RegisterCommand("remove-alarm", "[1-16]", "Remove an alarm.", RemoveAlarmAsync);
+        commandRegistry.RegisterCommand("set-snooze-time", "[1-20]", "Sets the snooze time in minutes.", SetSnoozeTimeAsync);
     }
 
-    private void ShowAlarms(string? args)
+    private async Task ShowAlarmsAsync(string? args)
     {
-        var alarms = SomneoApiClient.GetAlarms();
+        var alarms = await SomneoApiClient.GetAlarmsAsync();
 
         if (alarms.Count == 0)
         {
@@ -60,11 +60,11 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
         Console.WriteLine(consoleMessageBuilder);
     }
 
-    private void ShowAlarmSettings(string? args)
+    private async Task ShowAlarmSettingsAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int position) && position >= 1 && position <= 16)
         {
-            var alarmSettings = SomneoApiClient.GetAlarmSettings(position);
+            var alarmSettings = await SomneoApiClient.GetAlarmSettingsAsync(position);
 
             if (alarmSettings == null)
             {
@@ -113,7 +113,7 @@ $@"Alarm #{alarmSettings.Position} settings:
         Console.WriteLine("Specify a position between 1 and 16.");
     }
 
-    private void SetAlarm(string? args, SoundDeviceType? soundDevice)
+    private async Task SetAlarmAsync(string? args, SoundDeviceType? soundDevice)
     {
         if (string.IsNullOrEmpty(args))
         {
@@ -121,7 +121,7 @@ $@"Alarm #{alarmSettings.Position} settings:
             return;
         }
 
-        string[] argsArray = args.Split(new[] { ' ' }, 11);
+        string[] argsArray = args.Split(' ', 11);
 
         if (argsArray.Length < 8)
         {
@@ -260,7 +260,7 @@ $@"Alarm #{alarmSettings.Position} settings:
         switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
-                SomneoApiClient.SetAlarmWithFMRadio(
+                await SomneoApiClient.SetAlarmWithFMRadioAsync(
                     position,
                     hour,
                     minute,
@@ -274,7 +274,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                 break;
 
             case SoundDeviceType.WakeUpSound:
-                SomneoApiClient.SetAlarmWithWakeUpSound(
+                await SomneoApiClient.SetAlarmWithWakeUpSoundAsync(
                     position,
                     hour,
                     minute,
@@ -288,7 +288,7 @@ $@"Alarm #{alarmSettings.Position} settings:
                 break;
 
             case null:
-                SomneoApiClient.SetAlarmWithoutSound(
+                await SomneoApiClient.SetAlarmWithoutSoundAsync(
                     position,
                     hour,
                     minute,
@@ -331,7 +331,7 @@ $@"Set alarm #{position} with the settings:
   Sound device: {(soundDevice.HasValue ? EnumHelper.GetDescription(soundDevice.Value) : "None")}{soundDeviceState}");
     }
 
-    private void ToggleAlarm(string? args)
+    private async Task ToggleAlarmAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args))
         {
@@ -344,12 +344,12 @@ $@"Set alarm #{position} with the settings:
                 switch (argsArray[1].ToLower())
                 {
                     case "on":
-                        SomneoApiClient.ToggleAlarm(position, true);
+                        await SomneoApiClient.ToggleAlarmAsync(position, true);
                         Console.WriteLine($"Alarm #{position} enabled.");
                         return;
 
                     case "off":
-                        SomneoApiClient.ToggleAlarm(position, false);
+                        await SomneoApiClient.ToggleAlarmAsync(position, false);
                         Console.WriteLine($"Alarm #{position} disabled.");
                         return;
                 }
@@ -359,11 +359,11 @@ $@"Set alarm #{position} with the settings:
         Console.WriteLine("Specify a position between 1 and 16, followed by \"on\" or \"off\".");
     }
 
-    private void RemoveAlarm(string? args)
+    private async Task RemoveAlarmAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int position) && position >= 1 && position <= 16)
         {
-            SomneoApiClient.RemoveAlarm(position);
+            await SomneoApiClient.RemoveAlarmAsync(position);
             Console.WriteLine($"Alarm #{position} removed.");
             return;
         }
@@ -371,11 +371,11 @@ $@"Set alarm #{position} with the settings:
         Console.WriteLine("Specify a position between 1 and 16.");
     }
 
-    private void SetSnoozeTime(string? args)
+    private async Task SetSnoozeTimeAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args) && int.TryParse(args, out int minutes) && minutes >= 1 && minutes <= 20)
         {
-            SomneoApiClient.SetSnoozeTime(minutes);
+            await SomneoApiClient.SetSnoozeTimeAsync(minutes);
             Console.WriteLine($"Snooze set to {minutes} minute(s).");
             return;
         }

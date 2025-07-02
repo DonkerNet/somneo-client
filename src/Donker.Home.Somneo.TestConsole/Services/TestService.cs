@@ -33,16 +33,16 @@ public class TestService
             new RelaxBreatheCommandHandler(somneoApiClient)
         };
 
-        _commandRegistry.RegisterCommand("help", "Show available commands.", ShowHelp);
-        _commandRegistry.RegisterCommand("clear", "Clears the console.", args => Console.Clear());
+        _commandRegistry.RegisterCommand("help", "Show available commands.", ShowHelpAsync);
+        _commandRegistry.RegisterCommand("clear", "Clears the console.", ClearConsoleAsync);
 
         foreach (var commandHandler in commandHandlers)
             commandHandler.RegisterCommands(_commandRegistry);
 
-        _commandRegistry.RegisterCommand("exit", "Exit the application.", args => _canRun = false);
+        _commandRegistry.RegisterCommand("exit", "Exit the application.", ExitApplicationAsync);
     }
 
-    public void Run()
+    public async Task RunAsync()
     {
         _canRun = true;
 
@@ -56,7 +56,7 @@ Type ""help"" to get started.");
             Console.Write("> ");
             string? command = Console.ReadLine();
             Console.WriteLine();
-            RunCommand(command);
+            await RunCommandAsync(command);
         }
         while (_canRun);
 
@@ -64,7 +64,7 @@ Type ""help"" to get started.");
         Console.WriteLine("Bye!");
     }
 
-    private void RunCommand(string? command)
+    private async Task RunCommandAsync(string? command)
     {
         if (string.IsNullOrEmpty(command))
             return;
@@ -84,7 +84,7 @@ Type ""help"" to get started.");
 
         try
         {
-            commandInfo.Handler(commandHandlerArguments);
+            await commandInfo.AsyncHandler.Invoke(commandHandlerArguments);
         }
         catch (SomneoApiException ex)
         {
@@ -98,7 +98,7 @@ Type ""help"" to get started.");
 
     #region Command handler methods
 
-    private void ShowHelp(string? args)
+    private Task ShowHelpAsync(string? args)
     {
         Console.WriteLine("Available commands:");
 
@@ -130,7 +130,7 @@ Type ""help"" to get started.");
                             break;
                         case ConsoleKey.S:
                             Console.WriteLine("Command list stopped.");
-                            return;
+                            return Task.CompletedTask;
                     }
                 }
 
@@ -140,7 +140,21 @@ Type ""help"" to get started.");
 
         Console.WriteLine(@"
 Command list finished.");
+
+        return Task.CompletedTask;
     }
 
+    private Task ClearConsoleAsync(string? args)
+    {
+        Console.Clear();
+        return Task.CompletedTask;
+    }
+
+
+    private Task ExitApplicationAsync(string? args)
+    {
+        _canRun = false;
+        return Task.CompletedTask;
+    }
     #endregion
 }

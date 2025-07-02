@@ -6,20 +6,20 @@ public class BedtimeCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("start-bedtime", "Starts a new bedtime session.", StartBedtime);
-        commandRegistry.RegisterCommand("end-bedtime", "Ends the current bedtime session.", EndBedtime);
-        commandRegistry.RegisterCommand("last-bedtime", "Shows information about the last bedtime session.", LastBedtime);
+        commandRegistry.RegisterCommand("start-bedtime", "Starts a new bedtime session.", StartBedtimeAsync);
+        commandRegistry.RegisterCommand("end-bedtime", "Ends the current bedtime session.", EndBedtimeAsync);
+        commandRegistry.RegisterCommand("last-bedtime", "Shows information about the last bedtime session.", LastBedtimeAsync);
     }
 
-    private void StartBedtime(string? args)
+    private async Task StartBedtimeAsync(string? args)
     {
-        SomneoApiClient.StartBedtime();
+        await SomneoApiClient.StartBedtimeAsync();
         Console.WriteLine("New bedtime session started.");
     }
 
-    private void EndBedtime(string? args)
+    private async Task EndBedtimeAsync(string? args)
     {
-        var bedtimeInfo = SomneoApiClient.EndBedtime();
+        var bedtimeInfo = await SomneoApiClient.EndBedtimeAsync();
 
         Console.WriteLine(
 $@"Bedtime session ended:
@@ -28,9 +28,9 @@ $@"Bedtime session ended:
   Duration: {bedtimeInfo.Duration}");
     }
 
-    private void LastBedtime(string? args)
+    private async Task LastBedtimeAsync(string? args)
     {
-        var bedtimeInfo = SomneoApiClient.GetLastBedtimeInfo();
+        var bedtimeInfo = await SomneoApiClient.GetLastBedtimeInfoAsync();
 
         if (bedtimeInfo == null)
         {

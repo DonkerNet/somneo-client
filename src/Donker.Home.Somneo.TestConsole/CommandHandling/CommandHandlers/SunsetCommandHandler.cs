@@ -8,28 +8,28 @@ public class SunsetCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("sunset-settings", "Show the sunset settings.", ShowSunsetSettings);
-        commandRegistry.RegisterCommand("toggle-sunset", "[on/off]", "Toggle the sunset.", ToggleSunset);
+        commandRegistry.RegisterCommand("sunset-settings", "Show the sunset settings.", ShowSunsetSettingsAsync);
+        commandRegistry.RegisterCommand("toggle-sunset", "[on/off]", "Toggle the sunset.", ToggleSunsetAsync);
         commandRegistry.RegisterCommand(
             "set-fm-radio-sunset",
             "[1-3] [1-25] [5-60] [1-5] [1-25]",
             "Configures the sunset to use the specified colors, intensity, duration, FM radio preset and volume.",
-            args => SetSunsetSettings(args, SoundDeviceType.FMRadio));
+            args => SetSunsetSettingsAsync(args, SoundDeviceType.FMRadio));
         commandRegistry.RegisterCommand(
             "set-sunset-sound-sunset",
             "[1-3] [1-25] [5-60] [1-4] [1-25]",
             "Configures the sunset to use the specified colors, intensity, duration, sunset sound and volume.",
-            args => SetSunsetSettings(args, SoundDeviceType.Sunset));
+            args => SetSunsetSettingsAsync(args, SoundDeviceType.Sunset));
         commandRegistry.RegisterCommand(
             "set-silent-sunset",
             "[1-3] [1-25] [5-60]",
             "Configures the sunset to use the specified colors, intensity and duration.",
-            args => SetSunsetSettings(args, null));
+            args => SetSunsetSettingsAsync(args, null));
     }
 
-    private void ShowSunsetSettings(string? args)
+    private async Task ShowSunsetSettingsAsync(string? args)
     {
-        var sunsetSettings = SomneoApiClient.GetSunsetSettings();
+        var sunsetSettings = await SomneoApiClient.GetSunsetSettingsAsync();
 
         string soundDevice = sunsetSettings.SoundDevice.HasValue ? EnumHelper.GetDescription(sunsetSettings.SoundDevice.Value)! : "None";
 
@@ -59,17 +59,17 @@ $@"Sunset settings:
   Sound device: {soundDevice}{soundVolumeState}{channelOrPresetState}");
     }
 
-    private void ToggleSunset(string? args)
+    private async Task ToggleSunsetAsync(string? args)
     {
         switch (args?.ToLower())
         {
             case "on":
-                SomneoApiClient.ToggleSunset(true);
+                await SomneoApiClient.ToggleSunsetAsync(true);
                 Console.WriteLine("Sunset enabled.");
                 break;
 
             case "off":
-                SomneoApiClient.ToggleSunset(false);
+                await SomneoApiClient.ToggleSunsetAsync(false);
                 Console.WriteLine("Sunset disabled.");
                 break;
 
@@ -79,7 +79,7 @@ $@"Sunset settings:
         }
     }
 
-    private void SetSunsetSettings(string? args, SoundDeviceType? soundDevice)
+    private async Task SetSunsetSettingsAsync(string? args, SoundDeviceType? soundDevice)
     {
         if (string.IsNullOrEmpty(args))
         {
@@ -145,7 +145,7 @@ $@"Sunset settings:
         switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
-                SomneoApiClient.SetSunsetSettingsWithFMRadio(
+                await SomneoApiClient.SetSunsetSettingsWithFMRadioAsync(
                     sunsetColors,
                     sunsetIntensity,
                     sunsetDuration,
@@ -154,7 +154,7 @@ $@"Sunset settings:
                 break;
 
             case SoundDeviceType.Sunset:
-                SomneoApiClient.SetSunsetSettingsWithSunsetSound(
+                await SomneoApiClient.SetSunsetSettingsWithSunsetSoundAsync(
                     sunsetColors,
                     sunsetIntensity,
                     sunsetDuration,
@@ -163,7 +163,7 @@ $@"Sunset settings:
                 break;
 
             case null:
-                SomneoApiClient.SetSunsetSettingsWithoutSound(
+                await SomneoApiClient.SetSunsetSettingsWithoutSoundAsync(
                     sunsetColors,
                     sunsetIntensity,
                     sunsetDuration);

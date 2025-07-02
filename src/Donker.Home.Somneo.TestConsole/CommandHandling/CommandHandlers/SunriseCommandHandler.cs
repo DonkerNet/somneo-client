@@ -8,11 +8,11 @@ public class SunriseCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
 {
     public override void RegisterCommands(CommandRegistry commandRegistry)
     {
-        commandRegistry.RegisterCommand("enable-sunrise-preview", "[1-3] [1-25]", "Previews a sunrise with the specified intensity.", EnableSunrisePreview);
-        commandRegistry.RegisterCommand("disable-sunrise-preview", null, "Disables the sunrise preview.", DisableSunrisePreview);
+        commandRegistry.RegisterCommand("enable-sunrise-preview", "[1-3] [1-25]", "Previews a sunrise with the specified intensity.", EnableSunrisePreviewAsync);
+        commandRegistry.RegisterCommand("disable-sunrise-preview", null, "Disables the sunrise preview.", DisableSunrisePreviewAsync);
     }
 
-    private void EnableSunrisePreview(string? args)
+    private async Task EnableSunrisePreviewAsync(string? args)
     {
         if (!string.IsNullOrEmpty(args))
         {
@@ -24,7 +24,7 @@ public class SunriseCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
                 && int.TryParse(argsArray[1], out int intensity)
                 && intensity >= 1 && intensity <= 25)
             {
-                SomneoApiClient.EnableSunrisePreview(colorScheme, intensity);
+                await SomneoApiClient.EnableSunrisePreviewAsync(colorScheme, intensity);
                 Console.WriteLine($"Previewing sunrise \"{EnumHelper.GetDescription(colorScheme)}\" with intensity {intensity}/25.");
                 return;
             }
@@ -33,9 +33,9 @@ public class SunriseCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
         Console.WriteLine("The sunrise number should be between 1 and 3 with an intensity between 1 and 25.");
     }
 
-    private void DisableSunrisePreview(string? args)
+    private async Task DisableSunrisePreviewAsync(string? args)
     {
-        SomneoApiClient.DisableSunrisePreview();
+        await SomneoApiClient.DisableSunrisePreviewAsync();
         Console.WriteLine("Disabled sunrise preview.");
     }
 }
