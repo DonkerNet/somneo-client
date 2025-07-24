@@ -14,7 +14,7 @@ internal class PlayerStateDto
     public string? ChannelOrPreset { get; set; }
 
     [JsonPropertyName("snddv")]
-    public required string Device { get; set; }
+    public required string SoundDevice { get; set; }
 
     /* Example JSON:
 {

@@ -8,7 +8,7 @@ internal class DisplayStateDto
     public bool Permanent { get; set; }
 
     [JsonPropertyName("brght")]
-    public int Brightness { get; set; }
+    public int DisplayLevel { get; set; }
 
     /* Example JSON:
 {

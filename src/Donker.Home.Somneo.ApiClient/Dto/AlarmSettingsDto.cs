@@ -10,9 +10,6 @@ internal class AlarmSettingsDto
     [JsonPropertyName("daynm")]
     public byte RepeatDayFlags { get; set; }
 
-    [JsonPropertyName("ctype")]
-    public int ColorSchemeNumber { get; set; }
-
     [JsonPropertyName("pwrsz")]
     public int PowerWakeSize { get; set; }
 
@@ -40,6 +37,9 @@ internal class AlarmSettingsDto
     [JsonPropertyName("curve")]
     public int SunriseIntensity { get; set; }
 
+    [JsonPropertyName("ctype")]
+    public int SunriseColors { get; set; }
+
     [JsonPropertyName("sndch")]
     public string? ChannelOrPreset { get; set; }
 
@@ -47,7 +47,7 @@ internal class AlarmSettingsDto
     public int Volume { get; set; }
 
     [JsonPropertyName("snddv")]
-    public required string Device { get; set; }
+    public required string SoundDevice { get; set; }
 
     /* Example JSON:
 {

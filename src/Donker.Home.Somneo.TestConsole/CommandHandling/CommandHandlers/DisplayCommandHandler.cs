@@ -18,7 +18,7 @@ public class DisplayCommandHandler(ISomneoApiClient somneoApiClient) : CommandHa
         Console.WriteLine(
 $@"Display state:
   Permanent display enabled: {(displayState.Permanent ? "Yes" : "No")}
-  Brightness level: {displayState.Brightness}/6");
+  Brightness level: {displayState.DisplayLevel}/6");
     }
 
     private async Task TogglePermanentDisplayAsync(string? args)

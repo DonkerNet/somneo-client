@@ -12,18 +12,23 @@ public sealed class BedtimeInfo
     /// <summary>
     /// The moment the bedtime session ended.
     /// </summary>
-    public DateTimeOffset Ended { get; }
+    public DateTimeOffset? Ended { get; }
     /// <summary>
     /// The duration of the bedtime session.
     /// </summary>
     public TimeSpan Duration { get; }
+    /// <summary>
+    /// Whether the bedtime session is currently running or not.
+    /// </summary>
+    public bool Enabled { get; }
 
     internal BedtimeInfo(
         DateTimeOffset started,
-        DateTimeOffset ended)
+        DateTimeOffset? ended)
     {
         Started = started;
         Ended = ended;
-        Duration = ended - started;
+        Duration = (ended ?? DateTimeOffset.Now) - started;
+        Enabled = !ended.HasValue;
     }
 }

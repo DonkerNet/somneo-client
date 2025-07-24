@@ -55,14 +55,14 @@ public sealed class AlarmSettings
     /// <summary>
     /// The type of sound device used for the alarm sound.
     /// </summary>
-    public SoundDeviceType? Device { get; }
+    public SoundDeviceType? SoundDevice { get; }
     /// <summary>
-    /// The preset that is selected if <see cref="Device"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
+    /// The preset that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.FMRadio"/>.
     /// Can be between 1 and 5.
     /// </summary>
     public int? FMRadioPreset { get; }
     /// <summary>
-    /// The wake-up sound that is selected if <see cref="Device"/> is set to <see cref="SoundDeviceType.WakeUpSound"/>.
+    /// The wake-up sound that is selected if <see cref="SoundDevice"/> is set to <see cref="SoundDeviceType.WakeUpSound"/>.
     /// </summary>
     public WakeUpSound? WakeUpSound { get; }
     /// <summary>
@@ -83,7 +83,7 @@ public sealed class AlarmSettings
         ColorScheme? sunriseColors,
         int? sunriseDuration,
         int? sunriseIntensity,
-        SoundDeviceType? device,
+        SoundDeviceType? soundDevice,
         int? fMRadioPreset,
         WakeUpSound? wakeUpSound,
         int? volume)
@@ -99,7 +99,7 @@ public sealed class AlarmSettings
         SunriseColors = sunriseColors;
         SunriseDuration = sunriseDuration;
         SunriseIntensity = sunriseIntensity;
-        Device = device;
+        SoundDevice = soundDevice;
         FMRadioPreset = fMRadioPreset;
         WakeUpSound = wakeUpSound;
         Volume = volume;

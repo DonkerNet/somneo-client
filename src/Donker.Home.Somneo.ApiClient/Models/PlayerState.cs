@@ -35,14 +35,14 @@ public sealed class PlayerState
     internal PlayerState(
         bool enabled,
         int? volume,
-        SoundDeviceType? device,
+        SoundDeviceType? soundDevice,
         int? fMRadioPreset,
         WakeUpSound? wakeUpSound,
         SunsetSound? sunsetSound)
     {
         Enabled = enabled;
         Volume = volume;
-        SoundDevice = device;
+        SoundDevice = soundDevice;
         FMRadioPreset = fMRadioPreset;
         WakeUpSound = wakeUpSound;
         SunsetSound = sunsetSound;

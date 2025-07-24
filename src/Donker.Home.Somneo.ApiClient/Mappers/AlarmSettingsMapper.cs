@@ -10,7 +10,7 @@ internal class AlarmSettingsMapper
         var repeatDays = EnumMapper.GetDaysOfWeek(dto.RepeatDayFlags);
         bool powerWakeEnabled = dto.PowerWakeSize == 255;
         bool hasSunrise = dto.SunriseIntensity > 0;
-        var device = EnumMapper.GetSoundDeviceType(dto.Device);
+        var soundDevice = EnumMapper.GetSoundDeviceType(dto.SoundDevice);
         int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
 
         int? powerWakeHour = null;
@@ -30,12 +30,12 @@ internal class AlarmSettingsMapper
 
         if (hasSunrise)
         {
-            sunriseColors = EnumMapper.GetColorScheme(dto.ColorSchemeNumber);
+            sunriseColors = EnumMapper.GetColorScheme(dto.SunriseColors);
             sunriseDuration = dto.SunriseDuration;
             sunriseIntensity = dto.SunriseIntensity;
         }
 
-        switch (device)
+        switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
                 fmRadioPreset = channelOrPreset;
@@ -59,7 +59,7 @@ internal class AlarmSettingsMapper
             sunriseColors,
             sunriseDuration,
             sunriseIntensity,
-            device,
+            soundDevice,
             fmRadioPreset,
             wakeUpSound,
             volume);

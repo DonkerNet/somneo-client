@@ -11,7 +11,7 @@ internal class RelaxBreatheSettingsDto
     public int Duration { get; set; }
 
     [JsonPropertyName("intny")]
-    public int Intensity { get; set; }
+    public int LightIntensity { get; set; }
 
     [JsonPropertyName("sndlv")]
     public int Volume { get; set; }

@@ -7,15 +7,15 @@ internal class SunsetSettingsMapper
 {
     public static SunsetSettings ToModel(SunsetSettingsDto dto)
     {
-        var device = EnumMapper.GetSoundDeviceType(dto.Device);
+        var soundDevice = EnumMapper.GetSoundDeviceType(dto.SoundDevice);
         int? channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : null;
-        var sunsetColors = EnumMapper.GetColorScheme(dto.SunsetColors)!.Value;
+        var colors = EnumMapper.GetColorScheme(dto.Colors)!.Value;
 
         int? fmRadioPreset = null;
         SunsetSound? sunsetSound = null;
         int? volume = null;
 
-        switch (device)
+        switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
                 fmRadioPreset = channelOrPreset;
@@ -29,10 +29,10 @@ internal class SunsetSettingsMapper
 
         return new SunsetSettings(
             dto.Enabled,
-            dto.SunsetIntensity,
-            dto.SunsetDuration,
-            sunsetColors,
-            device,
+            dto.Intensity,
+            dto.Duration,
+            colors,
+            soundDevice,
             fmRadioPreset,
             sunsetSound,
             volume);

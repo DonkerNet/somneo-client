@@ -76,10 +76,10 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
             if (alarmSettings.RepeatDays.Count > 0)
                 daysState = $"{Environment.NewLine}  Days: {string.Join(",", alarmSettings.RepeatDays.Select(d => string.Concat(d.ToString().Take(3))))}";
 
-            string soundDevice = alarmSettings.Device.HasValue ? EnumHelper.GetDescription(alarmSettings.Device.Value)! : "None";
+            string soundDevice = alarmSettings.SoundDevice.HasValue ? EnumHelper.GetDescription(alarmSettings.SoundDevice.Value)! : "None";
 
             string? channelOrPresetState = null;
-            switch (alarmSettings.Device)
+            switch (alarmSettings.SoundDevice)
             {
                 case SoundDeviceType.FMRadio:
                     if (alarmSettings.FMRadioPreset.HasValue)
@@ -96,7 +96,7 @@ alarm.PowerWakeEnabled ? $"{alarm.PowerWakeHour!:00}:{alarm.PowerWakeMinute!:00}
                 sunriseState = $" (intensity: {alarmSettings.SunriseIntensity}/25, duration: {alarmSettings.SunriseDuration}/40 minutes)";
 
             string? soundVolumeState = null;
-            if (alarmSettings.Device.HasValue)
+            if (alarmSettings.SoundDevice.HasValue)
                 soundVolumeState = $" (volume: {alarmSettings.Volume}/25)";
 
             Console.WriteLine(

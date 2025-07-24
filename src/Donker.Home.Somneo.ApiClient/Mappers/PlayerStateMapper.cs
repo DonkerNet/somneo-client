@@ -7,14 +7,14 @@ internal class PlayerStateMapper
 {
     public static PlayerState ToModel(PlayerStateDto dto)
     {
-        var device = EnumMapper.GetSoundDeviceType(dto.Device);
+        var soundDevice = EnumMapper.GetSoundDeviceType(dto.SoundDevice);
         int channelOrPreset = !string.IsNullOrEmpty(dto.ChannelOrPreset) ? int.Parse(dto.ChannelOrPreset) : 0;
 
         int? fmRadioPreset = null;
         WakeUpSound? wakeUpSound = null;
         SunsetSound? sunsetSound = null;
 
-        switch (device)
+        switch (soundDevice)
         {
             case SoundDeviceType.FMRadio:
                 fmRadioPreset = channelOrPreset;
@@ -29,8 +29,8 @@ internal class PlayerStateMapper
 
         return new PlayerState(
             dto.Enabled,
-            device.HasValue ? dto.Volume : null,
-            device,
+            soundDevice.HasValue ? dto.Volume : null,
+            soundDevice,
             fmRadioPreset,
             wakeUpSound,
             sunsetSound);

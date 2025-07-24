@@ -41,8 +41,8 @@ public class SunsetCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
                     channelOrPresetState = $"{Environment.NewLine}  FM-radio preset: {sunsetSettings.FMRadioPreset.Value}";
                 break;
             case SoundDeviceType.Sunset:
-                if (sunsetSettings.SunsetSound.HasValue)
-                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSettings.SunsetSound.Value)}";
+                if (sunsetSettings.Sound.HasValue)
+                    channelOrPresetState = $"{Environment.NewLine}  Sunset sound: {EnumHelper.GetDescription(sunsetSettings.Sound.Value)}";
                 break;
         }
 
@@ -53,9 +53,9 @@ public class SunsetCommandHandler(ISomneoApiClient somneoApiClient) : CommandHan
         Console.WriteLine(
 $@"Sunset settings:
   Enabled: {(sunsetSettings.Enabled ? "Yes" : "No")}
-  Colors: {EnumHelper.GetDescription(sunsetSettings.SunsetColors)}
-  Intensity: {sunsetSettings.SunsetIntensity}/25
-  Duration: {sunsetSettings.SunsetDuration}/40 minutes
+  Colors: {EnumHelper.GetDescription(sunsetSettings.Colors)}
+  Intensity: {sunsetSettings.Intensity}/25
+  Duration: {sunsetSettings.Duration}/40 minutes
   Sound device: {soundDevice}{soundVolumeState}{channelOrPresetState}");
     }
 

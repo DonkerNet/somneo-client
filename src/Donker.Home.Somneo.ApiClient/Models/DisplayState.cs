@@ -13,13 +13,13 @@ public sealed class DisplayState
     /// The brightness level of the display.
     /// Can be between 1 and 6.
     /// </summary>
-    public int Brightness { get; }
+    public int DisplayLevel { get; }
 
     internal DisplayState(
         bool permanent,
-        int brightness)
+        int displayLevel)
     {
         Permanent = permanent;
-        Brightness = brightness;
+        DisplayLevel = displayLevel;
     }
 }

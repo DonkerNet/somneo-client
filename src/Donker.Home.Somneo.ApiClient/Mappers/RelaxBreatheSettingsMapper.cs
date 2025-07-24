@@ -12,7 +12,7 @@ internal class RelaxBreatheSettingsMapper
         bool isLight = dto.Type == 0;
         bool isSound = dto.Type == 1;
 
-        int? lightIntensity = isLight ? dto.Intensity : null;
+        int? lightIntensity = isLight ? dto.LightIntensity : null;
         int? soundVolume = isSound ? dto.Volume : null;
 
         return new RelaxBreatheSettings(

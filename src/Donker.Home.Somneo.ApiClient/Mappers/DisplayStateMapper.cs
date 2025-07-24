@@ -9,6 +9,6 @@ internal class DisplayStateMapper
     {
         return new DisplayState(
             dto.Permanent,
-            dto.Brightness);
+            dto.DisplayLevel);
     }
 }

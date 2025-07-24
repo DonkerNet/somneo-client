@@ -9,6 +9,6 @@ internal class BedtimeInfoMapper
     {
         return new BedtimeInfo(
             dto.Started.GetValueOrDefault(),
-            dto.Ended.GetValueOrDefault());
+            dto.Ended);
     }
 }

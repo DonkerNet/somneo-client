@@ -8,13 +8,13 @@ internal class SunsetSettingsDto
     public bool Enabled { get; set; }
 
     [JsonPropertyName("curve")]
-    public int SunsetIntensity { get; set; }
+    public int Intensity { get; set; }
 
     [JsonPropertyName("durat")]
-    public int SunsetDuration { get; set; }
+    public int Duration { get; set; }
 
     [JsonPropertyName("ctype")]
-    public int SunsetColors { get; set; }
+    public int Colors { get; set; }
 
     [JsonPropertyName("sndch")]
     public string? ChannelOrPreset { get; set; }
@@ -23,7 +23,7 @@ internal class SunsetSettingsDto
     public int Volume { get; set; }
 
     [JsonPropertyName("snddv")]
-    public required string Device { get; set; }
+    public required string SoundDevice { get; set; }
 
     /* Example JSON:
 {

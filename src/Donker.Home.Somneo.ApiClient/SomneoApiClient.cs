@@ -366,13 +366,13 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     /// <inheritdoc/>
-    public Task SeekFMRadioStationAsync(RadioSeekDirection direction, CancellationToken cancellationToken = default)
+    public Task SeekFMRadioStationAsync(RadioSeekDirection seekDirection, CancellationToken cancellationToken = default)
     {
-        SomneoParameterValidators.RadioSeekDirection.ThrowIfOutOfRange(direction, nameof(direction));
+        SomneoParameterValidators.RadioSeekDirection.ThrowIfOutOfRange(seekDirection, nameof(seekDirection));
 
         var data = new
         {
-            fmcmd = EnumMapper.GetRadioSeekDirectionValue(direction)
+            fmcmd = EnumMapper.GetRadioSeekDirectionValue(seekDirection)
         };
 
         return ExecutePutRequestAsync("di/v1/products/1/wufmr", data, cancellationToken);
@@ -675,18 +675,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     #region Somneo: Sunrise
 
     /// <inheritdoc/>
-    public Task EnableSunrisePreviewAsync(ColorScheme sunriseColors, int sunriseIntensity, CancellationToken cancellationToken = default)
+    public Task EnableSunrisePreviewAsync(ColorScheme colors, int intensity, CancellationToken cancellationToken = default)
     {
-        SomneoParameterValidators.SunriseColors.ThrowIfOutOfRange(sunriseColors, nameof(sunriseColors));
-        SomneoParameterValidators.SunriseIntensity.ThrowIfOutOfRange(sunriseIntensity, nameof(sunriseIntensity));
+        SomneoParameterValidators.SunriseColors.ThrowIfOutOfRange(colors, nameof(colors));
+        SomneoParameterValidators.SunriseIntensity.ThrowIfOutOfRange(intensity, nameof(intensity));
 
         var data = new
         {
             onoff = true,   // Enable the light
             tempy = true,   // Specifies to be in preview/temporary mode?
             ngtlt = false,  // Disable the night light
-            ctype = EnumMapper.GetColorSchemeValue(sunriseColors)!.Value,
-            ltlvl = sunriseIntensity
+            ctype = EnumMapper.GetColorSchemeValue(colors)!.Value,
+            ltlvl = intensity
         };
 
         return ExecutePutRequestAsync("di/v1/products/1/wulgt", data, cancellationToken);
@@ -728,42 +728,42 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
 
     /// <inheritdoc/>
     public Task SetSunsetSettingsWithSunsetSoundAsync(
-        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        ColorScheme colors, int intensity, int duration,
         SunsetSound sunsetSound, int volume,
         CancellationToken cancellationToken = default)
     {
         return SetSunsetSettingsAsync(
-            sunsetColors, sunsetIntensity, sunsetDuration,
+            colors, intensity, duration,
             volume, SoundDeviceType.Sunset, sunsetSound, null, cancellationToken);
     }
 
     /// <inheritdoc/>
     public Task SetSunsetSettingsWithFMRadioAsync(
-        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        ColorScheme colors, int intensity, int duration,
         int fmRadioPreset, int volume,
         CancellationToken cancellationToken = default)
     {
         return SetSunsetSettingsAsync(
-            sunsetColors, sunsetIntensity, sunsetDuration,
+            colors, intensity, duration,
             volume, SoundDeviceType.FMRadio, null, fmRadioPreset, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public Task SetSunsetSettingsWithoutSoundAsync(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration, CancellationToken cancellationToken = default)
+    public Task SetSunsetSettingsWithoutSoundAsync(ColorScheme colors, int intensity, int duration, CancellationToken cancellationToken = default)
     {
         return SetSunsetSettingsAsync(
-            sunsetColors, sunsetIntensity, sunsetDuration,
+            colors, intensity, duration,
             null, null, null, null, cancellationToken);
     }
 
     private Task SetSunsetSettingsAsync(
-        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        ColorScheme colors, int intensity, int duration,
         int? volume, SoundDeviceType? soundDevice, SunsetSound? sunsetSound, int? fmRadioPreset,
         CancellationToken cancellationToken)
     {
-        SomneoParameterValidators.SunsetColors.ThrowIfOutOfRange(sunsetColors, nameof(sunsetColors));
-        SomneoParameterValidators.SunsetIntensity.ThrowIfOutOfRange(sunsetIntensity, nameof(sunsetIntensity));
-        SomneoParameterValidators.SunsetDuration.ThrowIfOutOfRange(sunsetDuration, nameof(sunsetDuration));
+        SomneoParameterValidators.SunsetColors.ThrowIfOutOfRange(colors, nameof(colors));
+        SomneoParameterValidators.SunsetIntensity.ThrowIfOutOfRange(intensity, nameof(intensity));
+        SomneoParameterValidators.SunsetDuration.ThrowIfOutOfRange(duration, nameof(duration));
         if (volume.HasValue)
             SomneoParameterValidators.Volume.ThrowIfOutOfRange(volume.Value, nameof(volume));
         if (fmRadioPreset.HasValue)
@@ -771,7 +771,7 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         if (sunsetSound.HasValue)
             SomneoParameterValidators.SunsetSound.ThrowIfOutOfRange(sunsetSound.Value, nameof(sunsetSound));
 
-        int sunsetColorSchemeNumber = EnumMapper.GetColorSchemeValue(sunsetColors)!.Value;
+        int sunsetColorSchemeNumber = EnumMapper.GetColorSchemeValue(colors)!.Value;
 
         int soundChannel = -1;
 
@@ -791,8 +791,8 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
         var data = new
         {
             ctype = sunsetColorSchemeNumber,    // The sunset colors
-            curve = sunsetIntensity,            // The light level
-            durat = sunsetDuration,             // The sunrise duration
+            curve = intensity,            // The light level
+            durat = duration,             // The sunrise duration
             snddv = soundDeviceName,            // The sound device to play
             sndch = soundChannel.ToString(),    // The sunset sound or FM radio preset to play
             sndlv = volume ?? 12                // The volume level of the sound device to play
@@ -876,18 +876,18 @@ public sealed class SomneoApiClient : ISomneoApiClient, IDisposable
     }
 
     /// <inheritdoc/>
-    public Task SetRelaxBreatheSettingsWithLightAsync(int duration, int breathsPerMinuteOption, int intensity, CancellationToken cancellationToken = default)
+    public Task SetRelaxBreatheSettingsWithLightAsync(int duration, int breathsPerMinuteOption, int lightIntensity, CancellationToken cancellationToken = default)
     {
         SomneoParameterValidators.RelaxBreatheDuration.ThrowIfOutOfRange(duration, nameof(duration));
         SomneoParameterValidators.RelaxBreatheBreathsPerMinute.ThrowIfOutOfRange(breathsPerMinuteOption, nameof(breathsPerMinuteOption));
-        SomneoParameterValidators.RelaxBreatheLightIntensity.ThrowIfOutOfRange(intensity, nameof(intensity));
+        SomneoParameterValidators.RelaxBreatheLightIntensity.ThrowIfOutOfRange(lightIntensity, nameof(lightIntensity));
 
         var data = new
         {
             rtype = 1,                          // Sets the type to sound
             durat = duration,                   // The duration of RelaxBreathe
             progr = breathsPerMinuteOption + 1, // The option (1-based index) defining the amount of breaths per second
-            intny = intensity                   // The intensity of the light used for the exercises
+            intny = lightIntensity                   // The intensity of the light used for the exercises
         };
 
         return ExecutePutRequestAsync("di/v1/products/1/wurlx", data, cancellationToken);

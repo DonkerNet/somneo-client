@@ -220,12 +220,12 @@ public interface ISomneoApiClient
     /// <summary>
     /// Seeks a new FM radio station in the specified direction for the currently selected preset, if the FM radio is enabled.
     /// </summary>
-    /// <param name="direction">The seek direction.</param>
+    /// <param name="seekDirection">The seek direction.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="direction"/> parameter is out of range.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="seekDirection"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    Task SeekFMRadioStationAsync(RadioSeekDirection direction, CancellationToken cancellationToken = default);
+    Task SeekFMRadioStationAsync(RadioSeekDirection seekDirection, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -438,16 +438,16 @@ public interface ISomneoApiClient
     /// <summary>
     /// Enables a preview of a sunrise with the specified settings.
     /// </summary>
-    /// <param name="sunriseColors">The type of sunrise to preview.</param>
-    /// <param name="sunriseIntensity">
+    /// <param name="colors">The type of sunrise to preview.</param>
+    /// <param name="intensity">
     /// The intensity of the sunrise to preview.
     /// Value must be between 1 and 25.
     /// </param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="sunriseColors"/> or <paramref name="sunriseIntensity"/> parameter is out of range.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Exception thrown when the <paramref name="colors"/> or <paramref name="intensity"/> parameter is out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    Task EnableSunrisePreviewAsync(ColorScheme sunriseColors, int sunriseIntensity, CancellationToken cancellationToken = default);
+    Task EnableSunrisePreviewAsync(ColorScheme colors, int intensity, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Disables the preview of a sunrise.
@@ -481,12 +481,12 @@ public interface ISomneoApiClient
     /// <summary>
     /// Sets the Sunset settings with the specified sunset sound.
     /// </summary>
-    /// <param name="sunsetColors">The type of sunset colors to show.</param>
-    /// <param name="sunsetIntensity">
+    /// <param name="colors">The type of sunset colors to show.</param>
+    /// <param name="intensity">
     /// The maximum intensity of the sunset.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <param name="sunsetDuration">
+    /// <param name="duration">
     /// The duration of the sunset.
     /// Value must be between 5 and 60, with 5 minute steps in between.
     /// </param>
@@ -500,19 +500,19 @@ public interface ISomneoApiClient
     /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     Task SetSunsetSettingsWithSunsetSoundAsync(
-        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        ColorScheme colors, int intensity, int duration,
         SunsetSound sunsetSound, int volume,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets the Sunset settings with the specified FM radio preset.
     /// </summary>
-    /// <param name="sunsetColors">The type of sunset colors to show.</param>
-    /// <param name="sunsetIntensity">
+    /// <param name="colors">The type of sunset colors to show.</param>
+    /// <param name="intensity">
     /// The maximum intensity of the sunset.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <param name="sunsetDuration">
+    /// <param name="duration">
     /// The duration of the sunset.
     /// Value must be between 5 and 60, with 5 minute steps in between.
     /// </param>
@@ -529,19 +529,19 @@ public interface ISomneoApiClient
     /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
     Task SetSunsetSettingsWithFMRadioAsync(
-        ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration,
+        ColorScheme colors, int intensity, int duration,
         int fmRadioPreset, int volume,
         CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets the Sunset settings without any sound.
     /// </summary>
-    /// <param name="sunsetColors">The type of sunset colors to show.</param>
-    /// <param name="sunsetIntensity">
+    /// <param name="colors">The type of sunset colors to show.</param>
+    /// <param name="intensity">
     /// The maximum intensity of the sunset.
     /// Value must be between 1 and 25.
     /// </param>
-    /// <param name="sunsetDuration">
+    /// <param name="duration">
     /// The duration of the sunset.
     /// Value must be between 5 and 60, with 5 minute steps in between.
     /// </param>
@@ -549,7 +549,7 @@ public interface ISomneoApiClient
     /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    Task SetSunsetSettingsWithoutSoundAsync(ColorScheme sunsetColors, int sunsetIntensity, int sunsetDuration, CancellationToken cancellationToken = default);
+    Task SetSunsetSettingsWithoutSoundAsync(ColorScheme colors, int intensity, int duration, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -623,12 +623,12 @@ public interface ISomneoApiClient
     /// The option (index) that specifies the amount of breaths per minute for the exercise.
     /// Available options can be retrieved using the <see cref="GetRelaxBreatheSettingsAsync"/> method.
     /// </param>
-    /// <param name="intensity">The intensity used for the light of the breathing exercises. Must be between 1 and 25.</param>
+    /// <param name="lightIntensity">The intensity used for the light of the breathing exercises. Must be between 1 and 25.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Exception thrown when any of the supplied parameters are out of range.</exception>
     /// <exception cref="SomneoApiException">Exception thrown when a request to the Somneo device has failed.</exception>
-    Task SetRelaxBreatheSettingsWithLightAsync(int duration, int breathsPerMinuteOption, int intensity, CancellationToken cancellationToken = default);
+    Task SetRelaxBreatheSettingsWithLightAsync(int duration, int breathsPerMinuteOption, int lightIntensity, CancellationToken cancellationToken = default);
 
     #endregion
 }
